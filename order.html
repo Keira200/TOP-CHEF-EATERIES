@@ -754,6 +754,191 @@
   // Initialize
   renderMenu();
   renderCart();
+  
+  // ============================================
+  // NEW FEATURE 1: MINIMUM ORDER VALIDATION
+  // ============================================
+  const MINIMUM_ORDER_AMOUNT = 500; // KES 500 minimum order
+  
+  function validateMinimumOrder(total) {
+    if (total < MINIMUM_ORDER_AMOUNT) {
+      alert(` Minimum order amount is KES ${MINIMUM_ORDER_AMOUNT}. Your current total is KES ${total}. Please add more items.`);
+      return false;
+    }
+    return true;
+  }
+  
+  // ============================================
+  // NEW FEATURE 2: DELIVERY TIME SLOTS
+  // ============================================
+  function generateDeliverySlots() {
+    const slots = [];
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Generate slots for today
+    let startHour = currentHour + 1; // Start from next hour
+    
+    for (let i = 0; i < 6; i++) {
+      let slotHour = startHour + i;
+      let period = slotHour >= 12 ? 'PM' : 'AM';
+      let displayHour = slotHour > 12 ? slotHour - 12 : slotHour;
+      if (displayHour === 0) displayHour = 12;
+      
+      slots.push({
+        value: `${slotHour}:00`,
+        display: `${displayHour}:00 ${period}`,
+        available: slotHour <= 22 // No deliveries after 10 PM
+      });
+    }
+    return slots;
+  }
+  
+  function addDeliveryTimeSelector() {
+    const checkoutForm = document.querySelector('.checkout-form');
+    if (checkoutForm && !document.getElementById('deliveryTime')) {
+      const timeSlotHTML = `
+        <div class="form-group" style="margin: 0.5rem 0;">
+          <label style="display: block; margin-bottom: 0.3rem; font-weight: 600;">
+            <i class="fas fa-clock"></i> Preferred Delivery Time
+          </label>
+          <select id="deliveryTime" style="width: 100%; padding: 0.8rem; border: 1px solid #f0dcc8; border-radius: 28px;">
+            <option value="">Select a time slot</option>
+            ${generateDeliverySlots().filter(slot => slot.available).map(slot => 
+              `<option value="${slot.value}">${slot.display}</option>`
+            ).join('')}
+          </select>
+        </div>
+      `;
+      // Insert after phone number field
+      const phoneField = document.getElementById('customerPhone');
+      if (phoneField && phoneField.parentNode) {
+        phoneField.insertAdjacentHTML('afterend', timeSlotHTML);
+      }
+    }
+  }
+  
+  // ============================================
+  // NEW FEATURE 3: ORDER CONFIRMATION POPUP
+  // ============================================
+  function showOrderConfirmation(orderDetails, total, reference) {
+    // Create modal if it doesn't exist
+    let confirmationModal = document.getElementById('orderConfirmationModal');
+    if (!confirmationModal) {
+      const modalHTML = `
+        <div id="orderConfirmationModal" class="modal" style="display: none;">
+          <div class="modal-content" style="max-width: 500px;">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: #25D366;"></i>
+            <h3 style="color: #B65F1E; margin: 1rem 0;">Order Confirmed! 🎉</h3>
+            <div id="confirmationDetails" style="text-align: left; margin: 1rem 0; padding: 1rem; background: #fefaf5; border-radius: 16px;">
+              <!-- Dynamic content -->
+            </div>
+            <button onclick="closeConfirmationModal()" style="background: #E17B2E; color: white; border: none; padding: 0.8rem 2rem; border-radius: 40px; cursor: pointer; margin-top: 0.5rem;">
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+    
+    const detailsDiv = document.getElementById('confirmationDetails');
+    if (detailsDiv) {
+      let itemsHtml = '<ul style="list-style: none;">';
+      for (const item of orderDetails.items) {
+        itemsHtml += `<li style="padding: 0.3rem 0;">🍽️ ${item.name} x${item.quantity} - <strong>KES ${item.subtotal.toLocaleString()}</strong></li>`;
+      }
+      itemsHtml += '</ul>';
+      
+      detailsDiv.innerHTML = `
+        <p><strong> Customer:</strong> ${orderDetails.name}</p>
+        <p><strong>Phone:</strong> ${orderDetails.phone}</p>
+        <p><strong>Address:</strong> ${orderDetails.address}</p>
+        <p><strong> Delivery Time:</strong> ${orderDetails.deliveryTime || 'As soon as possible'}</p>
+        <p><strong> Order Details:</strong></p>
+        ${itemsHtml}
+        <p style="margin-top: 0.5rem;"><strong> Total:</strong> KES ${total.toLocaleString()}</p>
+        <p><strong>💳 Payment:</strong> ${orderDetails.paymentMethod}</p>
+        ${reference ? `<p><strong> Reference:</strong> ${reference}</p>` : ''}
+        <hr style="margin: 0.8rem 0;">
+        <p style="color: #25D366; text-align: center;">
+          <i class="fas fa-whatsapp"></i> You will receive a WhatsApp confirmation shortly
+        </p>
+      `;
+    }
+    
+    document.getElementById('orderConfirmationModal').style.display = 'flex';
+  }
+  
+  function closeConfirmationModal() {
+    const modal = document.getElementById('orderConfirmationModal');
+    if (modal) modal.style.display = 'none';
+  }
+  
+  // ============================================
+  // MODIFIED PAYMENT FUNCTION WITH NEW FEATURES
+  // ============================================
+  // Store original send function
+  const originalSendOrder = sendOrderToWhatsApp;
+  
+  // Override to add confirmation
+  window.sendOrderToWhatsApp = function(orderData, total, paymentRef = '') {
+    // Get delivery time
+    const deliveryTimeSelect = document.getElementById('deliveryTime');
+    const deliveryTime = deliveryTimeSelect ? deliveryTimeSelect.value : '';
+    orderData.deliveryTime = deliveryTime;
+    
+    // Show confirmation popup
+    showOrderConfirmation(orderData, total, paymentRef);
+    
+    // Call original function
+    originalSendOrder(orderData, total, paymentRef);
+  };
+  
+  // Add minimum order check before payment
+  const originalPaystackHandler = paystackBtn?.click;
+  if (paystackBtn) {
+    const existingClick = paystackBtn.onclick;
+    paystackBtn.addEventListener('click', function(e) {
+      let total = 0;
+      for (let [id, item] of cart.entries()) {
+        total += item.quantity * item.price;
+      }
+      if (!validateMinimumOrder(total)) {
+        e.stopPropagation();
+        return false;
+      }
+    });
+  }
+  
+  // Add delivery time selector to page
+  setTimeout(addDeliveryTimeSelector, 500);
+  
+  // ============================================
+  // BONUS: CALL TO ACTION BUTTON (Optional)
+  // ============================================
+  function addWhatsAppSupportButton() {
+    const supportBtn = document.createElement('div');
+    supportBtn.innerHTML = `
+      <a href="https://wa.me/254707203741" target="_blank" 
+         style="position: fixed; bottom: 20px; right: 20px; background: #25D366; 
+                color: white; width: 60px; height: 60px; border-radius: 50%; 
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999;
+                font-size: 2rem; text-decoration: none;">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    `;
+    document.body.appendChild(supportBtn);
+  }
+  
+  // Uncomment to add WhatsApp support button
+  // addWhatsAppSupportButton();
+  
+  console.log("✅ New features loaded: Minimum Order, Delivery Slots, Order Confirmation!");
+
 </script>
+
 </body>
 </html>
