@@ -753,6 +753,217 @@
   // Initialize
   renderMenu();
   renderCart();
+  
+  // ============================================
+  // FIX: ENSURE ORDERS ARE SENT TO RESTAURANT AFTER PAYMENT
+  // ============================================
+  
+  // Your restaurant WhatsApp number - UPDATE THIS
+  const RESTAURANT_WHATSAPP = "254707203741";  // 🔴 CHANGE TO YOUR ACTUAL NUMBER
+  
+  // Function to send order to WhatsApp
+  function sendOrderToRestaurant(orderDetails, total, paymentRef) {
+    // Format order items
+    let itemsList = "";
+    for (let i = 0; i < orderDetails.items.length; i++) {
+      itemsList += `✓ ${orderDetails.items[i].name} x${orderDetails.items[i].quantity} - KES ${orderDetails.items[i].subtotal.toLocaleString()}\n`;
+    }
+    
+    // Create message
+    const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
+      `*Customer:* ${orderDetails.name}%0A` +
+      `*Phone:* ${orderDetails.phone}%0A` +
+      `*Address:* ${orderDetails.address}%0A%0A` +
+      `*Order:*%0A${itemsList}%0A` +
+      `*Total: KES ${total.toLocaleString()}*%0A` +
+      `*Payment: ${orderDetails.paymentMethod}*%0A` +
+      `*Mobile Money Number: ${orderDetails.mobileNumber || 'N/A'}*%0A` +
+      (paymentRef ? `*Transaction Ref: ${paymentRef}*%0A` : '') +
+      `*Instructions:* ${orderDetails.instructions || 'None'}%0A%0A` +
+      `✅ Payment confirmed! Please prepare this order.`;
+    
+    // Open WhatsApp
+    const whatsappUrl = `https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+    
+    // Also log to console for debugging
+    console.log("✅ Order sent to WhatsApp:", RESTAURANT_WHATSAPP);
+    console.log("Order:", orderDetails);
+    
+    return true;
+  }
+  
+  // Find the Paystack payment button and fix its callback
+  setTimeout(function() {
+    const paystackBtn = document.getElementById('paystackPayBtn');
+    if (paystackBtn) {
+      console.log("✅ Found Paystack button - fixing order notification");
+      
+      // Store original click handler
+      const originalClick = paystackBtn.onclick;
+      
+      // Replace with fixed version
+      paystackBtn.onclick = null;
+      paystackBtn.addEventListener('click', function() {
+        // Get customer details
+        const name = document.getElementById('customerName')?.value.trim() || '';
+        const phone = document.getElementById('customerPhone')?.value.trim() || '';
+        const address = document.getElementById('deliveryLocation')?.value.trim() || '';
+        const instructions = document.getElementById('specialInstructions')?.value.trim() || '';
+        const mobileNumber = document.getElementById('mobileMoneyNumber')?.value.trim() || '';
+        
+        // Get selected payment method
+        let paymentMethod = 'M-Pesa';
+        const selectedOption = document.querySelector('.payment-option.selected');
+        if (selectedOption) {
+          if (selectedOption.dataset.payment === 'airtel') paymentMethod = 'Airtel Money';
+          else if (selectedOption.dataset.payment === 'cash') paymentMethod = 'Cash on Delivery';
+        }
+        
+        // Get cart items
+        let cartItems = [];
+        let total = 0;
+        
+        // Try to get cart from your existing cart variable
+        if (typeof cart !== 'undefined' && cart.size > 0) {
+          for (let [id, item] of cart.entries()) {
+            const subtotal = item.quantity * item.price;
+            total += subtotal;
+            cartItems.push({
+              name: item.name,
+              quantity: item.quantity,
+              subtotal: subtotal
+            });
+          }
+        } else if (typeof cartItemsList !== 'undefined') {
+          // Alternative: get from DOM
+          const cartElements = document.querySelectorAll('.cart-item');
+          cartElements.forEach(el => {
+            const nameEl = el.querySelector('.cart-item-title');
+            const qtyEl = el.querySelector('.cart-qty');
+            const priceEl = el.querySelector('.cart-item-price');
+            if (nameEl && qtyEl) {
+              const quantity = parseInt(qtyEl.innerText);
+              let price = 0;
+              if (priceEl) {
+                const priceText = priceEl.innerText;
+                const match = priceText.match(/[\d,]+/);
+                if (match) price = parseInt(match[0].replace(/,/g, ''));
+              }
+              const subtotal = quantity * price;
+              total += subtotal;
+              cartItems.push({
+                name: nameEl.innerText,
+                quantity: quantity,
+                subtotal: subtotal
+              });
+            }
+          });
+        }
+        
+        // Validation
+        if (!name || !phone || !address) {
+          alert("❌ Please fill in your Name, Phone Number, and Delivery Address.");
+          return;
+        }
+        if (cartItems.length === 0) {
+          alert("🛒 Your cart is empty. Add some delicious items first!");
+          return;
+        }
+        
+        // For Cash on Delivery - send order immediately
+        if (paymentMethod === 'Cash on Delivery') {
+          const orderData = { name, phone, address, instructions, items: cartItems, paymentMethod, mobileNumber: 'N/A' };
+          sendOrderToRestaurant(orderData, total, '');
+          alert(`✅ Order placed! Total: KES ${total.toLocaleString()}\n\nThe restaurant has been notified.`);
+          return;
+        }
+        
+        // For Mobile Money - need to wait for Paystack callback
+        if (!mobileNumber) {
+          alert("❌ Please enter your mobile money number");
+          return;
+        }
+        
+        // Get Paystack public key
+        let paystackKey = '';
+        if (typeof LIVE_PAYSTACK_PUBLIC_KEY !== 'undefined') {
+          paystackKey = LIVE_PAYSTACK_PUBLIC_KEY;
+        } else if (typeof PAYSTACK_PUBLIC_KEY !== 'undefined') {
+          paystackKey = PAYSTACK_PUBLIC_KEY;
+        } else {
+          // Try to get from the Paystack button data attribute
+          const btn = document.getElementById('paystackPayBtn');
+          paystackKey = btn?.getAttribute('data-key') || '';
+        }
+        
+        if (!paystackKey || paystackKey === 'pk_live_YOUR_ACTUAL_LIVE_PUBLIC_KEY_HERE') {
+          alert("⚠️ Payment system is being configured. Please use Cash on Delivery for now.");
+          return;
+        }
+        
+        // Initialize Paystack
+        const reference = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        
+        const handler = PaystackPop.setup({
+          key: paystackKey,
+          email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
+          amount: total * 100,
+          currency: 'KES',
+          ref: reference,
+          metadata: {
+            custom_fields: [
+              { display_name: "Customer Name", variable_name: "customer_name", value: name },
+              { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
+              { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
+              { display_name: "Mobile Money Number", variable_name: "mobile_money_number", value: mobileNumber }
+            ]
+          },
+          callback: function(response) {
+            // ✅ FIXED: Send order to restaurant AFTER successful payment
+            console.log("Payment successful:", response);
+            
+            const orderData = { 
+              name, phone, address, instructions, 
+              items: cartItems, 
+              paymentMethod, 
+              mobileNumber 
+            };
+            
+            // Send to WhatsApp
+            sendOrderToRestaurant(orderData, total, response.reference);
+            
+            alert(`✅ Payment Successful!\n\nAmount: KES ${total.toLocaleString()}\nReference: ${response.reference}\n\nThe restaurant has been notified of your order.`);
+            
+            // Clear cart
+            if (typeof cart !== 'undefined' && cart.clear) {
+              cart.clear();
+            }
+            if (typeof renderCart === 'function') {
+              renderCart();
+            }
+            
+            // Clear form
+            const formFields = ['customerName', 'customerPhone', 'deliveryLocation', 'specialInstructions', 'mobileMoneyNumber'];
+            formFields.forEach(field => {
+              const el = document.getElementById(field);
+              if (el) el.value = '';
+            });
+          },
+          onClose: function() {
+            alert('Payment cancelled. No money was deducted.');
+          }
+        });
+        
+        handler.openIframe();
+      });
+      
+      console.log("✅ Payment handler fixed!");
+    } else {
+      console.log("⚠️ Paystack button not found - check if the button exists");
+    }
+  }, 1000);
+
 </script>
 </body>
 </html>
