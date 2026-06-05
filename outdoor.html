@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Top Chef Eateries | Outdoor Dining Experience</title>
+  <!-- Google Fonts + Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fefaf5;
+      color: #2c2418;
+      scroll-behavior: smooth;
+    }
+
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid #f0e1d0;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo i {
+      color: #E17B2E;
+      margin-right: 6px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4a3522;
+      transition: 0.25s;
+      position: relative;
+    }
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2.5px;
+      background: #E17B2E;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover:after,
+    .nav-links a.active:after {
+      width: 100%;
+    }
+    .nav-links a.active {
+      color: #E17B2E;
+    }
+
+    /* Hero Section */
+    .hero-outdoor {
+      background: linear-gradient(107deg, rgba(0,0,0,0.5), rgba(0,0,0,0.4)), url('https://images.pexels.com/photos/1449775/pexels-photo-1449775.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center;
+      padding: 5rem 2rem;
+      text-align: center;
+      color: white;
+      border-radius: 0 0 48px 48px;
+    }
+    .hero-outdoor h1 {
+      font-size: 3rem;
+      font-weight: 800;
+    }
+    .hero-outdoor h1 span {
+      color: #FFB347;
+    }
+    .hero-outdoor p {
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    /* Main Container */
+    .outdoor-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    /* Experience Section */
+    .experience-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 3rem;
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+      border: 1px solid #f0e1d0;
+    }
+    .experience-image {
+      flex: 1;
+      min-width: 280px;
+      background: url('https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg?auto=compress&cs=tinysrgb&w=600');
+      background-size: cover;
+      background-position: center;
+    }
+    .experience-content {
+      flex: 1;
+      padding: 2rem;
+    }
+    .experience-content h2 {
+      color: #B65F1E;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+    .experience-content p {
+      color: #7a6248;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .feature-list {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .feature-list li {
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .feature-list li i {
+      color: #E17B2E;
+      width: 24px;
+    }
+
+    /* Gallery Section */
+    .gallery-section {
+      margin-bottom: 3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .section-header h2 {
+      font-size: 1.6rem;
+      color: #B65F1E;
+    }
+    .section-header i {
+      font-size: 1.8rem;
+      color: #E17B2E;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .gallery-item {
+      height: 220px;
+      border-radius: 24px;
+      background-size: cover;
+      background-position: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .gallery-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    /* Amenities Grid */
+    .amenities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .amenity-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      border: 1px solid #ffe4ce;
+      transition: all 0.3s ease;
+    }
+    .amenity-card:hover {
+      transform: translateY(-5px);
+      border-color: #E17B2E;
+      box-shadow: 0 12px 24px rgba(193,123,46,0.1);
+    }
+    .amenity-icon {
+      width: 70px;
+      height: 70px;
+      background: #fef0e4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    .amenity-icon i {
+      font-size: 2rem;
+      color: #E17B2E;
+    }
+    .amenity-card h3 {
+      color: #B65F1E;
+      margin-bottom: 0.5rem;
+    }
+    .amenity-card p {
+      color: #7a6248;
+      font-size: 0.9rem;
+    }
+
+    /* Special Menu Section */
+    .special-menu {
+      background: linear-gradient(135deg, #fff7ef, #fff0e3);
+      border-radius: 32px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .menu-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      border-bottom: 1px solid #f0dcc8;
+    }
+    .menu-item-name {
+      font-weight: 600;
+    }
+    .menu-item-price {
+      color: #E17B2E;
+      font-weight: 800;
+    }
+
+    /* Reservation Button */
+    .reservation-box {
+      text-align: center;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      margin: 2rem 0;
+      border: 1px solid #f0e1d0;
+    }
+    .outdoor-btn {
+      background: linear-gradient(135deg, #E17B2E, #B65F1E);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(225,123,46,0.3);
+      transition: all 0.3s ease;
+    }
+    .outdoor-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(225,123,46,0.4);
+      gap: 15px;
+    }
+
+    /* Back Link */
+    .back-link {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #F4E3D3;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #B65F1E;
+      transition: 0.3s;
+    }
+    .btn-back:hover {
+      background: #E17B2E;
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      background: #2c2418;
+      color: #f0e0ce;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+      border-radius: 40px 40px 0 0;
+    }
+
+    @media (max-width: 850px) {
+      .navbar { flex-direction: column; padding: 1rem; }
+      .hero-outdoor h1 { font-size: 2rem; }
+      .experience-section { flex-direction: column; }
+      .experience-image { height: 250px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><i class="fas fa-utensils"></i> TOP CHEF EATERIES</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="order.html">Order</a></li>
+    <li><a href="reservation.html">Reserve</a></li>
+    <li><a href="#" class="active">Outdoor</a></li>
+  </ul>
+</nav>
+
+<section class="hero-outdoor">
+  <h1>Outdoor <span>Dining</span></h1>
+  <p>Experience alfresco dining at its finest — fresh air, beautiful views, and exceptional cuisine</p>
+</section>
+
+<div class="outdoor-container">
+  <!-- Experience Section -->
+  <div class="experience-section">
+    <div class="experience-image"></div>
+    <div class="experience-content">
+      <h2><i class="fas fa-tree"></i> A Unique Alfresco Experience</h2>
+      <p>Escape the ordinary and immerse yourself in our enchanting outdoor dining terrace. Surrounded by lush greenery, twinkling string lights, and fresh seasonal flowers, our garden setting creates the perfect ambiance for romantic dinners, family gatherings, or casual meals with friends.</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-check-circle"></i> Heated patio for cooler evenings</li>
+        <li><i class="fas fa-check-circle"></i> Covered pergola and open-air seating</li>
+        <li><i class="fas fa-check-circle"></i> Pet-friendly designated area</li>
+        <li><i class="fas fa-check-circle"></i> Live acoustic music on weekends</li>
+        <li><i class="fas fa-check-circle"></i> Scenic garden views and ambient lighting</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Gallery Section -->
+  <div class="gallery-section">
+    <div class="section-header">
+      <i class="fas fa-camera"></i>
+      <h2>Our Outdoor Space</h2>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- Amenities Section -->
+  <div class="section-header">
+    <i class="fas fa-umbrella-beach"></i>
+    <h2>Outdoor Amenities</h2>
+  </div>
+  <div class="amenities-grid">
+    <div class="amenity-card">
+      <div class="amenity-icon"><i class="fas fa-temperature-high"></i></div>
+      <h3>Heated Patio</h3>
+      <p>Enjoy outdoor dining year-round with our cozy heated terrace</p>
+    </div>
+    <div class="amenity-card">
+      <div class="amenity-icon"><i class="fas fa-music"></i></div>
+      <h3>Live Music</h3>
+      <p>Acoustic performances every Friday and Saturday evening</p>
+    </div>
+    <div class="amenity-card">
+      <div class="amenity-icon"><i class="fas fa-paw"></i></div>
+      <h3>Pet Friendly</h3>
+      <p>Bring your furry friends to our dedicated pet-friendly zone</p>
+    </div>
+    <div class="amenity-card">
+      <div class="amenity-icon"><i class="fas fa-wifi"></i></div>
+      <h3>Free Wi-Fi</h3>
+      <p>Stay connected while enjoying your meal outdoors</p>
+    </div>
+  </div>
+
+  <!-- Special Outdoor Menu -->
+  <div class="special-menu">
+    <div class="section-header">
+      <i class="fas fa-leaf"></i>
+      <h2>Outdoor Dining Specials</h2>
+    </div>
+    <p style="color: #7a6248; margin-bottom: 1rem;">Specially curated dishes perfect for alfresco dining</p>
+    <div class="menu-items" id="outdoorMenu"></div>
+  </div>
+
+  <!-- Reservation Button -->
+  <div class="reservation-box">
+    <i class="fas fa-calendar-alt" style="font-size: 2.5rem; color: #E17B2E; margin-bottom: 1rem; display: inline-block;"></i>
+    <h3 style="color: #B65F1E; margin-bottom: 0.5rem;">Ready to Dine Alfresco?</h3>
+    <p style="color: #7a6248; margin-bottom: 1.5rem;">Reserve your outdoor table now and enjoy a memorable dining experience under the open sky.</p>
+    <button onclick="window.location.href='reservation.html'" class="outdoor-btn">
+      <i class="fas fa-calendar-check"></i> Reserve Outdoor Table
+    </button>
+  </div>
+
+  <!-- Back to Services -->
+  <div class="back-link">
+    <a href="services.html" class="btn-back">
+      <i class="fas fa-arrow-left"></i> Back to Services
+    </a>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2026 Top Chef Eateries — Experience the beauty of outdoor dining with us</p>
+</footer>
+
+<script>
+  // Gallery Images
+  const galleryImages = [
+    "https://images.pexels.com/photos/1449775/pexels-photo-1449775.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/2609220/pexels-photo-2609220.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=600"
+  ];
+
+  // Render Gallery
+  function renderGallery() {
+    const container = document.getElementById('galleryGrid');
+    if (!container) return;
+    
+    container.innerHTML = galleryImages.map(img => `
+      <div class="gallery-item" style="background-image: url('${img}');" onclick="window.open('${img}', '_blank')"></div>
+    `).join('');
+  }
+
+  // Outdoor Special Menu
+  const outdoorMenuItems = [
+    { name: "Grilled Octopus", price: "$22", desc: "Lemon herb marinade, chorizo, potato puree" },
+    { name: "Summer Salad", price: "$14", desc: "Mixed greens, strawberries, goat cheese, candied pecans" },
+    { name: "Lemon Herb Chicken", price: "$28", desc: "Free-range chicken, rosemary, garlic, seasonal vegetables" },
+    { name: "Garden Flatbread", price: "$16", desc: "Zucchini, cherry tomatoes, pesto, burrata" },
+    { name: "Frozen Rosé", price: "$12", desc: "House-made frozen rosé with fresh berries" },
+    { name: "Citrus Sorbet", price: "$8", desc: "Refreshing lemon and orange sorbet trio" }
+  ];
+
+  function renderOutdoorMenu() {
+    const container = document.getElementById('outdoorMenu');
+    if (!container) return;
+    
+    container.innerHTML = outdoorMenuItems.map(item => `
+      <div class="menu-item">
+        <div>
+          <div class="menu-item-name">${item.name}</div>
+          <div style="font-size: 0.75rem; color: #b6a089;">${item.desc}</div>
+        </div>
+        <div class="menu-item-price">${item.price}</div>
+      </div>
+    `).join('');
+  }
+
+  // Initialize page
+  renderGallery();
+  renderOutdoorMenu();
+</script>
+</body>
+</html>

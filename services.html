@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Top Chef Eateries | Our Services - Interactive Tabs</title>
+  <!-- Google Fonts + Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fefaf5;
+      color: #2c2418;
+      overflow-x: hidden;
+    }
+
+    /* fade transition for page */
+    body.fade-out {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid #f0e1d0;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo i {
+      color: #E17B2E;
+      margin-right: 6px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4a3522;
+      transition: 0.25s;
+      position: relative;
+    }
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2.5px;
+      background: #E17B2E;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover:after,
+    .nav-links a.active:after {
+      width: 100%;
+    }
+    .nav-links a.active {
+      color: #E17B2E;
+    }
+
+    /* Hero Section */
+    .hero-services {
+      position: relative;
+      background: linear-gradient(107deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url('https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center 35%;
+      height: 48vh;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 0 0 48px 48px;
+    }
+    .hero-content {
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      border-radius: 48px;
+      padding: 1.8rem 2.5rem;
+    }
+    .hero-content h1 {
+      font-size: 3rem;
+      color: white;
+    }
+    .hero-content h1 span {
+      color: #FFB347;
+    }
+    .hero-content p {
+      color: #fef2e0;
+      margin-top: 0.5rem;
+    }
+
+    /* Intro */
+    .intro-section {
+      text-align: center;
+      max-width: 900px;
+      margin: 3rem auto 1rem;
+      padding: 0 2rem;
+    }
+    .intro-section h2 {
+      font-size: 2rem;
+      color: #b35f1a;
+    }
+    .intro-section p {
+      background: #fff7ef;
+      padding: 1.2rem;
+      border-radius: 36px;
+      margin-top: 1rem;
+    }
+
+    /* ========== SERVICES TABS (FUNCTIONAL) ========== */
+    .services-tabs-wrapper {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    /* tab buttons */
+    .tabs-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .tab-btn {
+      background: white;
+      border: 1px solid #f0dcc8;
+      padding: 0.8rem 1.8rem;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4a3522;
+      cursor: pointer;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: inherit;
+    }
+    .tab-btn i {
+      font-size: 1.1rem;
+      color: #E17B2E;
+    }
+    .tab-btn:hover {
+      background: #fff3e8;
+      border-color: #E17B2E;
+      transform: translateY(-2px);
+    }
+    .tab-btn.active {
+      background: #E17B2E;
+      color: white;
+      border-color: #E17B2E;
+      box-shadow: 0 8px 18px rgba(225,123,46,0.3);
+    }
+    .tab-btn.active i {
+      color: white;
+    }
+    /* tab content panels */
+    .tab-panels {
+      background: white;
+      border-radius: 48px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+      border: 1px solid #ffe4ce;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .tab-panel {
+      display: none;
+      padding: 2.5rem;
+      animation: fadePanel 0.35s ease;
+    }
+    .tab-panel.active-panel {
+      display: block;
+    }
+    @keyframes fadePanel {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .service-detail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+    }
+    .detail-icon {
+      flex: 0 0 100px;
+      text-align: center;
+      font-size: 4rem;
+      color: #E17B2E;
+    }
+    .detail-info {
+      flex: 1;
+    }
+    .detail-info h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #2c2418;
+    }
+    .detail-info p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #5a4a38;
+    }
+    .detail-features {
+      list-style: none;
+      margin-top: 1rem;
+    }
+    .detail-features li {
+      margin: 0.6rem 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .detail-features li i {
+      color: #E17B2E;
+      width: 24px;
+    }
+    .btn-cta-small {
+      display: inline-block;
+      margin-top: 1.2rem;
+      background: #f0e0ce;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #B65F1E;
+      transition: 0.2s;
+    }
+    .btn-cta-small:hover {
+      background: #E17B2E;
+      color: white;
+    }
+
+    /* Back Home Button */
+    .back-home-wrapper {
+      text-align: center;
+      margin: 2.5rem 0;
+    }
+    .btn-back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #F4E3D3;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #B65F1E;
+      transition: 0.3s;
+    }
+    .btn-back-home:hover {
+      background: #E17B2E;
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    /* Footer */
+    .footer {
+      background: #2c2418;
+      color: #f0e0ce;
+      padding: 2.5rem 2rem 1.5rem;
+      margin-top: 2rem;
+      border-radius: 40px 40px 0 0;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .footer-col h4 {
+      color: #E6B17E;
+      margin-bottom: 1rem;
+    }
+    .footer-col p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .social-links a {
+      color: #f0dbc8;
+      margin-right: 1rem;
+      font-size: 1.4rem;
+      transition: 0.2s;
+    }
+    .social-links a:hover {
+      color: #E17B2E;
+    }
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      font-size: 0.8rem;
+      border-top: 1px solid #4f3e2c;
+      margin-top: 2rem;
+    }
+    @media (max-width: 750px) {
+      .navbar {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      .hero-content h1 { font-size: 2rem; }
+      .tabs-buttons { gap: 0.7rem; }
+      .tab-btn { padding: 0.5rem 1.2rem; font-size: 0.85rem; }
+      .detail-icon { font-size: 3rem; }
+      .detail-info h3 { font-size: 1.5rem; }
+      .tab-panel { padding: 1.5rem; }
+    }
+    /* Modern Order Now Button Styling */
+.global-order-btn {
+  background: linear-gradient(135deg, #E17B2E 0%, #C26522 100%);
+  color: white;
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 60px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(225, 123, 46, 0.3);
+  letter-spacing: 0.3px;
+}
+
+.global-order-btn i {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.global-order-btn:hover {
+  background: linear-gradient(135deg, #F08C42 0%, #D9722E 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(225, 123, 46, 0.4);
+  gap: 12px;
+}
+
+.global-order-btn:hover i {
+  transform: scale(1.1);
+}
+
+.global-order-btn:active {
+  transform: translateY(1px);
+}
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <div class="logo">
+    <i class="fas fa-utensils"></i> TOP CHEF EATERIES
+  </div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="#" class="active">Services</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  
+</nav>
+
+<!-- Hero -->
+<section class="hero-services">
+  <div class="hero-content">
+    <h1>Our <span>Signature Services</span></h1>
+    <p>Click any tab below to explore each exclusive service in detail</p>
+  </div>
+</section>
+
+<!-- Intro Text -->
+<div class="intro-section">
+  <h2>✨ Tailored Experiences, Just For You</h2>
+  <p>Discover the full range of premium offerings at Top Chef Eateries. Each service is crafted with passion — from intimate dine-in to grand catering. Click on any tab to view complete details, features, and how to book.</p>
+</div>
+
+<!-- ========== FUNCTIONAL TABS SECTION ========== -->
+<div class="services-tabs-wrapper">
+  <!-- Tab Buttons (6 services, fully interactive) -->
+  <div class="tabs-buttons" id="tabButtonsContainer">
+    <button class="tab-btn active" data-tab="dinein"><i class="fas fa-utensil-spoon"></i> Dine-In</button>
+    <button class="tab-btn" data-tab="online"><i class="fas fa-mobile-alt"></i> Online Order</button>
+    <button class="tab-btn" data-tab="delivery"><i class="fas fa-truck"></i> Home Delivery</button>
+    <button class="tab-btn" data-tab="catering"><i class="fas fa-champagne-glasses"></i> Event Catering</button>
+    <button class="tab-btn" data-tab="reservation"><i class="fas fa-calendar-check"></i> Table Reservation</button>
+    <button class="tab-btn" data-tab="outdoor"><i class="fas fa-tree"></i> Outdoor Dining</button>
+  </div>
+
+  <!-- Tab Panels (content changes when tab clicked) -->
+  <div class="tab-panels">
+    <!-- Dine-In Panel -->
+    <div id="dinein" class="tab-panel active-panel">
+      <div class="service-detail">
+        <div class="detail-icon"><i class="fas fa-utensil-spoon"></i></div>
+        <div class="detail-info">
+          <h3>🍽️ Dine-In Services</h3>
+          <p>Experience the heart of Top Chef Eateries. Our elegant dining room features live acoustic music on weekends, ambient lighting, and a seasonal menu crafted by award-winning chefs. Every dish tells a story of locally sourced ingredients and culinary artistry.</p>
+          <ul class="detail-features">
+            <li><i class="fas fa-check-circle"></i> Chef's tasting menu (5 or 7 courses)</li>
+            <li><i class="fas fa-check-circle"></i> Private booths available for special occasions</li>
+            <li><i class="fas fa-check-circle"></i> Kids' menu & vegetarian/vegan options</li>
+            <li><i class="fas fa-check-circle"></i> Complimentary valet parking on weekends</li>
+          </ul>
+          <a href="#" class="btn-cta-small">Make a Reservation →</a>
+        </div>
+      </div>
+    </div>
+
+<!-- ONLINE ORDER TAB -->
+<div id="online" class="tab-panel">
+  
+  <!-- Two Column Layout: Left Side (Details) + Right Side (Button) -->
+  <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+    
+    <!-- ========== LEFT SIDE - Online Ordering Details ========== -->
+    <div style="flex: 1; min-width: 280px;">
+      
+      <!-- Why Order Online Card -->
+      <div style="background: white; border-radius: 24px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f0e1d0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+          <i class="fas fa-rocket" style="font-size: 1.8rem; color: #E17B2E;"></i>
+          <h3 style="color: #B65F1E; font-size: 1.3rem;">Why Order Online?</h3>
+        </div>
+        <ul style="list-style: none;">
+          <li style="padding: 0.6rem 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0e0ce;">
+            <i class="fas fa-tachometer-alt" style="color: #E17B2E; width: 25px;"></i>
+            <span><strong>Fast & Easy</strong> - Order in under 2 minutes</span>
+          </li>
+          <li style="padding: 0.6rem 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0e0ce;">
+            <i class="fas fa-tag" style="color: #E17B2E; width: 25px;"></i>
+            <span><strong>Exclusive Deals</strong> - Online-only discounts</span>
+          </li>
+          <li style="padding: 0.6rem 0; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0e0ce;">
+            <i class="fas fa-history" style="color: #E17B2E; width: 25px;"></i>
+            <span><strong>Easy Reorder</strong> - Save your favorites</span>
+          </li>
+          <li style="padding: 0.6rem 0; display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-map-marker-alt" style="color: #E17B2E; width: 25px;"></i>
+            <span><strong>Track Delivery</strong> - Real-time order tracking</span>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- How It Works Card -->
+      <div style="background: linear-gradient(135deg, #fff7ef, #fff0e3); border-radius: 24px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f0e1d0;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+          <i class="fas fa-list-ol" style="font-size: 1.8rem; color: #E17B2E;"></i>
+          <h3 style="color: #B65F1E; font-size: 1.3rem;">How It Works</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: #E17B2E; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+            <span>Browse our menu & select your dishes</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: #E17B2E; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+            <span>Customize quantities & add to cart</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: #E17B2E; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+            <span>Fill in delivery & contact details</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: #E17B2E; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">4</div>
+            <span>Place order & get WhatsApp confirmation</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Delivery Info Card -->
+      <div style="background: white; border-radius: 24px; padding: 1.5rem; border: 1px solid #f0e1d0;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+          <i class="fas fa-truck-fast" style="font-size: 1.8rem; color: #E17B2E;"></i>
+          <h3 style="color: #B65F1E; font-size: 1.3rem;">Delivery Information</h3>
+        </div>
+        <ul style="list-style: none;">
+          <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-clock" style="color: #E17B2E; width: 25px;"></i>
+            <span> Delivery Time: <strong>25-40 minutes</strong></span>
+          </li>
+          <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-dollar-sign" style="color: #E17B2E; width: 25px;"></i>
+            <span> Free delivery on orders <strong>$30+</strong></span>
+          </li>
+          <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-map-pin" style="color: #E17B2E; width: 25px;"></i>
+            <span> Delivery within <strong>5km radius</strong></span>
+          </li>
+          <li style="padding: 0.5rem 0; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-hand-peace" style="color: #E17B2E; width: 25px;"></i>
+            <span>Contactless delivery available</span>
+          </li>
+        </ul>
+      </div>
+      
+    </div>
+    
+    <!-- ========== RIGHT SIDE - Centered Order Now Button ========== -->
+    <div style="flex: 1; min-width: 280px; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+      
+      <!-- Decorative Circle Icon -->
+      <div style="background: #fef0e4; width: 130px; height: 130px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+        <i class="fas fa-shopping-bag" style="font-size: 3.5rem; color: #E17B2E;"></i>
+      </div>
+      
+      <!-- Main Heading -->
+      <h3 style="color: #B65F1E; font-size: 1.8rem; margin-bottom: 0.5rem; text-align: center;">Ready to Order?</h3>
+      
+      <!-- Description -->
+      <p style="color: #7a6248; text-align: center; max-width: 320px; margin-bottom: 1.8rem; line-height: 1.5;">
+        Browse our full menu and place your order online for pickup or delivery
+      </p>
+      
+      <!-- Order Now Button -->
+      <button onclick="window.location.href='order.html'" 
+              style="background: linear-gradient(135deg, #E17B2E, #B65F1E); 
+                     color: white; 
+                     border: none; 
+                     padding: 1rem 2.5rem; 
+                     border-radius: 60px; 
+                     font-size: 1.1rem; 
+                     font-weight: 700; 
+                     cursor: pointer; 
+                     display: inline-flex; 
+                     align-items: center; 
+                     gap: 10px; 
+                     box-shadow: 0 8px 20px rgba(225,123,46,0.3); 
+                     transition: all 0.3s ease;">
+        <i class="fas fa-shopping-cart"></i> Order Now
+        <i class="fas fa-arrow-right"></i>
+      </button>
+      
+      <!-- Special Offer Badge -->
+      <div style="margin-top: 1.5rem; background: #fef0e4; border-radius: 50px; padding: 0.5rem 1rem; text-align: center;">
+        <span style="color: #E17B2E; font-weight: bold;"> 20% OFF</span>
+        <span style="color: #7a6248;"> your first order! Use code: <strong style="color: #E17B2E;">FIRST20</strong></span>
+      </div>
+      
+      <!-- Payment Methods -->
+      <div style="margin-top: 1.5rem; text-align: center;">
+        <p style="color: #b6a089; font-size: 0.75rem; margin-bottom: 0.5rem;">Secure payments accepted</p>
+        <div style="display: flex; gap: 0.8rem; justify-content: center;">
+          <i class="fab fa-cc-visa" style="font-size: 1.5rem; color: #1a1f71;"></i>
+          <i class="fab fa-cc-mastercard" style="font-size: 1.5rem; color: #eb001b;"></i>
+          <i class="fab fa-cc-paypal" style="font-size: 1.5rem; color: #003087;"></i>
+          <i class="fas fa-mobile-alt" style="font-size: 1.5rem; color: #25D366;"></i>
+        </div>
+        <p style="font-size: 0.7rem; color: #b6a089; margin-top: 0.3rem;">Cash on delivery also available</p>
+      </div>
+      
+    </div>
+    
+  </div>
+</div>
+    <!-- Home Delivery Panel -->
+    <div id="delivery" class="tab-panel">
+      <div class="service-detail">
+        <div class="detail-icon"><i class="fas fa-truck"></i></div>
+        <div class="detail-info">
+          <h3>🚚 Home Delivery</h3>
+          <p>Enjoy restaurant-quality meals in the comfort of your home. Our insulated packaging ensures that your food arrives hot and fresh. Delivery within 5 miles is complimentary for orders over $30.</p>
+          <ul class="detail-features">
+            <li><i class="fas fa-check-circle"></i> Contactless delivery available</li>
+            <li><i class="fas fa-check-circle"></i> Estimated delivery time: 25–40 minutes</li>
+            <li><i class="fas fa-check-circle"></i> Track your delivery driver in real time</li>
+            <li><i class="fas fa-check-circle"></i> Family meal bundles & weekly specials</li>
+          </ul>
+          <a href="#" class="btn-cta-small">Start Delivery Order →</a>
+        </div>
+      </div>
+    </div>
+
+  <!-- EVENT CATERING TAB -->
+<div id="catering" class="tab-panel">
+  <div class="service-header">
+    
+  </div>
+
+  <!-- Your catering intro and packages here -->
+  <div class="catering-intro">
+   
+  </div>
+
+  <!-- ✅ REQUEST CATERING QUOTE BUTTON - Only appears in this tab -->
+  <div id="cateringQuoteBtn" class="catering-quote-container" style="text-align: center; margin: 2rem 0;">
+    <button onclick="window.location.href='event.html'" class="catering-quote-btn" style="background: linear-gradient(135deg, #E17B2E, #B65F1E); color: white; border: none; padding: 1rem 2.5rem; border-radius: 60px; font-size: 1rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 8px 20px rgba(225,123,46,0.3); transition: all 0.3s ease;">
+      <i class="fas fa-calendar-alt"></i> Request Catering Quote
+    </button>
+    <p style="margin-top: 0.8rem; font-size: 0.8rem; color: #7a6248;">
+     
+    </p>
+  </div>
+</div>
+   <!-- TABLE RESERVATION TAB -->
+<div id="reservation" class="tab-panel">
+  <div class="service-header">
+   
+      
+    </button>
+  </div>
+
+  <!-- Reservation Content -->
+  <div style="text-align: center; padding: 2rem;">
+    <!-- Icon -->
+    <i class="fas fa-utensils" style="font-size: 3.5rem; color: #E17B2E; margin-bottom: 1rem; display: inline-block;"></i>
+    
+    <!-- Title -->
+    <h3 style="color: #B65F1E; font-size: 1.8rem; margin-bottom: 0.5rem;">Secure Your Table</h3>
+    
+    <!-- Description -->
+    <p style="color: #7a6248; max-width: 500px; margin: 0 auto 1.5rem;">
+      Book your table in advance and enjoy a seamless dining experience. 
+      Choose from cozy booths, window seats, or our exclusive Chef's Table.
+    </p>
+    
+    <!-- ✅ MAKE A RESERVATION BUTTON - Takes you to reservation.html -->
+    <div style="margin: 1.5rem 0;">
+      <button onclick="window.location.href='reservation.html'" 
+              style="background: linear-gradient(135deg, #E17B2E, #B65F1E); 
+                     color: white; 
+                     border: none; 
+                     padding: 1rem 2.5rem; 
+                     border-radius: 60px; 
+                     font-size: 1.1rem; 
+                     font-weight: 700; 
+                     cursor: pointer; 
+                     display: inline-flex; 
+                     align-items: center; 
+                     gap: 10px; 
+                     box-shadow: 0 8px 20px rgba(225,123,46,0.3); 
+                     transition: all 0.3s ease;">
+        <i class="fas fa-calendar-alt"></i> Make a Reservation
+      </button>
+    </div>
+    
+    <!-- Quick Info Cards -->
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+      <div style="background: white; border-radius: 20px; padding: 0.8rem 1.2rem; border: 1px solid #ffe4ce;">
+        <i class="fas fa-clock" style="color: #E17B2E;"></i> Free cancellation up to 2 hours prior
+      </div>
+      <div style="background: white; border-radius: 20px; padding: 0.8rem 1.2rem; border: 1px solid #ffe4ce;">
+        <i class="fas fa-users" style="color: #E17B2E;"></i> Groups up to 10+ welcome
+      </div>
+      <div style="background: white; border-radius: 20px; padding: 0.8rem 1.2rem; border: 1px solid #ffe4ce;">
+        <i class="fas fa-parking" style="color: #E17B2E;"></i> Free valet parking
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- OUTDOOR DINING TAB -->
+<div id="outdoor" class="tab-panel">
+ 
+   
+  </div>
+
+  <!-- Outdoor Dining Content -->
+  <div style="text-align: center; padding: 2rem;">
+    
+   
+    
+    
+  
+  </div>
+</div>
+
+<!-- Back Home Button -->
+<div class="back-home-wrapper">
+  <a href="index.html" class="btn-back-home" id="backHomeBtn">
+    <i class="fas fa-arrow-left"></i> Back to Homepage
+  </a>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4>Top Chef Eateries</h4>
+      <p><i class="fas fa-map-marker-alt"></i> Barracks Avenue,Nanyuki, Kenya</p>
+      <p><i class="fas fa-phone-alt"></i> +254707203741</p>
+      <p><i class="fas fa-envelope"></i> topchefeateries@gmail.com</p>
+    </div>
+    <div class="footer-col">
+      <h4>Opening Hours</h4>
+      <p>Mon - Fri: 6:00AM – 12:30AM</p>
+      <p>Sat - Sun: 5:00AM – 12:30AM</p>
+      <p>Happy Hour: 12-3PM (Daily)</p>
+    </div>
+    <div class="footer-col">
+      <h4>Follow Us</h4>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-yelp"></i></a>
+      </div>
+      <p style="margin-top: 0.5rem;"><i class="fas fa-star"></i> 4.9 stars · 2k+ reviews</p>
+    </div>
+  </div>
+  <div class="copyright">
+    &copy; 2026 Top Chef Eateries | Savor the art of fine dining. Interactive service tabs.
+  </div>
+</footer>
+
+<!-- ========== JAVASCRIPT: FULLY FUNCTIONAL TABS ========== -->
+<script>
+  (function() {
+    // Get all tab buttons and panels
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    // Function to switch active tab
+    function activateTab(tabId) {
+      // Remove active class from all buttons and panels
+      tabBtns.forEach(btn => {
+        btn.classList.remove('active');
+      });
+      panels.forEach(panel => {
+        panel.classList.remove('active-panel');
+      });
+      
+      // Add active class to the clicked button
+      const activeButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+      if (activeButton) activeButton.classList.add('active');
+      
+      // Show corresponding panel
+      const activePanel = document.getElementById(tabId);
+      if (activePanel) activePanel.classList.add('active-panel');
+    }
+
+    // Add click event to each tab button
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const tabId = this.getAttribute('data-tab');
+        if (tabId) {
+          activateTab(tabId);
+          // Optional: smooth scroll to tabs after click (usability)
+          const tabsWrapper = document.querySelector('.services-tabs-wrapper');
+          if (tabsWrapper) {
+            tabsWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+
+    // Back to home smooth fade & navigation
+    const backBtn = document.getElementById('backHomeBtn');
+    if (backBtn) {
+      backBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 200);
+      });
+    }
+    
+    // For any CTA buttons inside panels (alerts demo to show interactivity)
+    const ctaButtons = document.querySelectorAll('.btn-cta-small');
+    ctaButtons.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const parentPanel = this.closest('.tab-panel');
+        let serviceName = "this service";
+        if (parentPanel) {
+          const titleElem = parentPanel.querySelector('h3');
+          if (titleElem) serviceName = titleElem.innerText;
+        }
+        alert(`✨ Thank you for your interest in ${serviceName}! Our team will contact you shortly. ✨`);
+      });
+    });
+    
+    // Ensure first tab is active by default (already set in html but double-check)
+    const defaultActive = document.querySelector('.tab-btn.active');
+    if (!defaultActive) {
+      const firstBtn = document.querySelector('.tab-btn');
+      if (firstBtn) firstBtn.classList.add('active');
+      const firstPanel = document.getElementById('dinein');
+      if (firstPanel) firstPanel.classList.add('active-panel');
+    }
+    
+  
+
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Top Chef Eateries | Home - Gourmet Fine Dining Restaurant</title>
+  <!-- Google Fonts + Font Awesome 6 (free icons) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ---------- RESET & GLOBAL ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fefaf5;
+      color: #2c2418;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      transition: opacity 0.25s ease-out;
+    }
+
+    /* fade-out effect when navigating to services page */
+    body.fade-out {
+      opacity: 0;
+    }
+
+    /* custom scrollbar warmth */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f3e9de;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c17b2e;
+      border-radius: 20px;
+    }
+
+    /* ---------- NAVIGATION BAR (matches modern restaurant style) ---------- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid #f0e1d0;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo i {
+      color: #E17B2E;
+      margin-right: 6px;
+      background: none;
+      
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4a3522;
+      transition: 0.25s ease;
+      position: relative;
+      font-size: 1rem;
+    }
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2.5px;
+      background: #E17B2E;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover:after {
+      width: 100%;
+    }
+    .nav-links a:hover {
+      color: #C26522;
+    }
+
+    /* Active link style for current page */
+    .nav-links a.active {
+      color: #E17B2E;
+      font-weight: 600;
+    }
+    .nav-links a.active:after {
+      width: 100%;
+    }
+
+    /* ---------- HERO SECTION with beautiful food background & animations ---------- */
+    .hero-home {
+      position: relative;
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.55), rgba(0,0,0,0.75));
+    }
+    .food-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      filter: brightness(0.5) saturate(1.2);
+      animation: subtleZoom 22s infinite alternate ease-in-out;
+    }
+    @keyframes subtleZoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+    .hero-content {
+      max-width: 900px;
+      z-index: 5;
+      animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    @keyframes fadeSlideUp {
+      0% { opacity: 0; transform: translateY(35px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .hero-content h1 {
+      font-size: 4.2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      color: white;
+    }
+    .hero-content h1 span {
+      color: #FFB347;
+    }
+    .hero-tagline {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #fef2e4;
+      opacity: 0.95;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 2rem;
+      border-radius: 50px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-primary {
+      background: #E17B2E;
+      color: #0a0c10;
+      box-shadow: 0 8px 18px rgba(225,123,46,0.3);
+    }
+    .btn-primary:hover {
+      transform: scale(1.03);
+      background: #f08c42;
+      box-shadow: 0 12px 22px rgba(225,123,46,0.5);
+    }
+    .btn-outline {
+      border: 2px solid #E17B2E;
+      color: white;
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(225,123,46,0.2);
+      transform: translateY(-3px);
+    }
+
+    /* ---------- SERVICES LINK BUTTON (special styling to match theme) ---------- */
+    .btn-services-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #E17B2E 0%, #C26522 100%);
+      color: white;
+      padding: 0.9rem 2.2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.3px;
+      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      box-shadow: 0 8px 20px rgba(193, 101, 34, 0.3);
+      border: none;
+      cursor: pointer;
+    }
+    .btn-services-link i {
+      font-size: 1.1rem;
+      transition: transform 0.25s ease;
+    }
+    .btn-services-link:hover {
+      transform: translateY(-4px);
+      background: linear-gradient(135deg, #F08C42 0%, #D9722E 100%);
+      box-shadow: 0 16px 28px rgba(193, 101, 34, 0.4);
+      gap: 16px;
+    }
+    .btn-services-link:hover i:last-child {
+      transform: translateX(6px);
+    }
+    .btn-services-link:hover i:first-child {
+      transform: translateX(-2px);
+    }
+
+    /* ---------- ABOUT SECTION ---------- */
+    .about-section {
+      max-width: 1300px;
+      margin: 5rem auto;
+      padding: 0 2rem;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+    .about-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .about-text {
+      flex: 1;
+      min-width: 260px;
+    }
+    .about-text p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+      color: #4a3a2a;
+    }
+    .about-stats {
+      flex: 1;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: white;
+      padding: 1.8rem;
+      border-radius: 32px;
+      text-align: center;
+      width: 160px;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border: 1px solid #ffe4ce;
+    }
+    .stat-card:hover {
+      transform: translateY(-8px);
+      border-color: #E17B2E;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #E17B2E;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7a6248;
+    }
+
+    /* ---------- SERVICES PREVIEW SECTION ---------- */
+    .preview-section {
+      background: #fff9f2;
+      padding: 4rem 2rem;
+      border-radius: 64px;
+      margin: 2rem auto;
+      max-width: 1400px;
+    }
+    .services-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+    .mini-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem;
+      width: 260px;
+      text-align: center;
+      transition: all 0.3s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      border: 1px solid #ffe4ce;
+    }
+    .mini-card:hover {
+      transform: translateY(-8px);
+      border-color: #E17B2E;
+    }
+    .mini-card i {
+      font-size: 2.4rem;
+      color: #E17B2E;
+      margin-bottom: 1rem;
+    }
+    .mini-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #3a2c1c;
+    }
+    .mini-card p {
+      font-size: 0.9rem;
+      color: #7a6248;
+    }
+    .cta-link {
+      text-align: center;
+      margin: 2rem 0 1rem;
+    }
+
+    /* ---------- TESTIMONIALS / EXTRA CHARM ---------- */
+    .testimonial-section {
+      max-width: 1000px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+    .testimonial-card {
+      background: white;
+      border-radius: 48px;
+      padding: 2rem;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+      border: 1px solid #f0e0ce;
+    }
+    .testimonial-card i {
+      font-size: 2rem;
+      color: #E17B2E;
+      opacity: 0.5;
+    }
+    .testimonial-card p {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin: 1rem 0;
+    }
+
+    /* ---------- FOOTER ---------- */
+    .footer {
+      background: #2c2418;
+      color: #f0e0ce;
+      padding: 2.5rem 2rem 1.5rem;
+      margin-top: 3rem;
+      border-radius: 40px 40px 0 0;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .footer-col h4 {
+      color: #E6B17E;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .footer-col p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+    .footer-col i {
+      width: 24px;
+      color: #E17B2E;
+    }
+    .social-links a {
+      color: #f0dbc8;
+      margin-right: 1.2rem;
+      font-size: 1.4rem;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .social-links a:hover {
+      color: #E17B2E;
+      transform: translateY(-3px);
+    }
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      font-size: 0.8rem;
+      border-top: 1px solid #4f3e2c;
+      margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 850px) {
+      .navbar {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      .nav-links {
+        gap: 1.3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .hero-content h1 {
+        font-size: 2.5rem;
+      }
+      .section-title {
+        font-size: 2rem;
+      }
+      .about-grid {
+        flex-direction: column;
+      }
+      .footer-container {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-col p {
+        justify-content: center;
+      }
+    }
+    @media (max-width: 500px) {
+      .hero-content h1 {
+        font-size: 2rem;
+      }
+      .btn-group {
+        gap: 0.8rem;
+      }
+      .btn-services-link {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ======================== -->
+<!-- NAVIGATION BAR           -->
+<!-- ======================== -->
+<nav class="navbar">
+  <div class="logo">
+    <i class="fas fa-utensils"></i> TOP CHEF EATERIES
+  </div>
+  <ul class="nav-links">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <!-- SERVICES LINK IN NAVBAR - this links to the services page -->
+    <li><a href="services.html" id="navServicesLink">Services</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ======================== -->
+<!-- HERO SECTION (Home)      -->
+<!-- ======================== -->
+<section id="home" class="hero-home">
+  <!-- Beautiful food background image -->
+  <img class="food-bg" src="https://images.pexels.com/photos/2609220/pexels-photo-2609220.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Gourmet food background" onerror="this.src='https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=1600'">
+  <div class="hero-content">
+    <h1>Welcome to <span>Top Chef<br>Eateries</span></h1>
+    <p class="hero-tagline">Savor the art of fine dining — where passion meets perfection on every plate.</p>
+    <div class="btn-group">
+      <a href="#about" class="btn btn-primary">Our Story</a>
+      <!-- BUTTON LINKING TO SERVICES PAGE - Hero CTA -->
+      <a href="services.html" id="heroServicesBtn" class="btn-services-link">
+        <i class="fas fa-concierge-bell"></i> Explore Services <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== -->
+<!-- ABOUT SECTION            -->
+<!-- ======================== -->
+<section id="about" class="about-section">
+  <h2 class="section-title">About Top Chef Eateries</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p><strong>Top Chef Eateries</strong> was founded with a vision: to bring world-class culinary experiences crafted by top chefs to every guest. From seasonal ingredients to innovative cooking techniques, our kitchen is a stage for creativity and flavor.</p>
+      <p>We believe dining is an emotion. Our warm ambiance, exceptional service, and mindfully curated menu create memories that linger long after the last bite. With a team of Michelin-starred alumni and local artisans, we redefine gastronomy.</p>
+      <p><i class="fas fa-star" style="color: #E17B2E;"></i> <strong>Est. 2015</strong> — A legacy of taste and elegance.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="stat-number">12+</div>
+        <div class="stat-label">Award Wins</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">35K+</div>
+        <div class="stat-label">Happy Guests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">8</div>
+        <div class="stat-label">Signature Chefs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== -->
+<!-- SERVICES PREVIEW + LINK  -->
+<!-- ======================== -->
+<div class="preview-section">
+  <h2 class="section-title">What We Offer</h2>
+  <div class="services-preview">
+    <div class="mini-card">
+      <i class="fas fa-utensil-spoon"></i>
+      <h3>Dine-In</h3>
+      <p>Elegant ambiance & chef's specials</p>
+    </div>
+    <div class="mini-card">
+      <i class="fas fa-mobile-alt"></i>
+      <h3>Online Order</h3>
+      <p>Fast & seamless digital ordering</p>
+    </div>
+    <div class="mini-card">
+      <i class="fas fa-truck"></i>
+      <h3>Home Delivery</h3>
+      <p>Fresh to your doorstep</p>
+    </div>
+    <div class="mini-card">
+      <i class="fas fa-champagne-glasses"></i>
+      <h3>Event Catering</h3>
+      <p>Weddings & corporate events</p>
+     <div style="text-align: center; margin: 2rem;">
+  <a href="services.html" class="btn-services-link">
+    <i class="fas fa-utensils"></i> View All Services
+  </a>
+</div>
+    </div>
+  </div>
+  <div class="cta-link">
+    <!-- SECOND SERVICES LINK BUTTON - View all services -->
+    <a href="services.html" id="previewServicesBtn" class="btn-services-link">
+      <i class="fas fa-list-ul"></i> View All Services <i class="fas fa-long-arrow-alt-right"></i>
+    </a>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- TESTIMONIAL (warm touch) -->
+<!-- ======================== -->
+<div class="testimonial-section">
+  <div class="testimonial-card">
+    <i class="fas fa-quote-left"></i>
+    <p>"An unforgettable dining experience! The attention to detail and flavor combinations are simply outstanding. Top Chef Eateries is our go-to for celebrations."</p>
+    <h4 style="color:#E17B2E;">— Maria & James</h4>
+  </div>
+</div>
+
+<!-- ======================== -->
+<!-- FOOTER with contact & socials -->
+<!-- ======================== -->
+<footer class="footer" id="contact">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4>Top Chef Eateries</h4>
+      <p><i class="fas fa-map-marker-alt"></i> barracks Avenue, Nanyuki, Kenya</p>
+      <p><i class="fas fa-phone-alt"></i> +254707203741</p>
+      <p><i class="fas fa-envelope"></i>topchefeateries@gmail.com</p>
+    </div>
+    <div class="footer-col">
+      <h4>Opening Hours</h4>
+      <p>Mon - Fri: 6:00 AM – 12:30 AM</p>
+      <p>Sat - Sun: 5:00 AM – 12:45 AM</p>
+      <p>Happy Hour: 12–3 PM (Daily)</p>
+    </div>
+    <div class="footer-col">
+      <h4>Follow Us</h4>
+      <div class="social-links">
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" aria-label="Yelp"><i class="fab fa-yelp"></i></a>
+      </div>
+      <p style="margin-top: 1rem;"><i class="fas fa-star"></i> 4.9 stars · 2k+ reviews</p>
+    </div>
+  </div>
+  <div class="copyright">
+    &copy; 2026 Top Chef Eateries | Savor the art of fine dining. All rights reserved.
+  </div>
+</footer>
+
+<!-- ======================== -->
+<!-- JAVASCRIPT: Smooth linking to services page + fade animation -->
+<!-- ======================== -->
+<script>
+  (function() {
+    // Get all links that point to services.html (navbar link, hero button, preview button)
+    const servicesLinks = document.querySelectorAll('a[href="services.html"]');
+    
+    // Function to handle smooth navigation with fade-out effect
+    function navigateToServicesPage(event) {
+      // Prevent default link behavior to add our smooth animation
+      event.preventDefault();
+      const targetUrl = event.currentTarget.getAttribute('href');
+      
+      // Add fade-out class to body
+      document.body.classList.add('fade-out');
+      
+      // After a short delay, navigate to the services page
+      setTimeout(function() {
+        window.location.href = targetUrl;
+      }, 250);
+    }
+    
+    // Attach click event to every link that goes to services.html
+    servicesLinks.forEach(link => {
+      link.addEventListener('click', navigateToServicesPage);
+    });
+    
+    // Also handle any dynamically added elements (just in case)
+    // Remove fade class when page loads (in case user comes back via back button)
+    window.addEventListener('pageshow', function() {
+      document.body.classList.remove('fade-out');
+    });
+    
+    // For the navigation "Services" link, ensure active state is removed from Home
+    // (just visual polish)
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('index.html') || currentPath === '/' || currentPath.endsWith('/')) {
+      // we are on homepage, fine
+    }
+    
+    // Add small console info (optional)
+    console.log('✅ Homepage loaded — Services links are ready to navigate to services.html');
+  })();
+</script>
+
+<!-- 
+  ==================================================
+  IMPORTANT NOTE FOR LINKING TO SERVICES PAGE:
+  ==================================================
+  This homepage is designed to link to a file named "services.html"
+  located in the SAME folder as this homepage.
+  
+  MAKE SURE YOU HAVE THE SERVICES PAGE FILE (services.html) in the same directory.
+  If your services page has a different name (e.g., "our-services.html" or "service-page.html"),
+  update the href attributes in these places:
+  
+  1. Navbar: <a href="services.html" id="navServicesLink">
+  2. Hero button: <a href="services.html" id="heroServicesBtn">
+  3. Preview button: <a href="services.html" id="previewServicesBtn">
+  
+  Change "services.html" to your actual services page filename.
+  
+  If you haven't created the services page yet, you can use the complete 
+  "Services Provided" page code I provided earlier and save it as "services.html"
+  in the same folder as this homepage.
+  
+  ==================================================
+  ADDITIONAL FEATURES:
+  - Smooth fade-out animation when leaving homepage
+  - 3 different linking points (navbar, hero, services preview)
+  - Fully responsive design
+  - Beautiful food background with subtle zoom animation
+  - Modern warm restaurant colors
+  - Complete footer with contact and social links
+  ==================================================
+-->
+  <script>
+  // Smooth navigation to services page
+  const serviceLinks = document.querySelectorAll('a[href="services.html"]');
+  
+  serviceLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = 'services.html';
+    });
+  });
+</script>
+</body>
+</html>

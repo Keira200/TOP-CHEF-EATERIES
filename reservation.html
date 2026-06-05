@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Top Chef Eateries | Table Reservation</title>
+  <!-- Google Fonts + Font Awesome 6 -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fefaf5;
+      color: #2c2418;
+    }
+
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 248, 240, 0.96);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid #f0e1d0;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .logo i {
+      color: #E17B2E;
+      margin-right: 6px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4a3522;
+      transition: 0.25s;
+      position: relative;
+    }
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0%;
+      height: 2.5px;
+      background: #E17B2E;
+      transition: width 0.3s;
+    }
+    .nav-links a:hover:after,
+    .nav-links a.active:after {
+      width: 100%;
+    }
+    .nav-links a.active {
+      color: #E17B2E;
+    }
+
+    /* Hero Section */
+    .hero-reservation {
+      background: linear-gradient(107deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url('https://images.pexels.com/photos/2609220/pexels-photo-2609220.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: white;
+      border-radius: 0 0 48px 48px;
+    }
+    .hero-reservation h1 {
+      font-size: 3rem;
+      font-weight: 800;
+    }
+    .hero-reservation h1 span {
+      color: #FFB347;
+    }
+
+    /* Reservation Container */
+    .reservation-container {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .reservation-form-section {
+      flex: 1.5;
+      min-width: 300px;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+      border: 1px solid #f0e1d0;
+    }
+    .info-section {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      color: #B65F1E;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #4a3522;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.9rem;
+      border: 1px solid #f0dcc8;
+      border-radius: 28px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #fffcf9;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #E17B2E;
+    }
+
+    .reserve-btn {
+      background: linear-gradient(135deg, #25de41, #25de41);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 1rem;
+      border-radius: 60px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: 0.3s;
+      margin-top: 1rem;
+    }
+    .reserve-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(225,123,46,0.3);
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 32px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #f0e1d0;
+    }
+    .info-card h3 {
+      color: #e27618;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .info-card p {
+      color: #7a6248;
+      margin: 0.8rem 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .info-card i {
+      width: 30px;
+      color: #cf7c29;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 2rem 0;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #F4E3D3;
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #B65F1E;
+      transition: 0.3s;
+    }
+    .btn-back:hover {
+      background: #E17B2E;
+      color: white;
+    }
+
+    footer {
+      background: #2c2418;
+      color: #f0e0ce;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+      border-radius: 40px 40px 0 0;
+    }
+
+    @media (max-width: 850px) {
+      .navbar { flex-direction: column; padding: 1rem; }
+      .hero-reservation h1 { font-size: 2rem; }
+      .reservation-container { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><i class="fas fa-utensils"></i> TOP CHEF EATERIES</div>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="order.html">Order</a></li>
+    <li><a href="#" class="active">Reservation</a></li>
+  </ul>
+</nav>
+
+<section class="hero-reservation">
+  <h1>Table <span>Reservation</span></h1>
+  <p>Book your table in advance and enjoy an unforgettable dining experience</p>
+</section>
+
+<div class="reservation-container">
+  <!-- Reservation Form -->
+  <div class="reservation-form-section">
+    <div class="form-title">
+      <i class="fas fa-calendar-check"></i>
+      <h2>Make a Reservation</h2>
+    </div>
+    
+    <form id="reservationForm">
+      <div class="form-group">
+        <label><i class="fas fa-user"></i> Full Name *</label>
+        <input type="text" id="resName" placeholder="Enter your full name" required>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-phone"></i> Phone Number *</label>
+        <input type="tel" id="resPhone" placeholder="Your WhatsApp number" required>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-envelope"></i> Email Address</label>
+        <input type="email" id="resEmail" placeholder="your@email.com">
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-calendar"></i> Reservation Date *</label>
+        <input type="date" id="resDate" required>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-clock"></i> Reservation Time *</label>
+        <select id="resTime" required>
+          <option value="">Select time</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="12:30 PM">12:30 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="1:30 PM">1:30 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="6:00 PM">6:00 PM</option>
+          <option value="6:30 PM">6:30 PM</option>
+          <option value="7:00 PM">7:00 PM</option>
+          <option value="7:30 PM">7:30 PM</option>
+          <option value="8:00 PM">8:00 PM</option>
+          <option value="8:30 PM">8:30 PM</option>
+          <option value="9:00 PM">9:00 PM</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-users"></i> Number of Guests *</label>
+        <select id="resGuests" required>
+          <option value="">Select number</option>
+          <option value="1">1 person</option>
+          <option value="2">2 people</option>
+          <option value="3">3 people</option>
+          <option value="4">4 people</option>
+          <option value="5">5 people</option>
+          <option value="6">6 people</option>
+          <option value="7">7 people</option>
+          <option value="8">8 people</option>
+          <option value="9">9 people</option>
+          <option value="10+">10+ people</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label><i class="fas fa-comment"></i> Special Requests (Optional)</label>
+        <textarea id="resRequests" rows="2" placeholder="Dietary restrictions, allergies, special occasion..."></textarea>
+      </div>
+      
+      <button type="submit" class="reserve-btn">
+        <i class="fab fa-whatsapp"></i> Confirm Reservation via WhatsApp
+      </button>
+    </form>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <div class="info-card">
+      <h3><i class="fas fa-clock"></i> Opening Hours</h3>
+      <p><i class="fas fa-calendar-day"></i> Monday - Thursday: 12PM - 10:30PM</p>
+      <p><i class="fas fa-calendar-weekend"></i> Friday - Sunday: 11:30AM - 11:45PM</p>
+      <p><i class="fas fa-glass-cheers"></i> Happy Hour: 4PM - 7PM (Daily)</p>
+    </div>
+
+    <div class="info-card">
+      <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
+      <p><i class="fas fa-location-dot"></i> 100 Culinary Avenue, Flavor District, NYC</p>
+      <p><i class="fas fa-parking"></i> Complimentary valet parking available</p>
+    </div>
+
+    <div class="info-card">
+      <h3><i class="fas fa-phone"></i> Call Us</h3>
+      <p><i class="fas fa-phone-alt"></i> +1 (555) 789-1234</p>
+      <p><i class="fas fa-envelope"></i> reservations@topchefeateries.com</p>
+    </div>
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="services.html" class="btn-back">
+    <i class="fas fa-arrow-left"></i> Back to Services
+  </a>
+</div>
+
+<footer>
+  <p>&copy; 2026 Top Chef Eateries — Reserve your table for an unforgettable dining experience</p>
+</footer>
+
+<script>
+  const reservationForm = document.getElementById('reservationForm');
+  
+  if (reservationForm) {
+    reservationForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('resName')?.value.trim();
+      const phone = document.getElementById('resPhone')?.value.trim();
+      const email = document.getElementById('resEmail')?.value.trim();
+      const date = document.getElementById('resDate')?.value;
+      const time = document.getElementById('resTime')?.value;
+      const guests = document.getElementById('resGuests')?.value;
+      const requests = document.getElementById('resRequests')?.value.trim();
+      
+      // Validation
+      if (!name) {
+        alert("❌ Please enter your full name");
+        return;
+      }
+      if (!phone) {
+        alert("❌ Please enter your phone number");
+        return;
+      }
+      if (!date) {
+        alert("❌ Please select a reservation date");
+        return;
+      }
+      if (!time) {
+        alert("❌ Please select a reservation time");
+        return;
+      }
+      if (!guests) {
+        alert("❌ Please select number of guests");
+        return;
+      }
+      
+      // Format date nicely
+      const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      // Create WhatsApp message
+      const message = `🍽️ *TABLE RESERVATION - TOP CHEF EATERIES* 🍽️%0A%0A` +
+        `*Customer Details:*%0A` +
+        `👤 Name: ${name}%0A` +
+        `📞 Phone: ${phone}%0A` +
+        `✉️ Email: ${email || 'Not provided'}%0A%0A` +
+        `*Reservation Details:*%0A` +
+        `📅 Date: ${formattedDate}%0A` +
+        `⏰ Time: ${time}%0A` +
+        `👥 Guests: ${guests}%0A%0A` +
+        `*Special Requests:*%0A${requests || 'None'}%0A%0A` +
+        `🙏 Please confirm this reservation. Thank you!`;
+      
+      // 🔴 CHANGE THIS TO YOUR RESTAURANT'S WHATSAPP NUMBER
+      const restaurantNumber = "254707203741"; // Replace with your actual number
+      
+      const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${message}`;
+      window.open(whatsappUrl, '_blank');
+      
+      alert("✅ Reservation request sent! We'll confirm your booking via WhatsApp shortly.");
+      
+      // Optional: Reset form
+      reservationForm.reset();
+    });
+  }
+</script>
+</body>
+</html>
