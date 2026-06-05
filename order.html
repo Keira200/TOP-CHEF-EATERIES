@@ -622,25 +622,37 @@
   }
 
   // ============================================
-  // SEND ORDER TO WHATSAPP
+  // FIXED: PROPERLY FORMATTED WHATSAPP MESSAGE FUNCTION
   // ============================================
   function sendOrderToWhatsApp(orderData, total, paymentRef = '') {
+    // Build order items list with proper line breaks
     let orderItemsList = "";
     for (const item of orderData.items) {
-      orderItemsList += `${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
+      orderItemsList += `✓ ${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
     }
-    const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
-      `*Customer:* ${orderData.name}%0A` +
-      `*Phone:* ${orderData.phone}%0A` +
-      `*Address:* ${orderData.address}%0A%0A` +
-      `*Order:*%0A${orderItemsList}%0A` +
-      `*Total: KES ${total.toLocaleString()}*%0A` +
-      `*Payment: ${orderData.paymentMethod}*%0A` +
-      (paymentRef ? `*Transaction Ref: ${paymentRef}*%0A` : '') +
-      `*Instructions:* ${orderData.instructions || 'None'}%0A%0A` +
-      `✅ Payment confirmed! Please prepare this order.`;
+    
+    // Create the message with proper line breaks (\n) instead of %0A
+    let message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️\n\n`;
+    message += `*Customer:* ${orderData.name}\n`;
+    message += `*Phone:* ${orderData.phone}\n`;
+    message += `*Address:* ${orderData.address}\n\n`;
+    message += `*Order:*\n${orderItemsList}\n`;
+    message += `*Total: KES ${total.toLocaleString()}*\n`;
+    message += `*Payment: ${orderData.paymentMethod}*\n`;
+    if (paymentRef) {
+      message += `*Transaction Ref: ${paymentRef}*\n`;
+    }
+    message += `*Instructions:* ${orderData.instructions || 'None'}\n\n`;
+    message += `✅ Payment confirmed! Please prepare this order.`;
+    
+    // Encode the message for URL (this properly converts \n to %0A)
+    const encodedMessage = encodeURIComponent(message);
     const restaurantNumber = "254707203741";
-    window.open(`https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://wa.me/${restaurantNumber}?text=${encodedMessage}`, '_blank');
+    
+    // Log for debugging
+    console.log("Order sent to WhatsApp!");
+    console.log("Raw message:", message);
   }
 
   // ============================================
@@ -688,18 +700,9 @@
         return;
       }
 
-      // 🔴🔴🔴 IMPORTANT: PAYSTACK PUBLIC KEY 🔴🔴🔴
-      // ==================================================
-      // OPTION 1: USE TEST MODE (Works immediately - No verification needed)
-      // This is a valid Paystack test public key that works for testing
+      // 🔴🔴🔴 PAYSTACK PUBLIC KEY 🔴🔴🔴
       const PAYSTACK_PUBLIC_KEY = "pk_test_3f8af92c289b2fb9e0e63238c82e2f96e0921d23";
       
-      // OPTION 2: WHEN YOU GO LIVE, REPLACE WITH YOUR LIVE KEY FROM:
-      // https://dashboard.paystack.com/#/settings/developer
-      // const PAYSTACK_PUBLIC_KEY = "pk_live_YOUR_ACTUAL_LIVE_KEY_HERE";
-      // ==================================================
-      
-      // Validate that we have a valid key
       if (!PAYSTACK_PUBLIC_KEY || PAYSTACK_PUBLIC_KEY === "pk_live_YOUR_PUBLIC_KEY_HERE") {
         alert("⚠️ Payment system is not configured yet. Please use Cash on Delivery or contact the restaurant.");
         return;
@@ -709,7 +712,7 @@
         const handler = PaystackPop.setup({
           key: PAYSTACK_PUBLIC_KEY,
           email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
-          amount: total * 100, // Amount in cents (e.g., KES 350 = 35000)
+          amount: total * 100,
           currency: 'KES',
           ref: 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
           metadata: {
@@ -721,13 +724,11 @@
             ]
           },
           callback: function(response) {
-            // Payment successful
             console.log("Payment successful:", response);
             const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
             sendOrderToWhatsApp(orderData, total, response.reference);
             showResultModal(true, "Payment Successful!", `Your order has been placed! Total: KES ${total.toLocaleString()}. Ref: ${response.reference}`);
             
-            // Reset cart and form
             cart.clear();
             renderCart();
             document.getElementById('customerName').value = '';
@@ -753,217 +754,6 @@
   // Initialize
   renderMenu();
   renderCart();
-  
-  // ============================================
-  // FIX: ENSURE ORDERS ARE SENT TO RESTAURANT AFTER PAYMENT
-  // ============================================
-  
-  // Your restaurant WhatsApp number - UPDATE THIS
-  const RESTAURANT_WHATSAPP = "254707203741";  // 🔴 CHANGE TO YOUR ACTUAL NUMBER
-  
-  // Function to send order to WhatsApp
-  function sendOrderToRestaurant(orderDetails, total, paymentRef) {
-    // Format order items
-    let itemsList = "";
-    for (let i = 0; i < orderDetails.items.length; i++) {
-      itemsList += `✓ ${orderDetails.items[i].name} x${orderDetails.items[i].quantity} - KES ${orderDetails.items[i].subtotal.toLocaleString()}\n`;
-    }
-    
-    // Create message
-    const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
-      `*Customer:* ${orderDetails.name}%0A` +
-      `*Phone:* ${orderDetails.phone}%0A` +
-      `*Address:* ${orderDetails.address}%0A%0A` +
-      `*Order:*%0A${itemsList}%0A` +
-      `*Total: KES ${total.toLocaleString()}*%0A` +
-      `*Payment: ${orderDetails.paymentMethod}*%0A` +
-      `*Mobile Money Number: ${orderDetails.mobileNumber || 'N/A'}*%0A` +
-      (paymentRef ? `*Transaction Ref: ${paymentRef}*%0A` : '') +
-      `*Instructions:* ${orderDetails.instructions || 'None'}%0A%0A` +
-      `✅ Payment confirmed! Please prepare this order.`;
-    
-    // Open WhatsApp
-    const whatsappUrl = `https://wa.me/${RESTAURANT_WHATSAPP}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    
-    // Also log to console for debugging
-    console.log("✅ Order sent to WhatsApp:", RESTAURANT_WHATSAPP);
-    console.log("Order:", orderDetails);
-    
-    return true;
-  }
-  
-  // Find the Paystack payment button and fix its callback
-  setTimeout(function() {
-    const paystackBtn = document.getElementById('paystackPayBtn');
-    if (paystackBtn) {
-      console.log("✅ Found Paystack button - fixing order notification");
-      
-      // Store original click handler
-      const originalClick = paystackBtn.onclick;
-      
-      // Replace with fixed version
-      paystackBtn.onclick = null;
-      paystackBtn.addEventListener('click', function() {
-        // Get customer details
-        const name = document.getElementById('customerName')?.value.trim() || '';
-        const phone = document.getElementById('customerPhone')?.value.trim() || '';
-        const address = document.getElementById('deliveryLocation')?.value.trim() || '';
-        const instructions = document.getElementById('specialInstructions')?.value.trim() || '';
-        const mobileNumber = document.getElementById('mobileMoneyNumber')?.value.trim() || '';
-        
-        // Get selected payment method
-        let paymentMethod = 'M-Pesa';
-        const selectedOption = document.querySelector('.payment-option.selected');
-        if (selectedOption) {
-          if (selectedOption.dataset.payment === 'airtel') paymentMethod = 'Airtel Money';
-          else if (selectedOption.dataset.payment === 'cash') paymentMethod = 'Cash on Delivery';
-        }
-        
-        // Get cart items
-        let cartItems = [];
-        let total = 0;
-        
-        // Try to get cart from your existing cart variable
-        if (typeof cart !== 'undefined' && cart.size > 0) {
-          for (let [id, item] of cart.entries()) {
-            const subtotal = item.quantity * item.price;
-            total += subtotal;
-            cartItems.push({
-              name: item.name,
-              quantity: item.quantity,
-              subtotal: subtotal
-            });
-          }
-        } else if (typeof cartItemsList !== 'undefined') {
-          // Alternative: get from DOM
-          const cartElements = document.querySelectorAll('.cart-item');
-          cartElements.forEach(el => {
-            const nameEl = el.querySelector('.cart-item-title');
-            const qtyEl = el.querySelector('.cart-qty');
-            const priceEl = el.querySelector('.cart-item-price');
-            if (nameEl && qtyEl) {
-              const quantity = parseInt(qtyEl.innerText);
-              let price = 0;
-              if (priceEl) {
-                const priceText = priceEl.innerText;
-                const match = priceText.match(/[\d,]+/);
-                if (match) price = parseInt(match[0].replace(/,/g, ''));
-              }
-              const subtotal = quantity * price;
-              total += subtotal;
-              cartItems.push({
-                name: nameEl.innerText,
-                quantity: quantity,
-                subtotal: subtotal
-              });
-            }
-          });
-        }
-        
-        // Validation
-        if (!name || !phone || !address) {
-          alert("❌ Please fill in your Name, Phone Number, and Delivery Address.");
-          return;
-        }
-        if (cartItems.length === 0) {
-          alert("🛒 Your cart is empty. Add some delicious items first!");
-          return;
-        }
-        
-        // For Cash on Delivery - send order immediately
-        if (paymentMethod === 'Cash on Delivery') {
-          const orderData = { name, phone, address, instructions, items: cartItems, paymentMethod, mobileNumber: 'N/A' };
-          sendOrderToRestaurant(orderData, total, '');
-          alert(`✅ Order placed! Total: KES ${total.toLocaleString()}\n\nThe restaurant has been notified.`);
-          return;
-        }
-        
-        // For Mobile Money - need to wait for Paystack callback
-        if (!mobileNumber) {
-          alert("❌ Please enter your mobile money number");
-          return;
-        }
-        
-        // Get Paystack public key
-        let paystackKey = '';
-        if (typeof LIVE_PAYSTACK_PUBLIC_KEY !== 'undefined') {
-          paystackKey = LIVE_PAYSTACK_PUBLIC_KEY;
-        } else if (typeof PAYSTACK_PUBLIC_KEY !== 'undefined') {
-          paystackKey = PAYSTACK_PUBLIC_KEY;
-        } else {
-          // Try to get from the Paystack button data attribute
-          const btn = document.getElementById('paystackPayBtn');
-          paystackKey = btn?.getAttribute('data-key') || '';
-        }
-        
-        if (!paystackKey || paystackKey === 'pk_live_YOUR_ACTUAL_LIVE_PUBLIC_KEY_HERE') {
-          alert("⚠️ Payment system is being configured. Please use Cash on Delivery for now.");
-          return;
-        }
-        
-        // Initialize Paystack
-        const reference = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-        
-        const handler = PaystackPop.setup({
-          key: paystackKey,
-          email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
-          amount: total * 100,
-          currency: 'KES',
-          ref: reference,
-          metadata: {
-            custom_fields: [
-              { display_name: "Customer Name", variable_name: "customer_name", value: name },
-              { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
-              { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
-              { display_name: "Mobile Money Number", variable_name: "mobile_money_number", value: mobileNumber }
-            ]
-          },
-          callback: function(response) {
-            // ✅ FIXED: Send order to restaurant AFTER successful payment
-            console.log("Payment successful:", response);
-            
-            const orderData = { 
-              name, phone, address, instructions, 
-              items: cartItems, 
-              paymentMethod, 
-              mobileNumber 
-            };
-            
-            // Send to WhatsApp
-            sendOrderToRestaurant(orderData, total, response.reference);
-            
-            alert(`✅ Payment Successful!\n\nAmount: KES ${total.toLocaleString()}\nReference: ${response.reference}\n\nThe restaurant has been notified of your order.`);
-            
-            // Clear cart
-            if (typeof cart !== 'undefined' && cart.clear) {
-              cart.clear();
-            }
-            if (typeof renderCart === 'function') {
-              renderCart();
-            }
-            
-            // Clear form
-            const formFields = ['customerName', 'customerPhone', 'deliveryLocation', 'specialInstructions', 'mobileMoneyNumber'];
-            formFields.forEach(field => {
-              const el = document.getElementById(field);
-              if (el) el.value = '';
-            });
-          },
-          onClose: function() {
-            alert('Payment cancelled. No money was deducted.');
-          }
-        });
-        
-        handler.openIframe();
-      });
-      
-      console.log("✅ Payment handler fixed!");
-    } else {
-      console.log("⚠️ Paystack button not found - check if the button exists");
-    }
-  }, 1000);
-
 </script>
 </body>
 </html>
