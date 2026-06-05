@@ -511,17 +511,17 @@
       const card = document.createElement('div');
       card.className = 'food-card';
       card.innerHTML = `
-        <div class="card-img" style="background-image: url('${item.image}');"></div>
+        <div class="card-img" style="background-image: url('{item.image}');"></div>
         <div class="card-content">
           <h3>${item.name}</h3>
           <p class="desc">${item.desc}</p>
-          <div class="price">Ksh${item.price}</div>
+          <div class="price">Ksh{item.price}</div>
           <div class="quantity-control">
-            <button class="qty-btn decr" data-id="${item.id}">-</button>
-            <span class="qty-value" id="qty-${item.id}">0</span>
-            <button class="qty-btn incr" data-id="${item.id}">+</button>
+            <button class="qty-btn decr" data-id="{item.id}">-</button>
+            <span class="qty-value" id="qty-{item.id}">0</span>
+            <button class="qty-btn incr" data-id="{item.id}">+</button>
           </div>
-          <button class="add-to-cart" data-id="${item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+          <button class="add-to-cart" data-id="{item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
         </div>
       `;
       container.appendChild(card);
@@ -579,9 +579,9 @@
       total += subtotal;
       html += `
         <div class="cart-item">
-          <div><strong>${item.name}</strong><br>Ksh${item.price} x ${item.quantity}</div>
-          <div><strongKsh${subtotal.toFixed(2)}</strong>
-            <button class="remove-item" data-id="${id}" style="background:none; border:none; color:#b9534e; margin-left:10px; cursor:pointer;">
+          <div><strong>{item.name}</strong><br>Ksh{item.price} x {item.quantity}</div>
+          <div><strongKsh{subtotal.toFixed(2)}</strong>
+            <button class="remove-item" data-id="{id}" style="background:none; border:none; color:#b9534e; margin-left:10px; cursor:pointer;">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -589,7 +589,7 @@
       `;
     }
     cartContainer.innerHTML = html;
-    totalSpan.innerText = `Total: Ksh${total.toFixed(2)}`;
+    totalSpan.innerText = `Total: Ksh{total.toFixed(2)}`;
     document.querySelectorAll('.remove-item').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.dataset.id);
@@ -637,7 +637,7 @@
             reject('Please enter your mobile money number');
             return;
           }
-          if (!/^[0-9]{10,12}$/.test(mobileNumber.replace(/\s/g, ''))) {
+          if (!/^[0-9]{10,12}/.test(mobileNumber.replace(/\s/g, ''))) {
             reject('Please enter a valid mobile number (10-12 digits)');
             return;
           }
@@ -685,7 +685,7 @@
         for (let [id, item] of cart.entries()) {
           const subtotal = item.quantity * item.price;
           total += subtotal;
-          orderItems += `${item.name} x${item.quantity} - $${subtotal.toFixed(2)}\n`;
+          orderItems += `{item.name} x{item.quantity} -Ksh{subtotal.toFixed(2)}\n`;
         }
 
         const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
@@ -703,7 +703,7 @@
           `✅ Payment confirmed! Please prepare this order.`;
 
         const restaurantNumber = "254707203741"; // 🔴 CHANGE TO YOUR NUMBER
-        const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${message}`;
+        const whatsappUrl = `https://wa.me/${restaurantNumber}?text=Ksh{message}`;
         
         modal.style.display = 'none';
         showModal(`Your order has been placed successfully via ${paymentMethod}! Total: $${total.toFixed(2)}. You will receive a confirmation message shortly.`, 'success');
