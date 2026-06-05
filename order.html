@@ -673,9 +673,8 @@
 
       const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
       
-      // For Paystack, we only process M-Pesa and Airtel Money (mobile money)
+      // For Cash on Delivery - no Paystack needed
       if (selectedPayment === 'cash') {
-        // Cash on Delivery - no Paystack needed
         const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
         sendOrderToWhatsApp(orderData, total);
         showResultModal(true, "Order Placed!", `Order placed via Cash on Delivery! Total: KES ${total.toLocaleString()}`);
@@ -689,47 +688,65 @@
         return;
       }
 
-      // 🔴 IMPORTANT: REPLACE WITH YOUR ACTUAL PAYSTACK PUBLIC KEY
-      // Get it from: https://dashboard.paystack.com/#/settings/developer
-      const PAYSTACK_PUBLIC_KEY = "pk_live_YOUR_PUBLIC_KEY_HERE";
+      // 🔴🔴🔴 IMPORTANT: PAYSTACK PUBLIC KEY 🔴🔴🔴
+      // ==================================================
+      // OPTION 1: USE TEST MODE (Works immediately - No verification needed)
+      // This is a valid Paystack test public key that works for testing
+      const PAYSTACK_PUBLIC_KEY = "pk_test_d0df6216b5434cb2e0e2e32722716bdb6c9fccae";
       
-      // For testing with Paystack sandbox, use: "pk_test_d0df6216b5434cb2e0e2e32722716bdb6c9fccae"
+      // OPTION 2: WHEN YOU GO LIVE, REPLACE WITH YOUR LIVE KEY FROM:
+      // https://dashboard.paystack.com/#/settings/developer
+      // const PAYSTACK_PUBLIC_KEY = "pk_live_YOUR_ACTUAL_LIVE_KEY_HERE";
+      // ==================================================
       
-      const handler = PaystackPop.setup({
-        key: PAYSTACK_PUBLIC_KEY,
-        email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
-        amount: total * 100, // Amount in cents
-        currency: 'KES',
-        ref: 'TCE_' + Math.floor((Math.random() * 1000000000) + 1),
-        metadata: {
-          custom_fields: [
-            { display_name: "Customer Name", variable_name: "customer_name", value: name },
-            { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
-            { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
-            { display_name: "Instructions", variable_name: "instructions", value: instructions || "None" }
-          ]
-        },
-        callback: function(response) {
-          // Payment successful
-          const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-          sendOrderToWhatsApp(orderData, total, response.reference);
-          showResultModal(true, "Payment Successful!", `Your order has been placed! Total: KES ${total.toLocaleString()}. Ref: ${response.reference}`);
-          
-          // Reset cart and form
-          cart.clear();
-          renderCart();
-          document.getElementById('customerName').value = '';
-          document.getElementById('customerPhone').value = '';
-          document.getElementById('deliveryLocation').value = '';
-          document.getElementById('specialInstructions').value = '';
-          menuItems.forEach(item => updateQtyDisplay(item.id));
-        },
-        onClose: function() {
-          alert('Payment cancelled. You can try again.');
-        }
-      });
+      // Validate that we have a valid key
+      if (!PAYSTACK_PUBLIC_KEY || PAYSTACK_PUBLIC_KEY === "pk_live_YOUR_PUBLIC_KEY_HERE") {
+        alert("⚠️ Payment system is not configured yet. Please use Cash on Delivery or contact the restaurant.");
+        return;
+      }
       
-      handler.openIframe();
+      try {
+        const handler = PaystackPop.setup({
+          key: PAYSTACK_PUBLIC_KEY,
+          email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
+          amount: total * 100, // Amount in cents (e.g., KES 350 = 35000)
+          currency: 'KES',
+          ref: 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
+          metadata: {
+            custom_fields: [
+              { display_name: "Customer Name", variable_name: "customer_name", value: name },
+              { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
+              { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
+              { display_name: "Instructions", variable_name: "instructions", value: instructions || "None" }
+            ]
+          },
+          callback: function(response) {
+            // Payment successful
+            console.log("Payment successful:", response);
+            const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+            sendOrderToWhatsApp(orderData, total, response.reference);
+            showResultModal(true, "Payment Successful!", `Your order has been placed! Total: KES ${total.toLocaleString()}. Ref: ${response.reference}`);
+            
+            // Reset cart and form
+            cart.clear();
+            renderCart();
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('deliveryLocation').value = '';
+            document.getElementById('specialInstructions').value = '';
+            menuItems.forEach(item => updateQtyDisplay(item.id));
+          },
+          onClose: function() {
+            console.log("Payment window closed");
+            alert('Payment cancelled. You can try again or use Cash on Delivery.');
+          }
+        });
+        
+        handler.openIframe();
+      } catch (error) {
+        console.error("Paystack error:", error);
+        alert("Unable to start payment. Please try again or use Cash on Delivery.\nError: " + error.message);
+      }
     });
   }
 
