@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Top Chef Eateries | Online Ordering with Mobile Money</title>
+  <title>Top Chef Eateries | Online Ordering - KES Prices</title>
   <!-- Google Fonts + Font Awesome 6 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -21,7 +21,7 @@
       scroll-behavior: smooth;
     }
 
-    /* Navigation */
+    /* Navigation Bar */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -97,8 +97,12 @@
     .hero-order h1 span {
       color: #FFB347;
     }
+    .hero-order p {
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+    }
 
-    /* Main Layout */
+    /* Main Layout: 2 columns (menu + cart) */
     .ordering-container {
       max-width: 1500px;
       margin: 2rem auto;
@@ -136,6 +140,8 @@
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.8rem;
     }
+
+    /* Food Card */
     .food-card {
       background: white;
       border-radius: 28px;
@@ -146,6 +152,7 @@
     }
     .food-card:hover {
       transform: translateY(-6px);
+      box-shadow: 0 25px 30px -12px rgba(193,123,46,0.2);
       border-color: #E17B2E;
     }
     .card-img {
@@ -164,6 +171,7 @@
       color: #7a6248;
       font-size: 0.85rem;
       margin: 0.5rem 0;
+      line-height: 1.4;
     }
     .price {
       font-size: 1.4rem;
@@ -184,12 +192,20 @@
       height: 36px;
       border-radius: 50%;
       font-size: 1.2rem;
+      font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
+      color: #B65F1E;
     }
     .qty-btn:hover {
       background: #E17B2E;
       color: white;
+    }
+    .qty-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
     }
     .add-to-cart {
       background: #E17B2E;
@@ -199,14 +215,22 @@
       border-radius: 40px;
       color: white;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       cursor: pointer;
       transition: 0.2s;
+      margin-top: 0.5rem;
     }
     .add-to-cart:hover {
       background: #B65F1E;
+      transform: scale(1.01);
     }
+
+    /* Cart Styles */
     .cart-items {
-      max-height: 380px;
+      max-height: 350px;
       overflow-y: auto;
       margin-bottom: 1rem;
     }
@@ -217,12 +241,47 @@
       padding: 0.8rem 0;
       border-bottom: 1px solid #f0e0ce;
     }
+    .cart-item-info {
+      flex: 2;
+    }
+    .cart-item-title {
+      font-weight: 700;
+    }
+    .cart-item-price {
+      font-size: 0.8rem;
+      color: #E17B2E;
+    }
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-qty {
+      background: #f5ede4;
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .remove-item {
+      background: none;
+      border: none;
+      color: #b9534e;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 5px;
+    }
     .cart-total {
       font-size: 1.3rem;
       font-weight: 800;
       text-align: right;
       padding: 1rem 0;
       border-top: 2px dashed #E17B2E;
+      margin-top: 0.5rem;
+    }
+
+    /* Checkout Form */
+    .checkout-form {
+      margin-top: 1rem;
     }
     .checkout-form input, .checkout-form textarea, .checkout-form select {
       width: 100%;
@@ -231,6 +290,7 @@
       border: 1px solid #f0dcc8;
       border-radius: 28px;
       font-family: inherit;
+      background: #fffcf9;
     }
 
     /* Payment Section Styles */
@@ -285,6 +345,12 @@
     .mobile-money-input.active {
       display: block;
     }
+    .mobile-money-input input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #f0dcc8;
+      border-radius: 28px;
+    }
     .place-order-btn {
       background: #25D366;
       color: white;
@@ -304,29 +370,7 @@
     }
     .place-order-btn:hover {
       background: #128C7E;
-    }
-    .back-home {
-      text-align: center;
-      margin: 2rem;
-    }
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #F4E3D3;
-      padding: 0.7rem 2rem;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 600;
-      color: #B65F1E;
-    }
-    footer {
-      background: #2c2418;
-      color: #f0e0ce;
-      padding: 2rem;
-      text-align: center;
-      margin-top: 2rem;
-      border-radius: 40px 40px 0 0;
+      transform: scale(1.01);
     }
 
     /* Modal Styles */
@@ -352,7 +396,6 @@
     }
     .modal-content i {
       font-size: 3rem;
-      color: #25D366;
       margin-bottom: 1rem;
     }
     .modal-content h3 {
@@ -372,8 +415,39 @@
       cursor: pointer;
     }
 
+    /* Back Button */
+    .back-home {
+      text-align: center;
+      margin: 2rem;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #F4E3D3;
+      padding: 0.7rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #B65F1E;
+      transition: 0.3s;
+    }
+    .btn-back:hover {
+      background: #E17B2E;
+      color: white;
+    }
+
+    footer {
+      background: #2c2418;
+      color: #f0e0ce;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 2rem;
+      border-radius: 40px 40px 0 0;
+    }
+
     @media (max-width: 850px) {
-      .navbar { flex-direction: column; padding: 1rem; }
+      .navbar { flex-direction: column; gap: 0.5rem; padding: 1rem; }
       .ordering-container { flex-direction: column; }
       .cart-section { position: static; }
       .hero-order h1 { font-size: 2rem; }
@@ -397,24 +471,26 @@
 </section>
 
 <div class="ordering-container">
+  <!-- Menu Section -->
   <div class="menu-grid-section">
     <div class="section-title"><i class="fas fa-utensils"></i> Our Signature Menu</div>
     <div class="menu-grid" id="menuGrid"></div>
   </div>
 
+  <!-- Cart + Checkout -->
   <div class="cart-section">
     <div class="section-title"><i class="fas fa-shopping-cart"></i> Your Order</div>
     <div id="cartItemsList" class="cart-items">
       <p style="text-align:center; color:#b6a089;">Your cart is empty</p>
     </div>
-    <div id="cartTotal" class="cart-total">Total: Ksh0.00</div>
+    <div id="cartTotal" class="cart-total">Total: KES 0.00</div>
 
     <div class="checkout-form">
       <h4 style="margin-bottom: 0.5rem;">Delivery Details</h4>
       <input type="text" id="customerName" placeholder="Full Name" required>
       <input type="tel" id="customerPhone" placeholder="Phone Number" required>
       <input type="text" id="deliveryLocation" placeholder="Delivery Address" required>
-      <textarea id="specialInstructions" rows="2" placeholder="Special instructions"></textarea>
+      <textarea id="specialInstructions" rows="2" placeholder="Special instructions (allergies, gate code, etc.)"></textarea>
 
       <!-- Payment Section with Mobile Money -->
       <div class="payment-section">
@@ -469,21 +545,29 @@
 </div>
 
 <script>
-  // Menu Data
+  // ============================================
+  // MENU DATA - PRICES IN KENYA SHILLINGS (KES)
+  // ============================================
   const menuItems = [
-    { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms, parmesan", price: 600, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, name: "Grass-Fed Ribeye", desc: "Herb butter, roasted garlic, seasonal veggies", price: 500, image: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 3, name: "Lobster Ravioli", desc: "Lobster filling, saffron cream sauce", price: 800, image: "https://images.pexels.com/photos/1279337/pexels-photo-1279337.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 4, name: "Margherita Pizza", desc: "San Marzano tomatoes, fresh mozzarella, basil", price: 400, image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 5, name: "Grilled Salmon", desc: "Lemon dill glaze, quinoa, asparagus", price: 750, image: "https://images.pexels.com/photos/46239/salmon-dish-fish-meat-46239.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 6, name: "Vegan Power Bowl", desc: "Quinoa, avocado, chickpeas, tahini dressing", price: 450, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 7, name: "Chocolate Lava Cake", desc: "Warm chocolate, vanilla ice cream", price: 200, image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400" }
+    { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms, parmesan shavings", price: 1850, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 2, name: "Grass-Fed Ribeye", desc: "Herb butter, roasted garlic, seasonal veggies", price: 3200, image: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 3, name: "Lobster Ravioli", desc: "Lobster filling, saffron cream sauce, chives", price: 2800, image: "https://images.pexels.com/photos/1279337/pexels-photo-1279337.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 4, name: "Margherita Pizza", desc: "San Marzano tomatoes, fresh mozzarella, basil", price: 1400, image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 5, name: "Grilled Salmon", desc: "Lemon dill glaze, quinoa, asparagus", price: 2450, image: "https://images.pexels.com/photos/46239/salmon-dish-fish-meat-46239.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 6, name: "Vegan Power Bowl", desc: "Quinoa, avocado, chickpeas, tahini dressing", price: 1450, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 7, name: "Spaghetti Carbonara", desc: "Pancetta, egg yolk, pecorino, black pepper", price: 1650, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 8, name: "Chocolate Lava Cake", desc: "Warm chocolate, vanilla ice cream", price: 750, image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 9, name: "Beef Burger", desc: "Grass-fed beef, cheddar, lettuce, tomato, special sauce", price: 1250, image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 10, name: "Fresh Fruit Juice", desc: "Seasonal fresh fruits, no added sugar", price: 450, image: "https://images.pexels.com/photos/1233319/pexels-photo-1233319.jpeg?auto=compress&cs=tinysrgb&w=400" }
   ];
 
+  // Cart state
   let cart = new Map();
   let selectedPayment = "mpesa";
 
-  // Payment Option Selection
+  // ============================================
+  // PAYMENT OPTION SELECTION
+  // ============================================
   document.querySelectorAll('.payment-option').forEach(option => {
     option.addEventListener('click', function() {
       document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
@@ -499,10 +583,9 @@
     });
   });
 
-  // Set default selected payment
-  document.querySelector('.payment-option[data-payment="mpesa"]').classList.add('selected');
-
-  // Render Menu
+  // ============================================
+  // RENDER MENU
+  // ============================================
   function renderMenu() {
     const container = document.getElementById('menuGrid');
     if (!container) return;
@@ -511,25 +594,31 @@
       const card = document.createElement('div');
       card.className = 'food-card';
       card.innerHTML = `
-        <div class="card-img" style="background-image: url('{item.image}');"></div>
+        <div class="card-img" style="background-image: url('${item.image}'); background-size: cover; background-position: center;"></div>
         <div class="card-content">
           <h3>${item.name}</h3>
           <p class="desc">${item.desc}</p>
-          <div class="price">Ksh{item.price}</div>
+          <div class="price">KES ${item.price.toLocaleString()}</div>
           <div class="quantity-control">
-            <button class="qty-btn decr" data-id="{item.id}">-</button>
-            <span class="qty-value" id="qty-{item.id}">0</span>
-            <button class="qty-btn incr" data-id="{item.id}">+</button>
+            <button class="qty-btn decr" data-id="${item.id}">-</button>
+            <span class="qty-value" id="qty-${item.id}">0</span>
+            <button class="qty-btn incr" data-id="${item.id}">+</button>
           </div>
-          <button class="add-to-cart" data-id="{item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+          <button class="add-to-cart" data-id="${item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
         </div>
       `;
       container.appendChild(card);
     });
 
-    document.querySelectorAll('.decr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1)));
-    document.querySelectorAll('.incr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1)));
-    document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id))));
+    document.querySelectorAll('.decr').forEach(btn => {
+      btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1));
+    });
+    document.querySelectorAll('.incr').forEach(btn => {
+      btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1));
+    });
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id)));
+    });
   }
 
   function getItemQuantity(id) {
@@ -568,28 +657,42 @@
     const cartContainer = document.getElementById('cartItemsList');
     const totalSpan = document.getElementById('cartTotal');
     let total = 0;
+    
     if (cart.size === 0) {
-      cartContainer.innerHTML = '<p style="text-align:center;">Your cart is empty</p>';
-      totalSpan.innerText = 'Total: Ksh0.00';
+      cartContainer.innerHTML = '<p style="text-align:center; color:#b6a089;">Your cart is empty</p>';
+      totalSpan.innerText = 'Total: KES 0.00';
       return;
     }
+    
     let html = '';
     for (let [id, item] of cart.entries()) {
       const subtotal = item.quantity * item.price;
       total += subtotal;
       html += `
         <div class="cart-item">
-          <div><strong>{item.name}</strong><br>Ksh{item.price} x {item.quantity}</div>
-          <div><strongKsh{subtotal.toFixed(2)}</strong>
-            <button class="remove-item" data-id="{id}" style="background:none; border:none; color:#b9534e; margin-left:10px; cursor:pointer;">
-              <i class="fas fa-trash"></i>
-            </button>
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">KES ${item.price.toLocaleString()} each</div>
+          </div>
+          <div class="cart-item-actions">
+            <button class="cart-qty-adjust" data-id="${id}" data-delta="-1" style="background:#f0e0ce; border:none; width:28px; border-radius:50%;">-</button>
+            <span class="cart-qty">${item.quantity}</span>
+            <button class="cart-qty-adjust" data-id="${id}" data-delta="1" style="background:#f0e0ce; border:none; width:28px; border-radius:50%;">+</button>
+            <button class="remove-item" data-id="${id}"><i class="fas fa-trash-alt"></i></button>
           </div>
         </div>
       `;
     }
     cartContainer.innerHTML = html;
-    totalSpan.innerText = `Total: Ksh{total.toFixed(2)}`;
+    totalSpan.innerText = `Total: KES ${total.toLocaleString()}`;
+
+    document.querySelectorAll('.cart-qty-adjust').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseInt(btn.dataset.id);
+        const delta = parseInt(btn.dataset.delta);
+        changeQuantity(id, delta);
+      });
+    });
     document.querySelectorAll('.remove-item').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.dataset.id);
@@ -600,7 +703,9 @@
     });
   }
 
-  // Show Modal
+  // ============================================
+  // MODAL FUNCTIONS
+  // ============================================
   function showModal(message, type = 'success') {
     const modal = document.getElementById('paymentModal');
     const modalContent = modal.querySelector('.modal-content');
@@ -626,10 +731,11 @@
     document.getElementById('paymentModal').style.display = 'none';
   }
 
-  // Process Payment and Place Order
+  // ============================================
+  // PROCESS PAYMENT & PLACE ORDER
+  // ============================================
   function processPayment() {
     return new Promise((resolve, reject) => {
-      // Simulate payment processing
       setTimeout(() => {
         if (selectedPayment === 'mpesa' || selectedPayment === 'airtel') {
           const mobileNumber = document.getElementById('mobileMoneyNumber').value.trim();
@@ -637,7 +743,7 @@
             reject('Please enter your mobile money number');
             return;
           }
-          if (!/^[0-9]{10,12}/.test(mobileNumber.replace(/\s/g, ''))) {
+          if (!/^[0-9]{10,12}$/.test(mobileNumber.replace(/\s/g, ''))) {
             reject('Please enter a valid mobile number (10-12 digits)');
             return;
           }
@@ -647,7 +753,6 @@
     });
   }
 
-  // Place Order Button
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', async function() {
@@ -679,34 +784,34 @@
       try {
         await processPayment();
 
-        // Build order summary
         let orderItems = "";
         let total = 0;
         for (let [id, item] of cart.entries()) {
           const subtotal = item.quantity * item.price;
           total += subtotal;
-          orderItems += `{item.name} x{item.quantity} -Ksh{subtotal.toFixed(2)}\n`;
+          orderItems += `${item.name} x${item.quantity} - KES ${subtotal.toLocaleString()}\n`;
         }
 
         const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
         const mobileNumber = document.getElementById('mobileMoneyNumber')?.value.trim() || 'N/A';
 
-        const message = ` *NEW ORDER - TOP CHEF EATERIES* %0A%0A` +
+        const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
           `*Customer:* ${name}%0A` +
           `*Phone:* ${phone}%0A` +
           `*Address:* ${address}%0A%0A` +
           `*Order:*%0A${orderItems}%0A` +
-          `*Total: $${total.toFixed(2)}*%0A` +
+          `*Total: KES ${total.toLocaleString()}*%0A` +
           `*Payment: ${paymentMethod}*%0A` +
           `*Mobile Money Number: ${mobileNumber}*%0A%0A` +
           `*Instructions:* ${instructions || 'None'}%0A%0A` +
           `✅ Payment confirmed! Please prepare this order.`;
 
-        const restaurantNumber = "254707203741"; // 🔴 CHANGE TO YOUR NUMBER
-        const whatsappUrl = `https://wa.me/${restaurantNumber}?text=Ksh{message}`;
+        // 🔴 CHANGE THIS TO YOUR RESTAURANT'S WHATSAPP NUMBER
+        const restaurantNumber = "254712345678";
+        const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`;
         
         modal.style.display = 'none';
-        showModal(`Your order has been placed successfully via ${paymentMethod}! Total: $${total.toFixed(2)}. You will receive a confirmation message shortly.`, 'success');
+        showModal(`Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`, 'success');
         
         window.open(whatsappUrl, '_blank');
         
@@ -727,6 +832,7 @@
     });
   }
 
+  // Initialize
   renderMenu();
   renderCart();
 </script>
