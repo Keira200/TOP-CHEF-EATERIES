@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Top Chef Eateries | Online Ordering - Mobile Money Payment</title>
+  <title>Top Chef Eateries | Online Ordering - Paystack Mobile Money</title>
   <!-- Google Fonts + Font Awesome 6 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Paystack SDK for Mobile Money Payments -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
     * {
       margin: 0;
@@ -102,7 +104,7 @@
       font-size: 1.1rem;
     }
 
-    /* Main Layout: 2 columns (menu + cart) */
+    /* Main Layout */
     .ordering-container {
       max-width: 1500px;
       margin: 2rem auto;
@@ -152,7 +154,6 @@
     }
     .food-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 25px 30px -12px rgba(193,123,46,0.2);
       border-color: #E17B2E;
     }
     .card-img {
@@ -171,7 +172,6 @@
       color: #7a6248;
       font-size: 0.85rem;
       margin: 0.5rem 0;
-      line-height: 1.4;
     }
     .price {
       font-size: 1.4rem;
@@ -192,10 +192,8 @@
       height: 36px;
       border-radius: 50%;
       font-size: 1.2rem;
-      font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
-      color: #B65F1E;
     }
     .qty-btn:hover {
       background: #E17B2E;
@@ -215,10 +213,6 @@
       border-radius: 40px;
       color: white;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       cursor: pointer;
       transition: 0.2s;
       margin-top: 0.5rem;
@@ -268,7 +262,6 @@
       color: #b9534e;
       cursor: pointer;
       font-size: 1rem;
-      padding: 0 5px;
     }
     .cart-total {
       font-size: 1.3rem;
@@ -283,17 +276,16 @@
     .checkout-form {
       margin-top: 1rem;
     }
-    .checkout-form input, .checkout-form textarea, .checkout-form select {
+    .checkout-form input, .checkout-form textarea {
       width: 100%;
       padding: 0.8rem;
       margin: 0.5rem 0;
       border: 1px solid #f0dcc8;
       border-radius: 28px;
       font-family: inherit;
-      background: #fffcf9;
     }
 
-    /* Payment Section Styles */
+    /* Payment Section */
     .payment-section {
       margin-top: 1.5rem;
       padding-top: 1rem;
@@ -303,9 +295,6 @@
       font-weight: 700;
       margin-bottom: 0.8rem;
       color: #B65F1E;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
     .payment-options {
       display: flex;
@@ -321,8 +310,8 @@
       border-radius: 16px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s;
       background: white;
+      transition: 0.2s;
     }
     .payment-option.selected {
       border-color: #E17B2E;
@@ -332,27 +321,9 @@
       font-size: 1.5rem;
       color: #E17B2E;
       display: block;
-      margin-bottom: 0.3rem;
     }
-    .payment-option span {
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .mobile-money-input {
-      display: none;
-      margin-top: 1rem;
-    }
-    .mobile-money-input.active {
-      display: block;
-    }
-    .mobile-money-input input {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid #f0dcc8;
-      border-radius: 28px;
-    }
-    .place-order-btn {
-      background: #25D366;
+    .paystack-btn {
+      background: linear-gradient(135deg, #E17B2E, #B65F1E);
       color: white;
       border: none;
       width: 100%;
@@ -361,106 +332,19 @@
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
       transition: 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
     }
-    .place-order-btn:hover {
-      background: #128C7E;
+    .paystack-btn:hover {
       transform: scale(1.01);
+      opacity: 0.95;
     }
 
-    /* PIN Prompt Modal Styles */
-    .pin-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      z-index: 1001;
-      justify-content: center;
-      align-items: center;
-    }
-    .pin-modal-content {
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-    }
-    .pin-modal-content i {
-      font-size: 3rem;
-      color: #E17B2E;
-      margin-bottom: 1rem;
-    }
-    .pin-modal-content h3 {
-      color: #B65F1E;
-      margin-bottom: 0.5rem;
-    }
-    .pin-modal-content p {
-      color: #7a6248;
-      margin-bottom: 1.5rem;
-      font-size: 0.9rem;
-    }
-    .pin-input-container {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 1.5rem;
-    }
-    .pin-digit {
-      width: 55px;
-      height: 65px;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      border: 2px solid #f0dcc8;
-      border-radius: 16px;
-      font-family: monospace;
-    }
-    .pin-digit:focus {
-      outline: none;
-      border-color: #E17B2E;
-    }
-    .pin-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-    .pin-btn {
-      padding: 0.7rem 1.5rem;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-    }
-    .pin-btn-confirm {
-      background: #25D366;
-      color: white;
-    }
-    .pin-btn-confirm:hover {
-      background: #128C7E;
-    }
-    .pin-btn-cancel {
-      background: #f0e0ce;
-      color: #B65F1E;
-    }
-    .pin-btn-cancel:hover {
-      background: #e0d0c0;
-    }
-    .error-message {
-      color: #e74c3c;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-    }
-
-    /* Processing Modal */
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -485,14 +369,6 @@
       font-size: 3rem;
       margin-bottom: 1rem;
     }
-    .modal-content h3 {
-      color: #B65F1E;
-      margin-bottom: 0.5rem;
-    }
-    .modal-content p {
-      color: #7a6248;
-      margin-bottom: 1rem;
-    }
     .modal-close {
       background: #E17B2E;
       color: white;
@@ -500,6 +376,7 @@
       padding: 0.7rem 1.5rem;
       border-radius: 40px;
       cursor: pointer;
+      margin-top: 1rem;
     }
 
     /* Back Button */
@@ -517,28 +394,19 @@
       text-decoration: none;
       font-weight: 600;
       color: #B65F1E;
-      transition: 0.3s;
     }
-    .btn-back:hover {
-      background: #E17B2E;
-      color: white;
-    }
-
     footer {
       background: #2c2418;
       color: #f0e0ce;
       padding: 2rem;
       text-align: center;
       margin-top: 2rem;
-      border-radius: 40px 40px 0 0;
     }
-
     @media (max-width: 850px) {
-      .navbar { flex-direction: column; gap: 0.5rem; padding: 1rem; }
+      .navbar { flex-direction: column; padding: 1rem; }
       .ordering-container { flex-direction: column; }
       .cart-section { position: static; }
       .hero-order h1 { font-size: 2rem; }
-      .pin-digit { width: 45px; height: 55px; font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -580,7 +448,7 @@
       <input type="text" id="deliveryLocation" placeholder="Delivery Address" required>
       <textarea id="specialInstructions" rows="2" placeholder="Special instructions (allergies, gate code, etc.)"></textarea>
 
-      <!-- Payment Section with Mobile Money -->
+      <!-- Payment Section with Paystack (M-Pesa / Airtel Money) -->
       <div class="payment-section">
         <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
         <div class="payment-options">
@@ -598,16 +466,9 @@
           </div>
         </div>
 
-        <!-- Mobile Money Number Input -->
-        <div id="mobileMoneyInput" class="mobile-money-input">
-          <input type="tel" id="mobileMoneyNumber" placeholder="Enter Mobile Money Number (e.g., 0712345678)">
-          <p style="font-size: 0.7rem; color: #7a6248; margin-top: 0.3rem;">
-            <i class="fas fa-lock"></i> You will be prompted to enter your PIN to complete payment
-          </p>
-        </div>
-
-        <button id="placeOrderBtn" class="place-order-btn">
-          <i class="fas fa-check-circle"></i> Place Order & Pay
+        <!-- Paystack Payment Button -->
+        <button id="paystackPayBtn" class="paystack-btn">
+          <i class="fas fa-mobile-alt"></i> Pay with M-Pesa / Airtel Money
         </button>
       </div>
     </div>
@@ -619,39 +480,10 @@
 </div>
 
 <footer>
-  <p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love. Pay with M-Pesa or Airtel Money.</p>
+  <p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love. Pay with M-Pesa or Airtel Money via Paystack.</p>
 </footer>
 
-<!-- Processing Modal -->
-<div id="processingModal" class="modal">
-  <div class="modal-content">
-    <i class="fas fa-spinner fa-pulse"></i>
-    <h3>Processing Payment...</h3>
-    <p>Please wait while we process your transaction.</p>
-  </div>
-</div>
-
-<!-- PIN Prompt Modal for Mobile Money -->
-<div id="pinModal" class="pin-modal">
-  <div class="pin-modal-content">
-    <i class="fas fa-lock"></i>
-    <h3>Enter Your PIN</h3>
-    <p id="pinModalMessage">Please enter your 4-digit M-Pesa PIN to complete payment</p>
-    <div class="pin-input-container">
-      <input type="password" maxlength="1" class="pin-digit" id="pin1" autofocus>
-      <input type="password" maxlength="1" class="pin-digit" id="pin2">
-      <input type="password" maxlength="1" class="pin-digit" id="pin3">
-      <input type="password" maxlength="1" class="pin-digit" id="pin4">
-    </div>
-    <div id="pinError" class="error-message"></div>
-    <div class="pin-actions">
-      <button class="pin-btn pin-btn-confirm" id="confirmPinBtn">Confirm Payment</button>
-      <button class="pin-btn pin-btn-cancel" id="cancelPinBtn">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- Success/Error Modal -->
+<!-- Result Modal -->
 <div id="resultModal" class="modal">
   <div class="modal-content">
     <i id="resultIcon" class="fas fa-check-circle" style="color: #25D366;"></i>
@@ -678,155 +510,20 @@
     { id: 12, name: "Chicken Wings", desc: "Crispy wings, house BBQ sauce, celery sticks", price: 850, image: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400" }
   ];
 
-  // Cart state
   let cart = new Map();
   let selectedPayment = "mpesa";
-  let pendingOrderData = null;
 
-  // ============================================
-  // PAYMENT OPTION SELECTION
-  // ============================================
+  // Payment option selection styling
   document.querySelectorAll('.payment-option').forEach(option => {
     option.addEventListener('click', function() {
       document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
       this.classList.add('selected');
       selectedPayment = this.dataset.payment;
-      
-      const mobileInput = document.getElementById('mobileMoneyInput');
-      if (selectedPayment === 'mpesa' || selectedPayment === 'airtel') {
-        mobileInput.classList.add('active');
-      } else {
-        mobileInput.classList.remove('active');
-      }
     });
   });
 
   // ============================================
-  // PIN INPUT HANDLING
-  // ============================================
-  function setupPinInputs() {
-    const pinInputs = document.querySelectorAll('.pin-digit');
-    pinInputs.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        if (e.target.value.length === 1 && index < 3) {
-          pinInputs[index + 1].focus();
-        }
-      });
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !e.target.value && index > 0) {
-          pinInputs[index - 1].focus();
-        }
-      });
-    });
-  }
-
-  function getPin() {
-    const pin1 = document.getElementById('pin1').value;
-    const pin2 = document.getElementById('pin2').value;
-    const pin3 = document.getElementById('pin3').value;
-    const pin4 = document.getElementById('pin4').value;
-    return pin1 + pin2 + pin3 + pin4;
-  }
-
-  function clearPinInputs() {
-    document.getElementById('pin1').value = '';
-    document.getElementById('pin2').value = '';
-    document.getElementById('pin3').value = '';
-    document.getElementById('pin4').value = '';
-    document.getElementById('pin1').focus();
-  }
-
-  function showPinModal(message) {
-    document.getElementById('pinModalMessage').innerText = message;
-    document.getElementById('pinError').innerText = '';
-    clearPinInputs();
-    document.getElementById('pinModal').style.display = 'flex';
-  }
-
-  function hidePinModal() {
-    document.getElementById('pinModal').style.display = 'none';
-  }
-
-  function showProcessingModal() {
-    document.getElementById('processingModal').style.display = 'flex';
-  }
-
-  function hideProcessingModal() {
-    document.getElementById('processingModal').style.display = 'none';
-  }
-
-  function showResultModal(success, title, message) {
-    const icon = document.getElementById('resultIcon');
-    const titleEl = document.getElementById('resultTitle');
-    const messageEl = document.getElementById('resultMessage');
-    
-    if (success) {
-      icon.className = 'fas fa-check-circle';
-      icon.style.color = '#25D366';
-      titleEl.innerText = title;
-    } else {
-      icon.className = 'fas fa-times-circle';
-      icon.style.color = '#e74c3c';
-      titleEl.innerText = title;
-    }
-    messageEl.innerText = message;
-    document.getElementById('resultModal').style.display = 'flex';
-  }
-
-  function closeResultModal() {
-    document.getElementById('resultModal').style.display = 'none';
-  }
-
-  // ============================================
-  // PROCESS MOBILE MONEY PAYMENT WITH PIN
-  // ============================================
-  function processMobileMoneyPayment(amount, phoneNumber, paymentType) {
-    return new Promise((resolve, reject) => {
-      // Show PIN modal
-      showPinModal(`Please enter your 4-digit ${paymentType === 'mpesa' ? 'M-Pesa' : 'Airtel Money'} PIN to complete payment of KES ${amount.toLocaleString()}`);
-      
-      const confirmBtn = document.getElementById('confirmPinBtn');
-      const cancelBtn = document.getElementById('cancelPinBtn');
-      
-      const handleConfirm = () => {
-        const pin = getPin();
-        if (pin.length !== 4) {
-          document.getElementById('pinError').innerText = 'Please enter a valid 4-digit PIN';
-          return;
-        }
-        
-        hidePinModal();
-        showProcessingModal();
-        
-        // Simulate PIN verification and payment processing
-        setTimeout(() => {
-          hideProcessingModal();
-          // For demo purposes, any 4-digit PIN is accepted
-          // In real implementation, this would call your payment API
-          resolve();
-        }, 2000);
-        
-        cleanup();
-      };
-      
-      const handleCancel = () => {
-        hidePinModal();
-        reject('Payment cancelled by user');
-        cleanup();
-      };
-      
-      const cleanup = () => {
-        confirmBtn.removeEventListener('click', handleConfirm);
-        cancelBtn.removeEventListener('click', handleCancel);
-      };
-      
-      confirmBtn.addEventListener('click', handleConfirm);
-      cancelBtn.addEventListener('click', handleCancel);
-    });
-  }
-
-  // ============================================
-  // RENDER MENU
+  // CART FUNCTIONS
   // ============================================
   function renderMenu() {
     const container = document.getElementById('menuGrid');
@@ -836,7 +533,7 @@
       const card = document.createElement('div');
       card.className = 'food-card';
       card.innerHTML = `
-        <div class="card-img" style="background-image: url('${item.image}'); background-size: cover; background-position: center;"></div>
+        <div class="card-img" style="background-image: url('${item.image}');"></div>
         <div class="card-content">
           <h3>${item.name}</h3>
           <p class="desc">${item.desc}</p>
@@ -852,36 +549,21 @@
       container.appendChild(card);
     });
 
-    document.querySelectorAll('.decr').forEach(btn => {
-      btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1));
-    });
-    document.querySelectorAll('.incr').forEach(btn => {
-      btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1));
-    });
-    document.querySelectorAll('.add-to-cart').forEach(btn => {
-      btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id)));
-    });
+    document.querySelectorAll('.decr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1)));
+    document.querySelectorAll('.incr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1)));
+    document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id))));
   }
 
-  function getItemQuantity(id) {
-    return cart.has(id) ? cart.get(id).quantity : 0;
-  }
-
-  function updateQtyDisplay(id) {
-    const span = document.getElementById(`qty-${id}`);
-    if (span) span.innerText = getItemQuantity(id);
-  }
+  function getItemQuantity(id) { return cart.has(id) ? cart.get(id).quantity : 0; }
+  function updateQtyDisplay(id) { document.getElementById(`qty-${id}`).innerText = getItemQuantity(id); }
 
   function changeQuantity(id, delta) {
     const item = menuItems.find(i => i.id === id);
     if (!item) return;
     let newQty = getItemQuantity(id) + delta;
     if (newQty < 0) newQty = 0;
-    if (newQty === 0) {
-      cart.delete(id);
-    } else {
-      cart.set(id, { quantity: newQty, price: item.price, name: item.name });
-    }
+    if (newQty === 0) cart.delete(id);
+    else cart.set(id, { quantity: newQty, price: item.price, name: item.name });
     updateQtyDisplay(id);
     renderCart();
   }
@@ -899,91 +581,74 @@
     const cartContainer = document.getElementById('cartItemsList');
     const totalSpan = document.getElementById('cartTotal');
     let total = 0;
-    
     if (cart.size === 0) {
       cartContainer.innerHTML = '<p style="text-align:center; color:#b6a089;">Your cart is empty</p>';
       totalSpan.innerText = 'Total: KES 0.00';
       return;
     }
-    
     let html = '';
     for (let [id, item] of cart.entries()) {
       const subtotal = item.quantity * item.price;
       total += subtotal;
-      html += `
-        <div class="cart-item">
-          <div class="cart-item-info">
-            <div class="cart-item-title">${item.name}</div>
-            <div class="cart-item-price">KES ${item.price.toLocaleString()} each</div>
-          </div>
-          <div class="cart-item-actions">
-            <button class="cart-qty-adjust" data-id="${id}" data-delta="-1" style="background:#f0e0ce; border:none; width:28px; border-radius:50%;">-</button>
-            <span class="cart-qty">${item.quantity}</span>
-            <button class="cart-qty-adjust" data-id="${id}" data-delta="1" style="background:#f0e0ce; border:none; width:28px; border-radius:50%;">+</button>
-            <button class="remove-item" data-id="${id}"><i class="fas fa-trash-alt"></i></button>
-          </div>
-        </div>
-      `;
+      html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-title">${item.name}</div><div class="cart-item-price">KES ${item.price.toLocaleString()} each</div></div><div class="cart-item-actions"><button class="cart-qty-adjust" data-id="${id}" data-delta="-1">-</button><span class="cart-qty">${item.quantity}</span><button class="cart-qty-adjust" data-id="${id}" data-delta="1">+</button><button class="remove-item" data-id="${id}"><i class="fas fa-trash-alt"></i></button></div></div>`;
     }
     cartContainer.innerHTML = html;
     totalSpan.innerText = `Total: KES ${total.toLocaleString()}`;
+    document.querySelectorAll('.cart-qty-adjust').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), parseInt(btn.dataset.delta))));
+    document.querySelectorAll('.remove-item').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.dataset.id); cart.delete(id); updateQtyDisplay(id); renderCart(); }));
+  }
 
-    document.querySelectorAll('.cart-qty-adjust').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.dataset.id);
-        const delta = parseInt(btn.dataset.delta);
-        changeQuantity(id, delta);
-      });
-    });
-    document.querySelectorAll('.remove-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.dataset.id);
-        cart.delete(id);
-        updateQtyDisplay(id);
-        renderCart();
-      });
-    });
+  // ============================================
+  // RESULT MODAL
+  // ============================================
+  function showResultModal(success, title, message) {
+    const icon = document.getElementById('resultIcon');
+    const titleEl = document.getElementById('resultTitle');
+    const msgEl = document.getElementById('resultMessage');
+    if (success) {
+      icon.className = 'fas fa-check-circle';
+      icon.style.color = '#25D366';
+    } else {
+      icon.className = 'fas fa-times-circle';
+      icon.style.color = '#e74c3c';
+    }
+    titleEl.innerText = title;
+    msgEl.innerText = message;
+    document.getElementById('resultModal').style.display = 'flex';
+  }
+
+  function closeResultModal() {
+    document.getElementById('resultModal').style.display = 'none';
   }
 
   // ============================================
   // SEND ORDER TO WHATSAPP
   // ============================================
-  function sendOrderToWhatsApp(orderData, total) {
-    const orderItems = orderData.items;
-    const name = orderData.name;
-    const phone = orderData.phone;
-    const address = orderData.address;
-    const instructions = orderData.instructions;
-    const paymentMethod = orderData.paymentMethod;
-    const mobileNumber = orderData.mobileNumber;
-
+  function sendOrderToWhatsApp(orderData, total, paymentRef = '') {
     let orderItemsList = "";
-    for (const item of orderItems) {
+    for (const item of orderData.items) {
       orderItemsList += `${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
     }
-
     const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
-      `*Customer:* ${name}%0A` +
-      `*Phone:* ${phone}%0A` +
-      `*Address:* ${address}%0A%0A` +
+      `*Customer:* ${orderData.name}%0A` +
+      `*Phone:* ${orderData.phone}%0A` +
+      `*Address:* ${orderData.address}%0A%0A` +
       `*Order:*%0A${orderItemsList}%0A` +
       `*Total: KES ${total.toLocaleString()}*%0A` +
-      `*Payment: ${paymentMethod}*%0A` +
-      `*Mobile Money Number: ${mobileNumber}*%0A%0A` +
-      `*Instructions:* ${instructions || 'None'}%0A%0A` +
+      `*Payment: ${orderData.paymentMethod}*%0A` +
+      (paymentRef ? `*Transaction Ref: ${paymentRef}*%0A` : '') +
+      `*Instructions:* ${orderData.instructions || 'None'}%0A%0A` +
       `✅ Payment confirmed! Please prepare this order.`;
-
     const restaurantNumber = "254707203741";
-    const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(`https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`, '_blank');
   }
 
   // ============================================
-  // PLACE ORDER BUTTON HANDLER
+  // PAYSTACK PAYMENT INTEGRATION (M-Pesa & Airtel)
   // ============================================
-  const placeOrderBtn = document.getElementById('placeOrderBtn');
-  if (placeOrderBtn) {
-    placeOrderBtn.addEventListener('click', async function() {
+  const paystackBtn = document.getElementById('paystackPayBtn');
+  if (paystackBtn) {
+    paystackBtn.addEventListener('click', function() {
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('customerPhone').value.trim();
       const address = document.getElementById('deliveryLocation').value.trim();
@@ -1003,40 +668,52 @@
       for (let [id, item] of cart.entries()) {
         const subtotal = item.quantity * item.price;
         total += subtotal;
-        orderItems.push({
-          name: item.name,
-          quantity: item.quantity,
-          subtotal: subtotal
-        });
+        orderItems.push({ name: item.name, quantity: item.quantity, subtotal: subtotal });
       }
 
       const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
       
-      if (selectedPayment === 'mpesa' || selectedPayment === 'airtel') {
-        const mobileNumber = document.getElementById('mobileMoneyNumber').value.trim();
-        if (!mobileNumber) {
-          alert("❌ Please enter your mobile money number");
-          return;
-        }
-        if (!/^[0-9]{10,12}$/.test(mobileNumber.replace(/\s/g, ''))) {
-          alert("❌ Please enter a valid mobile number (10-12 digits)");
-          return;
-        }
+      // For Paystack, we only process M-Pesa and Airtel Money (mobile money)
+      if (selectedPayment === 'cash') {
+        // Cash on Delivery - no Paystack needed
+        const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+        sendOrderToWhatsApp(orderData, total);
+        showResultModal(true, "Order Placed!", `Order placed via Cash on Delivery! Total: KES ${total.toLocaleString()}`);
+        cart.clear();
+        renderCart();
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        document.getElementById('deliveryLocation').value = '';
+        document.getElementById('specialInstructions').value = '';
+        menuItems.forEach(item => updateQtyDisplay(item.id));
+        return;
+      }
 
-        pendingOrderData = {
-          name, phone, address, instructions,
-          orderItems, total,
-          paymentMethod, mobileNumber
-        };
-
-        try {
-          await processMobileMoneyPayment(total, mobileNumber, selectedPayment);
-          
-          // Payment successful - send to WhatsApp
-          sendOrderToWhatsApp(pendingOrderData, total);
-          
-          showResultModal(true, "Payment Successful!", 
-            `Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`);
+      // 🔴 IMPORTANT: REPLACE WITH YOUR ACTUAL PAYSTACK PUBLIC KEY
+      // Get it from: https://dashboard.paystack.com/#/settings/developer
+      const PAYSTACK_PUBLIC_KEY = "pk_live_YOUR_PUBLIC_KEY_HERE";
+      
+      // For testing with Paystack sandbox, use: "pk_test_d0df6216b5434cb2e0e2e32722716bdb6c9fccae"
+      
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
+        amount: total * 100, // Amount in cents
+        currency: 'KES',
+        ref: 'TCE_' + Math.floor((Math.random() * 1000000000) + 1),
+        metadata: {
+          custom_fields: [
+            { display_name: "Customer Name", variable_name: "customer_name", value: name },
+            { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
+            { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
+            { display_name: "Instructions", variable_name: "instructions", value: instructions || "None" }
+          ]
+        },
+        callback: function(response) {
+          // Payment successful
+          const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+          sendOrderToWhatsApp(orderData, total, response.reference);
+          showResultModal(true, "Payment Successful!", `Your order has been placed! Total: KES ${total.toLocaleString()}. Ref: ${response.reference}`);
           
           // Reset cart and form
           cart.clear();
@@ -1045,43 +722,20 @@
           document.getElementById('customerPhone').value = '';
           document.getElementById('deliveryLocation').value = '';
           document.getElementById('specialInstructions').value = '';
-          document.getElementById('mobileMoneyNumber').value = '';
           menuItems.forEach(item => updateQtyDisplay(item.id));
-          pendingOrderData = null;
-          
-        } catch (error) {
-          showResultModal(false, "Payment Failed", error);
-          pendingOrderData = null;
+        },
+        onClose: function() {
+          alert('Payment cancelled. You can try again.');
         }
-      } else {
-        // Cash on Delivery - no PIN required
-        const orderData = {
-          name, phone, address, instructions,
-          orderItems, total,
-          paymentMethod, mobileNumber: 'N/A'
-        };
-        
-        sendOrderToWhatsApp(orderData, total);
-        showResultModal(true, "Order Placed!", 
-          `Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`);
-        
-        // Reset cart and form
-        cart.clear();
-        renderCart();
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        document.getElementById('deliveryLocation').value = '';
-        document.getElementById('specialInstructions').value = '';
-        document.getElementById('mobileMoneyNumber').value = '';
-        menuItems.forEach(item => updateQtyDisplay(item.id));
-      }
+      });
+      
+      handler.openIframe();
     });
   }
 
   // Initialize
   renderMenu();
   renderCart();
-  setupPinInputs();
 </script>
 </body>
 </html>
