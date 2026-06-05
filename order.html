@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Top Chef Eateries | Online Ordering - KES Prices</title>
+  <title>Top Chef Eateries | Online Ordering - Mobile Money Payment</title>
   <!-- Google Fonts + Font Awesome 6 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -373,7 +373,94 @@
       transform: scale(1.01);
     }
 
-    /* Modal Styles */
+    /* PIN Prompt Modal Styles */
+    .pin-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
+    }
+    .pin-modal-content {
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+    }
+    .pin-modal-content i {
+      font-size: 3rem;
+      color: #E17B2E;
+      margin-bottom: 1rem;
+    }
+    .pin-modal-content h3 {
+      color: #B65F1E;
+      margin-bottom: 0.5rem;
+    }
+    .pin-modal-content p {
+      color: #7a6248;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .pin-input-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .pin-digit {
+      width: 55px;
+      height: 65px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border: 2px solid #f0dcc8;
+      border-radius: 16px;
+      font-family: monospace;
+    }
+    .pin-digit:focus {
+      outline: none;
+      border-color: #E17B2E;
+    }
+    .pin-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .pin-btn {
+      padding: 0.7rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+    .pin-btn-confirm {
+      background: #25D366;
+      color: white;
+    }
+    .pin-btn-confirm:hover {
+      background: #128C7E;
+    }
+    .pin-btn-cancel {
+      background: #f0e0ce;
+      color: #B65F1E;
+    }
+    .pin-btn-cancel:hover {
+      background: #e0d0c0;
+    }
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Processing Modal */
     .modal {
       display: none;
       position: fixed;
@@ -451,6 +538,7 @@
       .ordering-container { flex-direction: column; }
       .cart-section { position: static; }
       .hero-order h1 { font-size: 2rem; }
+      .pin-digit { width: 45px; height: 55px; font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -514,7 +602,7 @@
         <div id="mobileMoneyInput" class="mobile-money-input">
           <input type="tel" id="mobileMoneyNumber" placeholder="Enter Mobile Money Number (e.g., 0712345678)">
           <p style="font-size: 0.7rem; color: #7a6248; margin-top: 0.3rem;">
-            <i class="fas fa-lock"></i> Secure payment via mobile money
+            <i class="fas fa-lock"></i> You will be prompted to enter your PIN to complete payment
           </p>
         </div>
 
@@ -534,20 +622,48 @@
   <p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love. Pay with M-Pesa or Airtel Money.</p>
 </footer>
 
-<!-- Payment Modal -->
-<div id="paymentModal" class="modal">
+<!-- Processing Modal -->
+<div id="processingModal" class="modal">
   <div class="modal-content">
     <i class="fas fa-spinner fa-pulse"></i>
     <h3>Processing Payment...</h3>
-    <p>Please check your phone and enter your PIN to complete the transaction.</p>
-    <button class="modal-close" onclick="closeModal()">Close</button>
+    <p>Please wait while we process your transaction.</p>
+  </div>
+</div>
+
+<!-- PIN Prompt Modal for Mobile Money -->
+<div id="pinModal" class="pin-modal">
+  <div class="pin-modal-content">
+    <i class="fas fa-lock"></i>
+    <h3>Enter Your PIN</h3>
+    <p id="pinModalMessage">Please enter your 4-digit M-Pesa PIN to complete payment</p>
+    <div class="pin-input-container">
+      <input type="password" maxlength="1" class="pin-digit" id="pin1" autofocus>
+      <input type="password" maxlength="1" class="pin-digit" id="pin2">
+      <input type="password" maxlength="1" class="pin-digit" id="pin3">
+      <input type="password" maxlength="1" class="pin-digit" id="pin4">
+    </div>
+    <div id="pinError" class="error-message"></div>
+    <div class="pin-actions">
+      <button class="pin-btn pin-btn-confirm" id="confirmPinBtn">Confirm Payment</button>
+      <button class="pin-btn pin-btn-cancel" id="cancelPinBtn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success/Error Modal -->
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <i id="resultIcon" class="fas fa-check-circle" style="color: #25D366;"></i>
+    <h3 id="resultTitle">Payment Successful!</h3>
+    <p id="resultMessage">Your order has been placed successfully.</p>
+    <button class="modal-close" onclick="closeResultModal()">Close</button>
   </div>
 </div>
 
 <script>
   // ============================================
   // MENU DATA - PRICES IN KENYA SHILLINGS (KES)
-  // Lobster Ravioli and Grilled Salmon have been REMOVED
   // ============================================
   const menuItems = [
     { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms, parmesan shavings", price: 1850, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
@@ -565,6 +681,7 @@
   // Cart state
   let cart = new Map();
   let selectedPayment = "mpesa";
+  let pendingOrderData = null;
 
   // ============================================
   // PAYMENT OPTION SELECTION
@@ -583,6 +700,130 @@
       }
     });
   });
+
+  // ============================================
+  // PIN INPUT HANDLING
+  // ============================================
+  function setupPinInputs() {
+    const pinInputs = document.querySelectorAll('.pin-digit');
+    pinInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < 3) {
+          pinInputs[index + 1].focus();
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          pinInputs[index - 1].focus();
+        }
+      });
+    });
+  }
+
+  function getPin() {
+    const pin1 = document.getElementById('pin1').value;
+    const pin2 = document.getElementById('pin2').value;
+    const pin3 = document.getElementById('pin3').value;
+    const pin4 = document.getElementById('pin4').value;
+    return pin1 + pin2 + pin3 + pin4;
+  }
+
+  function clearPinInputs() {
+    document.getElementById('pin1').value = '';
+    document.getElementById('pin2').value = '';
+    document.getElementById('pin3').value = '';
+    document.getElementById('pin4').value = '';
+    document.getElementById('pin1').focus();
+  }
+
+  function showPinModal(message) {
+    document.getElementById('pinModalMessage').innerText = message;
+    document.getElementById('pinError').innerText = '';
+    clearPinInputs();
+    document.getElementById('pinModal').style.display = 'flex';
+  }
+
+  function hidePinModal() {
+    document.getElementById('pinModal').style.display = 'none';
+  }
+
+  function showProcessingModal() {
+    document.getElementById('processingModal').style.display = 'flex';
+  }
+
+  function hideProcessingModal() {
+    document.getElementById('processingModal').style.display = 'none';
+  }
+
+  function showResultModal(success, title, message) {
+    const icon = document.getElementById('resultIcon');
+    const titleEl = document.getElementById('resultTitle');
+    const messageEl = document.getElementById('resultMessage');
+    
+    if (success) {
+      icon.className = 'fas fa-check-circle';
+      icon.style.color = '#25D366';
+      titleEl.innerText = title;
+    } else {
+      icon.className = 'fas fa-times-circle';
+      icon.style.color = '#e74c3c';
+      titleEl.innerText = title;
+    }
+    messageEl.innerText = message;
+    document.getElementById('resultModal').style.display = 'flex';
+  }
+
+  function closeResultModal() {
+    document.getElementById('resultModal').style.display = 'none';
+  }
+
+  // ============================================
+  // PROCESS MOBILE MONEY PAYMENT WITH PIN
+  // ============================================
+  function processMobileMoneyPayment(amount, phoneNumber, paymentType) {
+    return new Promise((resolve, reject) => {
+      // Show PIN modal
+      showPinModal(`Please enter your 4-digit ${paymentType === 'mpesa' ? 'M-Pesa' : 'Airtel Money'} PIN to complete payment of KES ${amount.toLocaleString()}`);
+      
+      const confirmBtn = document.getElementById('confirmPinBtn');
+      const cancelBtn = document.getElementById('cancelPinBtn');
+      
+      const handleConfirm = () => {
+        const pin = getPin();
+        if (pin.length !== 4) {
+          document.getElementById('pinError').innerText = 'Please enter a valid 4-digit PIN';
+          return;
+        }
+        
+        hidePinModal();
+        showProcessingModal();
+        
+        // Simulate PIN verification and payment processing
+        setTimeout(() => {
+          hideProcessingModal();
+          // For demo purposes, any 4-digit PIN is accepted
+          // In real implementation, this would call your payment API
+          resolve();
+        }, 2000);
+        
+        cleanup();
+      };
+      
+      const handleCancel = () => {
+        hidePinModal();
+        reject('Payment cancelled by user');
+        cleanup();
+      };
+      
+      const cleanup = () => {
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+      };
+      
+      confirmBtn.addEventListener('click', handleConfirm);
+      cancelBtn.addEventListener('click', handleCancel);
+    });
+  }
 
   // ============================================
   // RENDER MENU
@@ -705,55 +946,41 @@
   }
 
   // ============================================
-  // MODAL FUNCTIONS
+  // SEND ORDER TO WHATSAPP
   // ============================================
-  function showModal(message, type = 'success') {
-    const modal = document.getElementById('paymentModal');
-    const modalContent = modal.querySelector('.modal-content');
-    if (type === 'success') {
-      modalContent.innerHTML = `
-        <i class="fas fa-check-circle" style="color: #25D366;"></i>
-        <h3>Payment Successful!</h3>
-        <p>${message}</p>
-        <button class="modal-close" onclick="closeModal()">Close</button>
-      `;
-    } else {
-      modalContent.innerHTML = `
-        <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
-        <h3>Payment Failed</h3>
-        <p>${message}</p>
-        <button class="modal-close" onclick="closeModal()">Close</button>
-      `;
+  function sendOrderToWhatsApp(orderData, total) {
+    const orderItems = orderData.items;
+    const name = orderData.name;
+    const phone = orderData.phone;
+    const address = orderData.address;
+    const instructions = orderData.instructions;
+    const paymentMethod = orderData.paymentMethod;
+    const mobileNumber = orderData.mobileNumber;
+
+    let orderItemsList = "";
+    for (const item of orderItems) {
+      orderItemsList += `${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
     }
-    modal.style.display = 'flex';
-  }
 
-  function closeModal() {
-    document.getElementById('paymentModal').style.display = 'none';
+    const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
+      `*Customer:* ${name}%0A` +
+      `*Phone:* ${phone}%0A` +
+      `*Address:* ${address}%0A%0A` +
+      `*Order:*%0A${orderItemsList}%0A` +
+      `*Total: KES ${total.toLocaleString()}*%0A` +
+      `*Payment: ${paymentMethod}*%0A` +
+      `*Mobile Money Number: ${mobileNumber}*%0A%0A` +
+      `*Instructions:* ${instructions || 'None'}%0A%0A` +
+      `✅ Payment confirmed! Please prepare this order.`;
+
+    const restaurantNumber = "254707203741";
+    const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   }
 
   // ============================================
-  // PROCESS PAYMENT & PLACE ORDER
+  // PLACE ORDER BUTTON HANDLER
   // ============================================
-  function processPayment() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (selectedPayment === 'mpesa' || selectedPayment === 'airtel') {
-          const mobileNumber = document.getElementById('mobileMoneyNumber').value.trim();
-          if (!mobileNumber) {
-            reject('Please enter your mobile money number');
-            return;
-          }
-          if (!/^[0-9]{10,12}$/.test(mobileNumber.replace(/\s/g, ''))) {
-            reject('Please enter a valid mobile number (10-12 digits)');
-            return;
-          }
-        }
-        resolve();
-      }, 2000);
-    });
-  }
-
   const placeOrderBtn = document.getElementById('placeOrderBtn');
   if (placeOrderBtn) {
     placeOrderBtn.addEventListener('click', async function() {
@@ -771,50 +998,72 @@
         return;
       }
 
+      let total = 0;
+      const orderItems = [];
+      for (let [id, item] of cart.entries()) {
+        const subtotal = item.quantity * item.price;
+        total += subtotal;
+        orderItems.push({
+          name: item.name,
+          quantity: item.quantity,
+          subtotal: subtotal
+        });
+      }
+
+      const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
+      
       if (selectedPayment === 'mpesa' || selectedPayment === 'airtel') {
         const mobileNumber = document.getElementById('mobileMoneyNumber').value.trim();
         if (!mobileNumber) {
           alert("❌ Please enter your mobile money number");
           return;
         }
-      }
-
-      const modal = document.getElementById('paymentModal');
-      modal.style.display = 'flex';
-
-      try {
-        await processPayment();
-
-        let orderItems = "";
-        let total = 0;
-        for (let [id, item] of cart.entries()) {
-          const subtotal = item.quantity * item.price;
-          total += subtotal;
-          orderItems += `${item.name} x${item.quantity} - KES ${subtotal.toLocaleString()}\n`;
+        if (!/^[0-9]{10,12}$/.test(mobileNumber.replace(/\s/g, ''))) {
+          alert("❌ Please enter a valid mobile number (10-12 digits)");
+          return;
         }
 
-        const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
-        const mobileNumber = document.getElementById('mobileMoneyNumber')?.value.trim() || 'N/A';
+        pendingOrderData = {
+          name, phone, address, instructions,
+          orderItems, total,
+          paymentMethod, mobileNumber
+        };
 
-        const message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️%0A%0A` +
-          `*Customer:* ${name}%0A` +
-          `*Phone:* ${phone}%0A` +
-          `*Address:* ${address}%0A%0A` +
-          `*Order:*%0A${orderItems}%0A` +
-          `*Total: KES ${total.toLocaleString()}*%0A` +
-          `*Payment: ${paymentMethod}*%0A` +
-          `*Mobile Money Number: ${mobileNumber}*%0A%0A` +
-          `*Instructions:* ${instructions || 'None'}%0A%0A` +
-          `✅ Payment confirmed! Please prepare this order.`;
-
-        // 🔴 CHANGE THIS TO YOUR RESTAURANT'S WHATSAPP NUMBER
-        const restaurantNumber = "254707203741";
-        const whatsappUrl = `https://wa.me/${restaurantNumber}?text=${encodeURIComponent(message)}`;
+        try {
+          await processMobileMoneyPayment(total, mobileNumber, selectedPayment);
+          
+          // Payment successful - send to WhatsApp
+          sendOrderToWhatsApp(pendingOrderData, total);
+          
+          showResultModal(true, "Payment Successful!", 
+            `Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`);
+          
+          // Reset cart and form
+          cart.clear();
+          renderCart();
+          document.getElementById('customerName').value = '';
+          document.getElementById('customerPhone').value = '';
+          document.getElementById('deliveryLocation').value = '';
+          document.getElementById('specialInstructions').value = '';
+          document.getElementById('mobileMoneyNumber').value = '';
+          menuItems.forEach(item => updateQtyDisplay(item.id));
+          pendingOrderData = null;
+          
+        } catch (error) {
+          showResultModal(false, "Payment Failed", error);
+          pendingOrderData = null;
+        }
+      } else {
+        // Cash on Delivery - no PIN required
+        const orderData = {
+          name, phone, address, instructions,
+          orderItems, total,
+          paymentMethod, mobileNumber: 'N/A'
+        };
         
-        modal.style.display = 'none';
-        showModal(`Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`, 'success');
-        
-        window.open(whatsappUrl, '_blank');
+        sendOrderToWhatsApp(orderData, total);
+        showResultModal(true, "Order Placed!", 
+          `Your order has been placed successfully via ${paymentMethod}! Total: KES ${total.toLocaleString()}. You will receive a confirmation message shortly.`);
         
         // Reset cart and form
         cart.clear();
@@ -825,10 +1074,6 @@
         document.getElementById('specialInstructions').value = '';
         document.getElementById('mobileMoneyNumber').value = '';
         menuItems.forEach(item => updateQtyDisplay(item.id));
-
-      } catch (error) {
-        modal.style.display = 'none';
-        showModal(error, 'error');
       }
     });
   }
@@ -836,6 +1081,7 @@
   // Initialize
   renderMenu();
   renderCart();
+  setupPinInputs();
 </script>
 </body>
 </html>
