@@ -2,385 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Top Chef Eateries | Track Your Order</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Your Order</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #fefaf5; color: #2c2418; }
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 3rem;
-      background: rgba(255, 248, 240, 0.96);
-      border-bottom: 1px solid #f0e1d0;
-      flex-wrap: wrap;
-    }
-    .logo {
-      font-size: 1.7rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #B65F1E, #E17B2E);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .logo i { color: #E17B2E; margin-right: 6px; }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a {
-      text-decoration: none;
-      font-weight: 500;
-      color: #4a3522;
-      transition: 0.25s;
-      position: relative;
-    }
-    .nav-links a:after {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      left: 0;
-      width: 0%;
-      height: 2.5px;
-      background: #E17B2E;
-      transition: width 0.3s;
-    }
-    .nav-links a:hover:after,
-    .nav-links a.active:after { width: 100%; }
-    .nav-links a.active { color: #E17B2E; }
-    .hero-track {
-      background: linear-gradient(107deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url('https://images.pexels.com/photos/4394610/pexels-photo-4394610.jpeg?auto=compress&cs=tinysrgb&w=1600');
-      background-size: cover;
-      padding: 3rem 2rem;
-      text-align: center;
-      color: white;
-      border-radius: 0 0 48px 48px;
-    }
-    .hero-track h1 { font-size: 2.5rem; font-weight: 800; }
-    .hero-track h1 span { color: #FFB347; }
-    .tracking-container { max-width: 800px; margin: 3rem auto; padding: 0 2rem; }
-    .search-box {
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
-      border: 1px solid #f0e1d0;
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .search-box h3 { color: #B65F1E; margin-bottom: 0.5rem; }
-    .search-box p { color: #7a6248; margin-bottom: 1.5rem; }
-    .search-input-group { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .search-input-group input {
-      flex: 2;
-      padding: 1rem;
-      border: 1px solid #f0dcc8;
-      border-radius: 60px;
-      font-family: inherit;
-      font-size: 1rem;
-    }
-    .search-input-group button {
-      flex: 1;
-      background: linear-gradient(135deg, #E17B2E, #B65F1E);
-      color: white;
-      border: none;
-      padding: 1rem 1.5rem;
-      border-radius: 60px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .order-card {
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
-      border: 1px solid #f0e1d0;
-      display: none;
-    }
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #f0e0ce;
-    }
-    .order-number { font-size: 1.2rem; font-weight: 700; color: #B65F1E; }
-    .order-number span { color: #E17B2E; font-family: monospace; }
-    .customer-details {
-      background: #fefaf5;
-      padding: 1rem;
-      border-radius: 20px;
-      margin-bottom: 1.5rem;
-    }
-    .customer-details p { margin: 0.3rem 0; font-size: 0.9rem; }
-    .order-items { margin-bottom: 1.5rem; }
-    .order-items h4 { color: #B65F1E; margin-bottom: 0.5rem; }
-    .order-items ul { list-style: none; }
-    .order-items li { padding: 0.3rem 0; border-bottom: 1px solid #f0e0ce; font-size: 0.9rem; }
-    .order-total { text-align: right; font-weight: 800; font-size: 1.2rem; color: #E17B2E; margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #f0e0ce; }
-    .tracking-timeline { margin: 1.5rem 0; padding: 1rem; background: #fefaf5; border-radius: 24px; }
-    .timeline-step {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      border-radius: 12px;
-    }
-    .timeline-icon {
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 1rem;
-      transition: all 0.3s;
-      font-size: 1.2rem;
-    }
-    .timeline-step.completed .timeline-icon {
-      background: #25D366;
-      color: white;
-    }
-    .timeline-step.current .timeline-icon {
-      background: #E17B2E;
-      color: white;
-      animation: pulse 1.5s infinite;
-    }
-    .timeline-step.pending .timeline-icon {
-      background: #f0e0ce;
-      color: #b6a089;
-    }
-    .timeline-content { flex: 1; }
-    .timeline-content h4 { font-size: 1rem; margin-bottom: 0.2rem; }
-    .timeline-content p { font-size: 0.8rem; color: #7a6248; }
-    .timeline-step.completed .timeline-content h4 { color: #25D366; }
-    .timeline-step.current .timeline-content h4 { color: #E17B2E; font-weight: 700; }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(225,123,46,0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(225,123,46,0); }
-      100% { box-shadow: 0 0 0 0 rgba(225,123,46,0); }
-    }
-    .whatsapp-support { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f0e0ce; }
-    .whatsapp-support a {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #25D366;
-      color: white;
-      padding: 0.7rem 1.5rem;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .error-message {
-      background: #f8d7da;
-      color: #721c24;
-      padding: 1rem;
-      border-radius: 16px;
-      text-align: center;
-      display: none;
-    }
-    .back-home { text-align: center; margin: 2rem; }
-    .btn-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #F4E3D3;
-      padding: 0.7rem 2rem;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 600;
-      color: #B65F1E;
-    }
-    footer { background: #2c2418; color: #f0e0ce; padding: 2rem; text-align: center; margin-top: 2rem; }
-    @media (max-width: 650px) {
-      .navbar { flex-direction: column; padding: 1rem; }
-      .hero-track h1 { font-size: 1.8rem; }
-      .search-input-group { flex-direction: column; }
-    }
+    body { font-family: 'Inter', sans-serif; background: #fefaf5; padding: 2rem; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .search-box { background: white; border-radius: 24px; padding: 2rem; text-align: center; margin-bottom: 2rem; border: 1px solid #f0e1d0; }
+    input { padding: 1rem; width: 70%; border: 1px solid #f0dcc8; border-radius: 60px; }
+    button { padding: 1rem 1.5rem; background: linear-gradient(135deg, #E17B2E, #B65F1E); color: white; border: none; border-radius: 60px; cursor: pointer; }
+    .order-card { background: white; border-radius: 24px; padding: 1.5rem; border: 1px solid #f0e1d0; display: none; }
+    .timeline { margin: 1.5rem 0; }
+    .step { display: flex; align-items: center; margin-bottom: 1rem; padding: 0.5rem; }
+    .step-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; }
+    .step.completed .step-icon { background: #25D366; color: white; }
+    .step.current .step-icon { background: #E17B2E; color: white; animation: pulse 1s infinite; }
+    .step.pending .step-icon { background: #f0e0ce; color: #b6a089; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(225,123,46,0.4); } 70% { box-shadow: 0 0 0 10px rgba(225,123,46,0); } 100% { box-shadow: 0 0 0 0 rgba(225,123,46,0); } }
+    .error { background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 16px; display: none; text-align: center; }
+    .back-btn { display: inline-block; margin-top: 2rem; text-align: center; width: 100%; }
+    footer { text-align: center; margin-top: 2rem; padding: 1rem; color: #b6a089; }
   </style>
 </head>
 <body>
-
-<nav class="navbar">
-  <div class="logo"><i class="fas fa-utensils"></i> TOP CHEF EATERIES</div>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="services.html">Services</a></li>
-    <li><a href="order.html">Order</a></li>
-    <li><a href="#" class="active">Track Order</a></li>
-  </ul>
-</nav>
-
-<section class="hero-track">
-  <h1>Track Your <span>Order</span></h1>
-  <p>Enter your order number to get real-time status updates</p>
-</section>
-
-<div class="tracking-container">
+<div class="container">
   <div class="search-box">
-    <h3><i class="fas fa-search"></i> Find Your Order</h3>
-    <p>Enter the order number you received after payment</p>
-    <div class="search-input-group">
-      <input type="text" id="orderNumberInput" placeholder="e.g., TCE_1734567890_1234">
-      <button id="trackOrderBtn"><i class="fas fa-truck"></i> Track Order</button>
-    </div>
+    <h3>Track Your Order</h3>
+    <p>Enter your tracking number</p>
+    <input type="text" id="trackingInput" placeholder="e.g., TCE_1234567890_1234">
+    <button onclick="trackOrder()"><i class="fas fa-search"></i> Track</button>
   </div>
-
-  <div id="errorMessage" class="error-message">
-    <i class="fas fa-exclamation-circle"></i> Order not found. Please check your tracking number.
-  </div>
-
+  
+  <div id="errorMsg" class="error">Order not found!</div>
+  
   <div id="orderCard" class="order-card">
-    <div class="order-header">
-      <div class="order-number">Order # <span id="orderNumber"></span></div>
-      <div class="order-date" id="orderDate"></div>
-    </div>
-    <div class="customer-details">
-      <p><i class="fas fa-user"></i> <strong>Customer:</strong> <span id="customerName"></span></p>
-      <p><i class="fas fa-phone"></i> <strong>Phone:</strong> <span id="customerPhone"></span></p>
-      <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> <span id="deliveryAddress"></span></p>
-    </div>
-    <div class="order-items">
-      <h4><i class="fas fa-utensils"></i> Order Items</h4>
-      <ul id="orderItemsList"></ul>
-      <div class="order-total" id="orderTotal"></div>
-    </div>
-    <div class="tracking-timeline" id="trackingTimeline"></div>
-    <div class="whatsapp-support">
-      <a href="https://wa.me/254707203741" target="_blank"><i class="fab fa-whatsapp"></i> Contact Restaurant Support</a>
-    </div>
+    <h3 id="orderNumber"></h3>
+    <p id="customerDetails"></p>
+    <p id="orderItems"></p>
+    <p id="orderTotal"></p>
+    <div id="timeline" class="timeline"></div>
   </div>
+  
+  <a href="order.html" class="back-btn" style="display: inline-block; background: #F4E3D3; color: #B65F1E; padding: 0.7rem 2rem; border-radius: 60px; text-decoration: none;">← Back to Order</a>
 </div>
-
-<div class="back-home">
-  <a href="order.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Order</a>
-</div>
-
-<footer><p>&copy; 2026 Top Chef Eateries — Real-time order tracking</p></footer>
+<footer><p>Top Chef Eateries - Real-time Order Tracking</p></footer>
 
 <script>
-  function loadOrders() {
-    const saved = localStorage.getItem('topchef_orders');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return [];
-  }
+  const steps = [
+    { id: "pending", name: "Order Received", icon: "fa-receipt", desc: "We've received your order" },
+    { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", desc: "Payment verified" },
+    { id: "preparing", name: "Preparing Food", icon: "fa-utensils", desc: "Chefs are cooking" },
+    { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", desc: "On the way!" },
+    { id: "delivered", name: "Delivered", icon: "fa-check-double", desc: "Enjoy your meal!" }
+  ];
+  const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
 
-  function getStatusTimeline(status) {
-    // Define all status steps in correct order
-    const steps = [
-      { id: "pending", name: "Order Received", icon: "fa-receipt", description: "We've received your order" },
-      { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", description: "Payment verified successfully" },
-      { id: "preparing", name: "Preparing Your Food", icon: "fa-utensils", description: "Our chefs are cooking your meal" },
-      { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", description: "Your order is on the way! 🚚" },
-      { id: "delivered", name: "Delivered", icon: "fa-check-double", description: "Enjoy your meal! 🎉" }
-    ];
+  function trackOrder() {
+    const trackingNumber = document.getElementById('trackingInput').value.trim();
+    if (!trackingNumber) { alert("Enter tracking number"); return; }
     
-    const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
-    
-    // Find the index of the current status
-    let currentIndex = statusOrder.indexOf(status);
-    
-    // If status is not found, default to pending
-    if (currentIndex === -1) {
-      console.log("Unknown status:", status, "defaulting to pending");
-      currentIndex = 0;
-    }
-    
-    console.log("Current status:", status, "Index:", currentIndex);
-    
-    let timelineHtml = '';
-    
-    steps.forEach((step, index) => {
-      let stepClass = 'pending';
-      
-      if (index < currentIndex) {
-        stepClass = 'completed';
-      } else if (index === currentIndex) {
-        stepClass = 'current';
-      }
-      
-      timelineHtml += `
-        <div class="timeline-step ${stepClass}">
-          <div class="timeline-icon"><i class="fas ${step.icon}"></i></div>
-          <div class="timeline-content">
-            <h4>${step.name} ${index < currentIndex ? '✓' : ''}</h4>
-            <p>${step.description}</p>
-          </div>
-        </div>
-      `;
-    });
-    
-    return timelineHtml;
-  }
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-KE', { 
-      day: 'numeric', 
-      month: 'short', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  function displayOrder(orderNumber) {
-    const orders = loadOrders();
-    
-    const order = orders.find(o => o.orderNumber === orderNumber);
+    let orders = JSON.parse(localStorage.getItem('topchef_orders') || '[]');
+    let order = orders.find(o => o.orderNumber === trackingNumber);
     
     if (!order) {
-      document.getElementById('errorMessage').style.display = 'block';
+      document.getElementById('errorMsg').style.display = 'block';
       document.getElementById('orderCard').style.display = 'none';
-      console.log("Order not found:", orderNumber);
       return;
     }
     
-    // Make sure status exists, default to 'pending'
-    const currentStatus = order.status || 'pending';
-    console.log("Order found! Status:", currentStatus);
-    
-    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'none';
     document.getElementById('orderCard').style.display = 'block';
     
-    document.getElementById('orderNumber').innerText = order.orderNumber;
-    document.getElementById('orderDate').innerHTML = `<i class="fas fa-calendar"></i> ${formatDate(order.orderDate)}`;
-    document.getElementById('customerName').innerText = order.customerName;
-    document.getElementById('customerPhone').innerText = order.customerPhone;
-    document.getElementById('deliveryAddress').innerText = order.deliveryAddress;
+    let currentStatus = order.status || 'pending';
+    let currentIndex = statusOrder.indexOf(currentStatus);
     
-    let itemsHtml = '';
-    for (const item of order.items) {
-      itemsHtml += `<li>🍽️ ${item.name} x${item.quantity} - KES ${(item.price * item.quantity).toLocaleString()}</li>`;
-    }
-    document.getElementById('orderItemsList').innerHTML = itemsHtml;
-    document.getElementById('orderTotal').innerHTML = `Total: KES ${order.total.toLocaleString()}`;
+    document.getElementById('orderNumber').innerHTML = `<i class="fas fa-receipt"></i> Order: ${order.orderNumber}`;
+    document.getElementById('customerDetails').innerHTML = `<i class="fas fa-user"></i> ${order.customerName} | <i class="fas fa-phone"></i> ${order.customerPhone} | <i class="fas fa-map-marker-alt"></i> ${order.deliveryAddress}`;
+    document.getElementById('orderItems').innerHTML = `<strong>Items:</strong> ${order.items.map(i => `${i.name} x${i.quantity}`).join(', ')}`;
+    document.getElementById('orderTotal').innerHTML = `<strong>Total:</strong> KES ${order.total}`;
     
-    // Generate timeline based on current status
-    document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(currentStatus);
+    let timelineHtml = '';
+    steps.forEach((step, index) => {
+      let stepClass = 'pending';
+      if (index < currentIndex) stepClass = 'completed';
+      else if (index === currentIndex) stepClass = 'current';
+      timelineHtml += `
+        <div class="step ${stepClass}">
+          <div class="step-icon"><i class="fas ${step.icon}"></i></div>
+          <div><strong>${step.name}</strong><br><small>${step.desc}</small></div>
+        </div>
+      `;
+    });
+    document.getElementById('timeline').innerHTML = timelineHtml;
   }
-
-  document.getElementById('trackOrderBtn').addEventListener('click', function() {
-    const orderNumber = document.getElementById('orderNumberInput').value.trim();
-    if (orderNumber) {
-      displayOrder(orderNumber);
-    } else {
-      alert('Please enter your order number');
-    }
-  });
-
-  document.getElementById('orderNumberInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      document.getElementById('trackOrderBtn').click();
-    }
-  });
-
-  console.log("✅ Tracking page ready!");
 </script>
 </body>
 </html>
