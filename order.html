@@ -448,6 +448,16 @@
       <input type="text" id="deliveryLocation" placeholder="Delivery Address" required>
       <textarea id="specialInstructions" rows="2" placeholder="Special instructions (allergies, gate code, etc.)"></textarea>
 
+      <!-- Delivery Time Slot -->
+      <div class="form-group" style="margin: 0.5rem 0;">
+        <label style="display: block; margin-bottom: 0.3rem; font-weight: 600;">
+          <i class="fas fa-clock"></i> Preferred Delivery Time
+        </label>
+        <select id="deliveryTime" style="width: 100%; padding: 0.8rem; border: 1px solid #f0dcc8; border-radius: 28px;">
+          <option value="">Select a time slot</option>
+        </select>
+      </div>
+
       <!-- Payment Section with Paystack (M-Pesa / Airtel Money) -->
       <div class="payment-section">
         <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
@@ -512,6 +522,53 @@
 
   let cart = new Map();
   let selectedPayment = "mpesa";
+
+  // ============================================
+  // MINIMUM ORDER VALIDATION
+  // ============================================
+  const MINIMUM_ORDER_AMOUNT = 500;
+
+  function validateMinimumOrder(total) {
+    if (total < MINIMUM_ORDER_AMOUNT) {
+      alert(`⚠️ Minimum order amount is KES ${MINIMUM_ORDER_AMOUNT}. Your current total is KES ${total}. Please add more items.`);
+      return false;
+    }
+    return true;
+  }
+
+  // ============================================
+  // DELIVERY TIME SLOTS
+  // ============================================
+  function generateDeliverySlots() {
+    const slots = [];
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    let startHour = currentHour + 1;
+    
+    for (let i = 0; i < 6; i++) {
+      let slotHour = startHour + i;
+      let period = slotHour >= 12 ? 'PM' : 'AM';
+      let displayHour = slotHour > 12 ? slotHour - 12 : slotHour;
+      if (displayHour === 0) displayHour = 12;
+      
+      slots.push({
+        value: `${slotHour}:00`,
+        display: `${displayHour}:00 ${period}`,
+        available: slotHour <= 22
+      });
+    }
+    return slots;
+  }
+
+  function populateDeliverySlots() {
+    const select = document.getElementById('deliveryTime');
+    if (select) {
+      const slots = generateDeliverySlots().filter(slot => slot.available);
+      select.innerHTML = '<option value="">Select a time slot</option>' + 
+        slots.map(slot => `<option value="${slot.value}">${slot.display}</option>`).join('');
+    }
+  }
 
   // Payment option selection styling
   document.querySelectorAll('.payment-option').forEach(option => {
@@ -596,6 +653,7 @@
     totalSpan.innerText = `Total: KES ${total.toLocaleString()}`;
     document.querySelectorAll('.cart-qty-adjust').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), parseInt(btn.dataset.delta))));
     document.querySelectorAll('.remove-item').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.dataset.id); cart.delete(id); updateQtyDisplay(id); renderCart(); }));
+    return total;
   }
 
   // ============================================
@@ -622,16 +680,14 @@
   }
 
   // ============================================
-  // FIXED: PROPERLY FORMATTED WHATSAPP MESSAGE FUNCTION
+  // WHATSAPP MESSAGE FUNCTION WITH TRACKING
   // ============================================
-  function sendOrderToWhatsApp(orderData, total, paymentRef = '') {
-    // Build order items list with proper line breaks
+  function sendOrderToWhatsApp(orderData, total, paymentRef = '', trackingNumber = '') {
     let orderItemsList = "";
     for (const item of orderData.items) {
       orderItemsList += `✓ ${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
     }
     
-    // Create the message with proper line breaks (\n) instead of %0A
     let message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️\n\n`;
     message += `*Customer:* ${orderData.name}\n`;
     message += `*Phone:* ${orderData.phone}\n`;
@@ -642,21 +698,20 @@
     if (paymentRef) {
       message += `*Transaction Ref: ${paymentRef}*\n`;
     }
+    if (trackingNumber) {
+      message += `*🔖 Tracking Number: ${trackingNumber}*\n`;
+    }
     message += `*Instructions:* ${orderData.instructions || 'None'}\n\n`;
     message += `✅ Payment confirmed! Please prepare this order.`;
     
-    // Encode the message for URL (this properly converts \n to %0A)
     const encodedMessage = encodeURIComponent(message);
     const restaurantNumber = "254707203741";
     window.open(`https://wa.me/${restaurantNumber}?text=${encodedMessage}`, '_blank');
-    
-    // Log for debugging
-    console.log("Order sent to WhatsApp!");
-    console.log("Raw message:", message);
+    console.log("Order sent to WhatsApp with tracking:", trackingNumber);
   }
 
   // ============================================
-  // PAYSTACK PAYMENT INTEGRATION (M-Pesa & Airtel)
+  // PAYSTACK PAYMENT INTEGRATION WITH TRACKING
   // ============================================
   const paystackBtn = document.getElementById('paystackPayBtn');
   if (paystackBtn) {
@@ -665,6 +720,7 @@
       const phone = document.getElementById('customerPhone').value.trim();
       const address = document.getElementById('deliveryLocation').value.trim();
       const instructions = document.getElementById('specialInstructions').value.trim();
+      const deliveryTime = document.getElementById('deliveryTime').value;
 
       if (!name || !phone || !address) {
         alert("❌ Please fill in your Name, Phone Number, and Delivery Address.");
@@ -683,9 +739,14 @@
         orderItems.push({ name: item.name, quantity: item.quantity, subtotal: subtotal });
       }
 
+      // Minimum order validation
+      if (!validateMinimumOrder(total)) {
+        return;
+      }
+
       const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
       
-      // For Cash on Delivery - no Paystack needed
+      // Cash on Delivery
       if (selectedPayment === 'cash') {
         const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
         sendOrderToWhatsApp(orderData, total);
@@ -700,13 +761,8 @@
         return;
       }
 
-      // 🔴🔴🔴 PAYSTACK PUBLIC KEY 🔴🔴🔴
+      // Paystack Public Key
       const PAYSTACK_PUBLIC_KEY = "pk_test_3f8af92c289b2fb9e0e63238c82e2f96e0921d23";
-      
-      if (!PAYSTACK_PUBLIC_KEY || PAYSTACK_PUBLIC_KEY === "pk_live_YOUR_PUBLIC_KEY_HERE") {
-        alert("⚠️ Payment system is not configured yet. Please use Cash on Delivery or contact the restaurant.");
-        return;
-      }
       
       try {
         const handler = PaystackPop.setup({
@@ -720,56 +776,34 @@
               { display_name: "Customer Name", variable_name: "customer_name", value: name },
               { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
               { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
+              { display_name: "Delivery Time", variable_name: "delivery_time", value: deliveryTime || "As soon as possible" },
               { display_name: "Instructions", variable_name: "instructions", value: instructions || "None" }
             ]
           },
           callback: function(response) {
-    console.log("Payment successful:", response);
-    
-    // ============================================
-    // SAVE ORDER FOR TRACKING
-    // ============================================
-    const orderDataForTracking = {
-        name: name,
-        phone: phone,
-        address: address,
-        items: orderItems,
-        total: total
-    };
-    
-    // Add order to tracking system (this creates a tracking number)
-    let orderNumber = '';
-    if (typeof window.addOrder === 'function') {
-        orderNumber = window.addOrder(orderDataForTracking);
-    } else {
-        // Fallback tracking number if tracking system not loaded
-        orderNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-    }
-    
-    // Send WhatsApp with tracking number
-    const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-    sendOrderToWhatsApp(orderData, total, response.reference, orderNumber);
-    
-    // Get the tracking page URL (use your actual domain)
-    const trackingUrl = window.location.origin + '/track-order.html';
-    
-    // Show tracking link to customer
-    showResultModal(true, "Payment Successful!", 
-        `✅ Your order has been placed!\n\n` +
-        `💰 Total: KES ${total.toLocaleString()}\n` +
-        `🔖 Tracking Number: ${orderNumber}\n\n` +
-        `📱 Track your order at:\n${trackingUrl}\n\n` +
-        `💬 A confirmation has been sent to your WhatsApp.`);
-    
-    // Reset cart and form
-    cart.clear();
-    renderCart();
-    document.getElementById('customerName').value = '';
-    document.getElementById('customerPhone').value = '';
-    document.getElementById('deliveryLocation').value = '';
-    document.getElementById('specialInstructions').value = '';
-    menuItems.forEach(item => updateQtyDisplay(item.id));
-},
+            console.log("Payment successful:", response);
+            
+            // Generate tracking number
+            const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            
+            // Send WhatsApp with tracking number
+            const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+            sendOrderToWhatsApp(orderData, total, response.reference, trackingNumber);
+            
+            // Show success message with tracking
+            showResultModal(true, "Payment Successful!", 
+              `✅ Your order has been placed!\n\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking Number: ${trackingNumber}\n\n📱 Please save this tracking number to check your order status.\n💬 A confirmation has been sent to your WhatsApp.`);
+            
+            // Reset cart and form
+            cart.clear();
+            renderCart();
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('deliveryLocation').value = '';
+            document.getElementById('specialInstructions').value = '';
+            document.getElementById('deliveryTime').value = '';
+            menuItems.forEach(item => updateQtyDisplay(item.id));
+          },
           onClose: function() {
             console.log("Payment window closed");
             alert('Payment cancelled. You can try again or use Cash on Delivery.');
@@ -787,191 +821,9 @@
   // Initialize
   renderMenu();
   renderCart();
+  populateDeliverySlots();
   
-  // ============================================
-  // NEW FEATURE 1: MINIMUM ORDER VALIDATION
-  // ============================================
-  const MINIMUM_ORDER_AMOUNT = 500; // KES 500 minimum order
-  
-  function validateMinimumOrder(total) {
-    if (total < MINIMUM_ORDER_AMOUNT) {
-      alert(` Minimum order amount is KES ${MINIMUM_ORDER_AMOUNT}. Your current total is KES ${total}. Please add more items.`);
-      return false;
-    }
-    return true;
-  }
-  
-  // ============================================
-  // NEW FEATURE 2: DELIVERY TIME SLOTS
-  // ============================================
-  function generateDeliverySlots() {
-    const slots = [];
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    
-    // Generate slots for today
-    let startHour = currentHour + 1; // Start from next hour
-    
-    for (let i = 0; i < 6; i++) {
-      let slotHour = startHour + i;
-      let period = slotHour >= 12 ? 'PM' : 'AM';
-      let displayHour = slotHour > 12 ? slotHour - 12 : slotHour;
-      if (displayHour === 0) displayHour = 12;
-      
-      slots.push({
-        value: `${slotHour}:00`,
-        display: `${displayHour}:00 ${period}`,
-        available: slotHour <= 22 // No deliveries after 10 PM
-      });
-    }
-    return slots;
-  }
-  
-  function addDeliveryTimeSelector() {
-    const checkoutForm = document.querySelector('.checkout-form');
-    if (checkoutForm && !document.getElementById('deliveryTime')) {
-      const timeSlotHTML = `
-        <div class="form-group" style="margin: 0.5rem 0;">
-          <label style="display: block; margin-bottom: 0.3rem; font-weight: 600;">
-            <i class="fas fa-clock"></i> Preferred Delivery Time
-          </label>
-          <select id="deliveryTime" style="width: 100%; padding: 0.8rem; border: 1px solid #f0dcc8; border-radius: 28px;">
-            <option value="">Select a time slot</option>
-            ${generateDeliverySlots().filter(slot => slot.available).map(slot => 
-              `<option value="${slot.value}">${slot.display}</option>`
-            ).join('')}
-          </select>
-        </div>
-      `;
-      // Insert after phone number field
-      const phoneField = document.getElementById('customerPhone');
-      if (phoneField && phoneField.parentNode) {
-        phoneField.insertAdjacentHTML('afterend', timeSlotHTML);
-      }
-    }
-  }
-  
-  // ============================================
-  // NEW FEATURE 3: ORDER CONFIRMATION POPUP
-  // ============================================
-  function showOrderConfirmation(orderDetails, total, reference) {
-    // Create modal if it doesn't exist
-    let confirmationModal = document.getElementById('orderConfirmationModal');
-    if (!confirmationModal) {
-      const modalHTML = `
-        <div id="orderConfirmationModal" class="modal" style="display: none;">
-          <div class="modal-content" style="max-width: 500px;">
-            <i class="fas fa-check-circle" style="font-size: 3rem; color: #25D366;"></i>
-            <h3 style="color: #B65F1E; margin: 1rem 0;">Order Confirmed! 🎉</h3>
-            <div id="confirmationDetails" style="text-align: left; margin: 1rem 0; padding: 1rem; background: #fefaf5; border-radius: 16px;">
-              <!-- Dynamic content -->
-            </div>
-            <button onclick="closeConfirmationModal()" style="background: #E17B2E; color: white; border: none; padding: 0.8rem 2rem; border-radius: 40px; cursor: pointer; margin-top: 0.5rem;">
-              Continue Shopping
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.insertAdjacentHTML('beforeend', modalHTML);
-    }
-    
-    const detailsDiv = document.getElementById('confirmationDetails');
-    if (detailsDiv) {
-      let itemsHtml = '<ul style="list-style: none;">';
-      for (const item of orderDetails.items) {
-        itemsHtml += `<li style="padding: 0.3rem 0;">🍽️ ${item.name} x${item.quantity} - <strong>KES ${item.subtotal.toLocaleString()}</strong></li>`;
-      }
-      itemsHtml += '</ul>';
-      
-      detailsDiv.innerHTML = `
-        <p><strong> Customer:</strong> ${orderDetails.name}</p>
-        <p><strong>Phone:</strong> ${orderDetails.phone}</p>
-        <p><strong>Address:</strong> ${orderDetails.address}</p>
-        <p><strong> Delivery Time:</strong> ${orderDetails.deliveryTime || 'As soon as possible'}</p>
-        <p><strong> Order Details:</strong></p>
-        ${itemsHtml}
-        <p style="margin-top: 0.5rem;"><strong> Total:</strong> KES ${total.toLocaleString()}</p>
-        <p><strong>💳 Payment:</strong> ${orderDetails.paymentMethod}</p>
-        ${reference ? `<p><strong> Reference:</strong> ${reference}</p>` : ''}
-        <hr style="margin: 0.8rem 0;">
-        <p style="color: #25D366; text-align: center;">
-          <i class="fas fa-whatsapp"></i> You will receive a WhatsApp confirmation shortly
-        </p>
-      `;
-    }
-    
-    document.getElementById('orderConfirmationModal').style.display = 'flex';
-  }
-  
-  function closeConfirmationModal() {
-    const modal = document.getElementById('orderConfirmationModal');
-    if (modal) modal.style.display = 'none';
-  }
-  
-  // ============================================
-  // MODIFIED PAYMENT FUNCTION WITH NEW FEATURES
-  // ============================================
-  // Store original send function
-  const originalSendOrder = sendOrderToWhatsApp;
-  
-  // Override to add confirmation
-  window.sendOrderToWhatsApp = function(orderData, total, paymentRef = '') {
-    // Get delivery time
-    const deliveryTimeSelect = document.getElementById('deliveryTime');
-    const deliveryTime = deliveryTimeSelect ? deliveryTimeSelect.value : '';
-    orderData.deliveryTime = deliveryTime;
-    
-    // Show confirmation popup
-    showOrderConfirmation(orderData, total, paymentRef);
-    
-    // Call original function
-    originalSendOrder(orderData, total, paymentRef);
-  };
-  
-  // Add minimum order check before payment
-  const originalPaystackHandler = paystackBtn?.click;
-  if (paystackBtn) {
-    const existingClick = paystackBtn.onclick;
-    paystackBtn.addEventListener('click', function(e) {
-      let total = 0;
-      for (let [id, item] of cart.entries()) {
-        total += item.quantity * item.price;
-      }
-      if (!validateMinimumOrder(total)) {
-        e.stopPropagation();
-        return false;
-      }
-    });
-  }
-  
-  // Add delivery time selector to page
-  setTimeout(addDeliveryTimeSelector, 500);
-  
-  // ============================================
-  // BONUS: CALL TO ACTION BUTTON (Optional)
-  // ============================================
-  function addWhatsAppSupportButton() {
-    const supportBtn = document.createElement('div');
-    supportBtn.innerHTML = `
-      <a href="https://wa.me/254707203741" target="_blank" 
-         style="position: fixed; bottom: 20px; right: 20px; background: #25D366; 
-                color: white; width: 60px; height: 60px; border-radius: 50%; 
-                display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999;
-                font-size: 2rem; text-decoration: none;">
-        <i class="fab fa-whatsapp"></i>
-      </a>
-    `;
-    document.body.appendChild(supportBtn);
-  }
-  
-  // Uncomment to add WhatsApp support button
-  // addWhatsAppSupportButton();
-  
-  console.log("✅ New features loaded: Minimum Order, Delivery Slots, Order Confirmation!");
-
+  console.log("✅ Order page loaded with Minimum Order (KES 500), Delivery Slots, and Order Tracking!");
 </script>
-
 </body>
 </html>
