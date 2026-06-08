@@ -129,14 +129,15 @@
       border-radius: 12px;
     }
     .timeline-icon {
-      width: 50px;
-      height: 50px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 1rem;
       transition: all 0.3s;
+      font-size: 1.2rem;
     }
     .timeline-step.completed .timeline-icon {
       background: #25D366;
@@ -270,7 +271,7 @@
     if (saved) {
       ordersDatabase = JSON.parse(saved);
       console.log("✅ Loaded orders:", ordersDatabase.length);
-      console.log("Orders with statuses:", ordersDatabase.map(o => ({ number: o.orderNumber, status: o.status })));
+      ordersDatabase.forEach(o => console.log(`Order: ${o.orderNumber.substring(0, 25)}... - Status: ${o.status || 'pending'}`));
     } else {
       ordersDatabase = [];
       console.log("No orders found");
@@ -278,22 +279,30 @@
   }
 
   function getStatusTimeline(status) {
+    // Define all status steps in correct order
     const steps = [
       { id: "pending", name: "Order Received", icon: "fa-receipt", description: "We've received your order" },
       { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", description: "Payment verified successfully" },
       { id: "preparing", name: "Preparing Your Food", icon: "fa-utensils", description: "Our chefs are cooking your meal" },
-      { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", description: "Your order is on the way!" },
-      { id: "delivered", name: "Delivered", icon: "fa-check-double", description: "Enjoy your meal!" }
+      { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", description: "Your order is on the way! 🚚" },
+      { id: "delivered", name: "Delivered", icon: "fa-check-double", description: "Enjoy your meal! 🎉" }
     ];
     
     const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
-    const currentIndex = statusOrder.indexOf(status);
+    let currentIndex = statusOrder.indexOf(status);
+    
+    // If status is not found, default to pending
+    if (currentIndex === -1) {
+      console.log("⚠️ Unknown status:", status, "defaulting to pending");
+      currentIndex = 0;
+    }
+    
+    console.log("📊 Current status:", status, "| Index:", currentIndex, "| Total steps:", statusOrder.length);
     
     let timelineHtml = '';
     
     steps.forEach((step, index) => {
       let stepClass = 'pending';
-      let timeText = '';
       
       if (index < currentIndex) {
         stepClass = 'completed';
@@ -301,11 +310,14 @@
         stepClass = 'current';
       }
       
+      // Add a checkmark for completed steps
+      const checkmark = index < currentIndex ? ' ✓' : '';
+      
       timelineHtml += `
         <div class="timeline-step ${stepClass}">
           <div class="timeline-icon"><i class="fas ${step.icon}"></i></div>
           <div class="timeline-content">
-            <h4>${step.name}</h4>
+            <h4>${step.name}${checkmark}</h4>
             <p>${step.description}</p>
           </div>
         </div>
@@ -334,11 +346,12 @@
     if (!order) {
       document.getElementById('errorMessage').style.display = 'block';
       document.getElementById('orderCard').style.display = 'none';
-      console.log("Order not found:", orderNumber);
+      console.log("❌ Order not found:", orderNumber);
       return;
     }
     
-    console.log("Order found! Status:", order.status);
+    const currentStatus = order.status || 'pending';
+    console.log("✅ Order found! Status:", currentStatus);
     
     document.getElementById('errorMessage').style.display = 'none';
     document.getElementById('orderCard').style.display = 'block';
@@ -357,7 +370,6 @@
     document.getElementById('orderTotal').innerHTML = `Total: KES ${order.total.toLocaleString()}`;
     
     // Generate timeline based on current status
-    const currentStatus = order.status || 'pending';
     document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(currentStatus);
   }
 
@@ -378,6 +390,7 @@
 
   loadOrders();
   console.log("✅ Tracking page ready!");
+  console.log("📋 Available statuses: pending → confirmed → preparing → out_for_delivery → delivered");
 </script>
 </body>
 </html>
