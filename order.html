@@ -4,26 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Top Chef Eateries | Online Ordering - Paystack Mobile Money</title>
-  <!-- Google Fonts + Font Awesome 6 -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Paystack SDK for Mobile Money Payments -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #fefaf5;
-      color: #2c2418;
-      scroll-behavior: smooth;
-    }
-
-    /* Navigation Bar */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fefaf5; color: #2c2418; scroll-behavior: smooth; }
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -31,14 +17,12 @@
       padding: 1.2rem 3rem;
       background: rgba(255, 248, 240, 0.96);
       backdrop-filter: blur(8px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
       border-bottom: 1px solid #f0e1d0;
       flex-wrap: wrap;
       position: sticky;
       top: 0;
       z-index: 100;
     }
-
     .logo {
       font-size: 1.7rem;
       font-weight: 800;
@@ -47,16 +31,8 @@
       background-clip: text;
       color: transparent;
     }
-    .logo i {
-      color: #E17B2E;
-      margin-right: 6px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
+    .logo i { color: #E17B2E; margin-right: 6px; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
       text-decoration: none;
       font-weight: 500;
@@ -75,36 +51,18 @@
       transition: width 0.3s;
     }
     .nav-links a:hover:after,
-    .nav-links a.active:after {
-      width: 100%;
-    }
-    .nav-links a.active {
-      color: #E17B2E;
-    }
-
-    /* Hero Section */
+    .nav-links a.active:after { width: 100%; }
+    .nav-links a.active { color: #E17B2E; }
     .hero-order {
       background: linear-gradient(107deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url('https://images.pexels.com/photos/4394610/pexels-photo-4394610.jpeg?auto=compress&cs=tinysrgb&w=1600');
       background-size: cover;
-      background-position: center;
       padding: 4rem 2rem;
       text-align: center;
       color: white;
       border-radius: 0 0 48px 48px;
     }
-    .hero-order h1 {
-      font-size: 3rem;
-      font-weight: 800;
-    }
-    .hero-order h1 span {
-      color: #FFB347;
-    }
-    .hero-order p {
-      margin-top: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    /* Main Layout */
+    .hero-order h1 { font-size: 3rem; font-weight: 800; }
+    .hero-order h1 span { color: #FFB347; }
     .ordering-container {
       max-width: 1500px;
       margin: 2rem auto;
@@ -113,10 +71,7 @@
       gap: 2rem;
       flex-wrap: wrap;
     }
-    .menu-grid-section {
-      flex: 2;
-      min-width: 260px;
-    }
+    .menu-grid-section { flex: 2; min-width: 260px; }
     .cart-section {
       flex: 1.2;
       min-width: 320px;
@@ -129,154 +84,37 @@
       height: fit-content;
       border: 1px solid #f0e1d0;
     }
-    .section-title {
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-      color: #B65F1E;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.8rem;
-    }
-
-    /* Food Card */
+    .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; color: #B65F1E; display: flex; align-items: center; gap: 10px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; }
     .food-card {
       background: white;
       border-radius: 28px;
       overflow: hidden;
       transition: all 0.3s ease;
-      box-shadow: 0 12px 24px -10px rgba(0,0,0,0.08);
       border: 1px solid #ffe4ce;
     }
-    .food-card:hover {
-      transform: translateY(-6px);
-      border-color: #E17B2E;
-    }
-    .card-img {
-      height: 180px;
-      background-size: cover;
-      background-position: center;
-    }
-    .card-content {
-      padding: 1.2rem;
-    }
-    .card-content h3 {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-    .desc {
-      color: #7a6248;
-      font-size: 0.85rem;
-      margin: 0.5rem 0;
-    }
-    .price {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #E17B2E;
-      margin: 0.5rem 0;
-    }
-    .quantity-control {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 1rem 0;
-    }
+    .food-card:hover { transform: translateY(-6px); border-color: #E17B2E; }
+    .card-img { height: 180px; background-size: cover; background-position: center; }
+    .card-content { padding: 1.2rem; }
+    .card-content h3 { font-size: 1.4rem; font-weight: 700; }
+    .desc { color: #7a6248; font-size: 0.85rem; margin: 0.5rem 0; }
+    .price { font-size: 1.4rem; font-weight: 800; color: #E17B2E; margin: 0.5rem 0; }
+    .quantity-control { display: flex; align-items: center; gap: 12px; margin: 1rem 0; }
     .qty-btn {
-      background: #f0e0ce;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: 0.2s;
+      background: #f0e0ce; border: none; width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer;
     }
-    .qty-btn:hover {
-      background: #E17B2E;
-      color: white;
-    }
-    .qty-value {
-      font-size: 1.2rem;
-      font-weight: 600;
-      min-width: 30px;
-      text-align: center;
-    }
+    .qty-btn:hover { background: #E17B2E; color: white; }
     .add-to-cart {
-      background: #E17B2E;
-      border: none;
-      width: 100%;
-      padding: 0.7rem;
-      border-radius: 40px;
-      color: white;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
+      background: #E17B2E; border: none; width: 100%; padding: 0.7rem;
+      border-radius: 40px; color: white; font-weight: 700; cursor: pointer;
       margin-top: 0.5rem;
     }
-    .add-to-cart:hover {
-      background: #B65F1E;
-      transform: scale(1.01);
-    }
-
-    /* Cart Styles */
-    .cart-items {
-      max-height: 350px;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-    }
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 0;
-      border-bottom: 1px solid #f0e0ce;
-    }
-    .cart-item-info {
-      flex: 2;
-    }
-    .cart-item-title {
-      font-weight: 700;
-    }
-    .cart-item-price {
-      font-size: 0.8rem;
-      color: #E17B2E;
-    }
-    .cart-item-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .cart-qty {
-      background: #f5ede4;
-      padding: 0.2rem 0.5rem;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-    .remove-item {
-      background: none;
-      border: none;
-      color: #b9534e;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .cart-total {
-      font-size: 1.3rem;
-      font-weight: 800;
-      text-align: right;
-      padding: 1rem 0;
-      border-top: 2px dashed #E17B2E;
-      margin-top: 0.5rem;
-    }
-
-    /* Checkout Form */
-    .checkout-form {
-      margin-top: 1rem;
-    }
-    .checkout-form input, .checkout-form textarea {
+    .add-to-cart:hover { background: #B65F1E; transform: scale(1.01); }
+    .cart-items { max-height: 350px; overflow-y: auto; margin-bottom: 1rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f0e0ce; }
+    .cart-total { font-size: 1.3rem; font-weight: 800; text-align: right; padding: 1rem 0; border-top: 2px dashed #E17B2E; margin-top: 0.5rem; }
+    .checkout-form input, .checkout-form textarea, .checkout-form select {
       width: 100%;
       padding: 0.8rem;
       margin: 0.5rem 0;
@@ -284,44 +122,15 @@
       border-radius: 28px;
       font-family: inherit;
     }
-
-    /* Payment Section */
-    .payment-section {
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid #f0e0ce;
-    }
-    .payment-title {
-      font-weight: 700;
-      margin-bottom: 0.8rem;
-      color: #B65F1E;
-    }
-    .payment-options {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
+    .payment-section { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f0e0ce; }
+    .payment-title { font-weight: 700; margin-bottom: 0.8rem; color: #B65F1E; }
+    .payment-options { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .payment-option {
-      flex: 1;
-      min-width: 100px;
-      padding: 0.8rem;
-      border: 2px solid #f0dcc8;
-      border-radius: 16px;
-      text-align: center;
-      cursor: pointer;
-      background: white;
-      transition: 0.2s;
+      flex: 1; min-width: 100px; padding: 0.8rem; border: 2px solid #f0dcc8;
+      border-radius: 16px; text-align: center; cursor: pointer; background: white;
     }
-    .payment-option.selected {
-      border-color: #E17B2E;
-      background: #fef0e4;
-    }
-    .payment-option i {
-      font-size: 1.5rem;
-      color: #E17B2E;
-      display: block;
-    }
+    .payment-option.selected { border-color: #E17B2E; background: #fef0e4; }
+    .payment-option i { font-size: 1.5rem; color: #E17B2E; display: block; }
     .paystack-btn {
       background: linear-gradient(135deg, #E17B2E, #B65F1E);
       color: white;
@@ -330,21 +139,13 @@
       padding: 1rem;
       border-radius: 40px;
       font-weight: 700;
-      font-size: 1rem;
       cursor: pointer;
       margin-top: 0.5rem;
-      transition: 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
     }
-    .paystack-btn:hover {
-      transform: scale(1.01);
-      opacity: 0.95;
-    }
-
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -365,10 +166,6 @@
       width: 90%;
       text-align: center;
     }
-    .modal-content i {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
     .modal-close {
       background: #E17B2E;
       color: white;
@@ -378,8 +175,6 @@
       cursor: pointer;
       margin-top: 1rem;
     }
-
-    /* Bottom Buttons Container */
     .bottom-buttons {
       text-align: center;
       margin: 2rem auto;
@@ -400,17 +195,8 @@
       text-decoration: none;
       font-weight: 600;
       color: #B65F1E;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 1rem;
     }
-    .btn-back:hover {
-      background: #E17B2E;
-      color: white;
-      transform: translateY(-2px);
-    }
+    .btn-back:hover { background: #E17B2E; color: white; }
     .btn-track {
       display: inline-flex;
       align-items: center;
@@ -421,33 +207,13 @@
       text-decoration: none;
       font-weight: 600;
       color: white;
-      transition: all 0.3s ease;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 1rem;
     }
-    .btn-track:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(225,123,46,0.3);
-      gap: 12px;
-    }
-
-    footer {
-      background: #2c2418;
-      color: #f0e0ce;
-      padding: 2rem;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
+    .btn-track:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(225,123,46,0.3); }
+    footer { background: #2c2418; color: #f0e0ce; padding: 2rem; text-align: center; margin-top: 1rem; }
     @media (max-width: 850px) {
       .navbar { flex-direction: column; padding: 1rem; }
       .ordering-container { flex-direction: column; }
-      .cart-section { position: static; }
       .hero-order h1 { font-size: 2rem; }
-      .bottom-buttons { flex-direction: column; align-items: center; }
-      .btn-back, .btn-track { width: 80%; justify-content: center; }
     }
   </style>
 </head>
@@ -469,79 +235,48 @@
 </section>
 
 <div class="ordering-container">
-  <!-- Menu Section -->
   <div class="menu-grid-section">
     <div class="section-title"><i class="fas fa-utensils"></i> Our Signature Menu</div>
     <div class="menu-grid" id="menuGrid"></div>
   </div>
 
-  <!-- Cart + Checkout -->
   <div class="cart-section">
     <div class="section-title"><i class="fas fa-shopping-cart"></i> Your Order</div>
-    <div id="cartItemsList" class="cart-items">
-      <p style="text-align:center; color:#b6a089;">Your cart is empty</p>
-    </div>
+    <div id="cartItemsList" class="cart-items"><p style="text-align:center;">Your cart is empty</p></div>
     <div id="cartTotal" class="cart-total">Total: KES 0.00</div>
 
     <div class="checkout-form">
-      <h4 style="margin-bottom: 0.5rem;">Delivery Details</h4>
-      <input type="text" id="customerName" placeholder="Full Name" required>
-      <input type="tel" id="customerPhone" placeholder="Phone Number" required>
-      <input type="text" id="deliveryLocation" placeholder="Delivery Address" required>
-      <textarea id="specialInstructions" rows="2" placeholder="Special instructions (allergies, gate code, etc.)"></textarea>
+      <h4>Delivery Details</h4>
+      <input type="text" id="customerName" placeholder="Full Name">
+      <input type="tel" id="customerPhone" placeholder="Phone Number">
+      <input type="text" id="deliveryLocation" placeholder="Delivery Address">
+      <textarea id="specialInstructions" rows="2" placeholder="Special instructions"></textarea>
 
-      <!-- Delivery Time Slot -->
-      <div class="form-group" style="margin: 0.5rem 0;">
-        <label style="display: block; margin-bottom: 0.3rem; font-weight: 600;">
-          <i class="fas fa-clock"></i> Preferred Delivery Time
-        </label>
-        <select id="deliveryTime" style="width: 100%; padding: 0.8rem; border: 1px solid #f0dcc8; border-radius: 28px;">
-          <option value="">Select a time slot</option>
-        </select>
+      <div class="form-group">
+        <label><i class="fas fa-clock"></i> Preferred Delivery Time</label>
+        <select id="deliveryTime"><option value="">Select a time slot</option></select>
       </div>
 
-      <!-- Payment Section with Paystack (M-Pesa / Airtel Money) -->
       <div class="payment-section">
         <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
         <div class="payment-options">
-          <div class="payment-option selected" data-payment="mpesa">
-            <i class="fas fa-mobile-alt"></i>
-            <span>M-Pesa</span>
-          </div>
-          <div class="payment-option" data-payment="airtel">
-            <i class="fas fa-mobile-alt"></i>
-            <span>Airtel Money</span>
-          </div>
-          <div class="payment-option" data-payment="cash">
-            <i class="fas fa-money-bill-wave"></i>
-            <span>Cash on Delivery</span>
-          </div>
+          <div class="payment-option selected" data-payment="mpesa"><i class="fas fa-mobile-alt"></i><span>M-Pesa</span></div>
+          <div class="payment-option" data-payment="airtel"><i class="fas fa-mobile-alt"></i><span>Airtel Money</span></div>
+          <div class="payment-option" data-payment="cash"><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></div>
         </div>
-
-        <!-- Paystack Payment Button -->
-        <button id="paystackPayBtn" class="paystack-btn">
-          <i class="fas fa-mobile-alt"></i> Pay with M-Pesa / Airtel Money
-        </button>
+        <button id="paystackPayBtn" class="paystack-btn"><i class="fas fa-mobile-alt"></i> Pay with M-Pesa / Airtel Money</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Bottom Buttons: Back to Services and Track Your Order -->
 <div class="bottom-buttons">
-  <a href="services.html" class="btn-back">
-    <i class="fas fa-arrow-left"></i> Back to Services
-  </a>
-  <a href="track-order.html" class="btn-track">
-    <i class="fas fa-map-marker-alt"></i> Track Your Order
-  </a>
+  <a href="services.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Services</a>
+  <a href="track-order.html" class="btn-track"><i class="fas fa-map-marker-alt"></i> Track Your Order</a>
 </div>
 
-<footer>
-  <p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love. Pay with M-Pesa or Airtel Money via Paystack.</p>
-</footer>
+<footer><p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love.</p></footer>
 
-<!-- Result Modal -->
 <div id="resultModal" class="modal">
   <div class="modal-content">
     <i id="resultIcon" class="fas fa-check-circle" style="color: #25D366;"></i>
@@ -553,34 +288,50 @@
 
 <script>
   // ============================================
-  // MENU DATA - PRICES IN KENYA SHILLINGS (KES)
+  // MENU DATA
   // ============================================
   const menuItems = [
-    { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms, parmesan shavings", price: 1850, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, name: "Grass-Fed Ribeye", desc: "Herb butter, roasted garlic, seasonal veggies", price: 3200, image: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 4, name: "Margherita Pizza", desc: "San Marzano tomatoes, fresh mozzarella, basil", price: 1400, image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 6, name: "Vegan Power Bowl", desc: "Quinoa, avocado, chickpeas, tahini dressing", price: 1450, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 7, name: "Spaghetti Carbonara", desc: "Pancetta, egg yolk, pecorino, black pepper", price: 1650, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 8, name: "Chocolate Lava Cake", desc: "Warm chocolate, vanilla ice cream", price: 750, image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 9, name: "Beef Burger", desc: "Grass-fed beef, cheddar, lettuce, tomato, special sauce", price: 1250, image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 10, name: "Fresh Fruit Juice", desc: "Seasonal fresh fruits, no added sugar", price: 450, image: "https://images.pexels.com/photos/1233319/pexels-photo-1233319.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 11, name: "Garlic Bread", desc: "Crusty bread, garlic butter, herbs, parmesan", price: 350, image: "https://images.pexels.com/photos/1654426/pexels-photo-1654426.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 12, name: "Chicken Wings", desc: "Crispy wings, house BBQ sauce, celery sticks", price: 850, image: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400" }
+    { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms", price: 1850, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 2, name: "Grass-Fed Ribeye", desc: "Herb butter, roasted garlic", price: 3200, image: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 4, name: "Margherita Pizza", desc: "Fresh mozzarella, basil", price: 1400, image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 6, name: "Vegan Power Bowl", desc: "Quinoa, avocado, chickpeas", price: 1450, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 7, name: "Spaghetti Carbonara", desc: "Pancetta, egg yolk, pecorino", price: 1650, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 8, name: "Chocolate Lava Cake", desc: "Warm chocolate, ice cream", price: 750, image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 9, name: "Beef Burger", desc: "Grass-fed beef, cheddar", price: 1250, image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 10, name: "Fresh Fruit Juice", desc: "Seasonal fruits", price: 450, image: "https://images.pexels.com/photos/1233319/pexels-photo-1233319.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 11, name: "Garlic Bread", desc: "Garlic butter, herbs", price: 350, image: "https://images.pexels.com/photos/1654426/pexels-photo-1654426.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 12, name: "Chicken Wings", desc: "Crispy wings, BBQ sauce", price: 850, image: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400" }
   ];
 
   let cart = new Map();
   let selectedPayment = "mpesa";
-
-  // ============================================
-  // MINIMUM ORDER VALIDATION
-  // ============================================
   const MINIMUM_ORDER_AMOUNT = 500;
 
-  function validateMinimumOrder(total) {
-    if (total < MINIMUM_ORDER_AMOUNT) {
-      alert(`⚠️ Minimum order amount is KES ${MINIMUM_ORDER_AMOUNT}. Your current total is KES ${total}. Please add more items.`);
-      return false;
+  // ============================================
+  // ORDER TRACKING SYSTEM - SAVE TO LOCALSTORAGE
+  // ============================================
+  function saveOrderToLocalStorage(orderData, trackingNumber) {
+    let orders = [];
+    const saved = localStorage.getItem('topchef_orders');
+    if (saved) {
+      orders = JSON.parse(saved);
     }
+    
+    const newOrder = {
+      orderNumber: trackingNumber,
+      customerName: orderData.name,
+      customerPhone: orderData.phone,
+      deliveryAddress: orderData.address,
+      orderDate: new Date().toISOString(),
+      items: orderData.items,
+      total: orderData.total,
+      status: "pending"
+    };
+    
+    orders.push(newOrder);
+    localStorage.setItem('topchef_orders', JSON.stringify(orders));
+    console.log("✅ Order saved to localStorage:", trackingNumber);
+    console.log("Total orders in storage:", orders.length);
     return true;
   }
 
@@ -591,20 +342,13 @@
     const slots = [];
     const now = new Date();
     const currentHour = now.getHours();
-    
     let startHour = currentHour + 1;
-    
     for (let i = 0; i < 6; i++) {
       let slotHour = startHour + i;
       let period = slotHour >= 12 ? 'PM' : 'AM';
       let displayHour = slotHour > 12 ? slotHour - 12 : slotHour;
       if (displayHour === 0) displayHour = 12;
-      
-      slots.push({
-        value: `${slotHour}:00`,
-        display: `${displayHour}:00 ${period}`,
-        available: slotHour <= 22
-      });
+      slots.push({ value: `${slotHour}:00`, display: `${displayHour}:00 ${period}`, available: slotHour <= 22 });
     }
     return slots;
   }
@@ -613,12 +357,11 @@
     const select = document.getElementById('deliveryTime');
     if (select) {
       const slots = generateDeliverySlots().filter(slot => slot.available);
-      select.innerHTML = '<option value="">Select a time slot</option>' + 
-        slots.map(slot => `<option value="${slot.value}">${slot.display}</option>`).join('');
+      select.innerHTML = '<option value="">Select a time slot</option>' + slots.map(slot => `<option value="${slot.value}">${slot.display}</option>`).join('');
     }
   }
 
-  // Payment option selection styling
+  // Payment selection
   document.querySelectorAll('.payment-option').forEach(option => {
     option.addEventListener('click', function() {
       document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
@@ -627,12 +370,9 @@
     });
   });
 
-  // ============================================
-  // CART FUNCTIONS
-  // ============================================
+  // Cart Functions
   function renderMenu() {
     const container = document.getElementById('menuGrid');
-    if (!container) return;
     container.innerHTML = '';
     menuItems.forEach(item => {
       const card = document.createElement('div');
@@ -653,7 +393,6 @@
       `;
       container.appendChild(card);
     });
-
     document.querySelectorAll('.decr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1)));
     document.querySelectorAll('.incr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1)));
     document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id))));
@@ -687,7 +426,7 @@
     const totalSpan = document.getElementById('cartTotal');
     let total = 0;
     if (cart.size === 0) {
-      cartContainer.innerHTML = '<p style="text-align:center; color:#b6a089;">Your cart is empty</p>';
+      cartContainer.innerHTML = '<p style="text-align:center;">Your cart is empty</p>';
       totalSpan.innerText = 'Total: KES 0.00';
       return;
     }
@@ -695,72 +434,42 @@
     for (let [id, item] of cart.entries()) {
       const subtotal = item.quantity * item.price;
       total += subtotal;
-      html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-title">${item.name}</div><div class="cart-item-price">KES ${item.price.toLocaleString()} each</div></div><div class="cart-item-actions"><button class="cart-qty-adjust" data-id="${id}" data-delta="-1">-</button><span class="cart-qty">${item.quantity}</span><button class="cart-qty-adjust" data-id="${id}" data-delta="1">+</button><button class="remove-item" data-id="${id}"><i class="fas fa-trash-alt"></i></button></div></div>`;
+      html += `<div class="cart-item"><div><strong>${item.name}</strong><br>KES ${item.price.toLocaleString()} x ${item.quantity}</div><div><strong>KES ${subtotal.toLocaleString()}</strong> <button class="remove-item" data-id="${id}" style="background:none; border:none; color:#b9534e;"><i class="fas fa-trash"></i></button></div></div>`;
     }
     cartContainer.innerHTML = html;
     totalSpan.innerText = `Total: KES ${total.toLocaleString()}`;
-    document.querySelectorAll('.cart-qty-adjust').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), parseInt(btn.dataset.delta))));
-    document.querySelectorAll('.remove-item').forEach(btn => btn.addEventListener('click', () => { const id = parseInt(btn.dataset.id); cart.delete(id); updateQtyDisplay(id); renderCart(); }));
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', () => { const id = parseInt(btn.dataset.id); cart.delete(id); updateQtyDisplay(id); renderCart(); });
+    });
     return total;
   }
 
-  // ============================================
-  // RESULT MODAL
-  // ============================================
+  // Modal Functions
   function showResultModal(success, title, message) {
-    const icon = document.getElementById('resultIcon');
-    const titleEl = document.getElementById('resultTitle');
-    const msgEl = document.getElementById('resultMessage');
-    if (success) {
-      icon.className = 'fas fa-check-circle';
-      icon.style.color = '#25D366';
-    } else {
-      icon.className = 'fas fa-times-circle';
-      icon.style.color = '#e74c3c';
-    }
-    titleEl.innerText = title;
-    msgEl.innerText = message;
+    document.getElementById('resultIcon').className = success ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    document.getElementById('resultIcon').style.color = success ? '#25D366' : '#e74c3c';
+    document.getElementById('resultTitle').innerText = title;
+    document.getElementById('resultMessage').innerText = message;
     document.getElementById('resultModal').style.display = 'flex';
   }
+  function closeResultModal() { document.getElementById('resultModal').style.display = 'none'; }
 
-  function closeResultModal() {
-    document.getElementById('resultModal').style.display = 'none';
-  }
-
-  // ============================================
-  // WHATSAPP MESSAGE FUNCTION WITH TRACKING
-  // ============================================
+  // WhatsApp Message Function
   function sendOrderToWhatsApp(orderData, total, paymentRef = '', trackingNumber = '') {
     let orderItemsList = "";
     for (const item of orderData.items) {
       orderItemsList += `✓ ${item.name} x${item.quantity} - KES ${item.subtotal.toLocaleString()}\n`;
     }
-    
     let message = `🍽️ *NEW ORDER - TOP CHEF EATERIES* 🍽️\n\n`;
-    message += `*Customer:* ${orderData.name}\n`;
-    message += `*Phone:* ${orderData.phone}\n`;
-    message += `*Address:* ${orderData.address}\n\n`;
-    message += `*Order:*\n${orderItemsList}\n`;
-    message += `*Total: KES ${total.toLocaleString()}*\n`;
-    message += `*Payment: ${orderData.paymentMethod}*\n`;
-    if (paymentRef) {
-      message += `*Transaction Ref: ${paymentRef}*\n`;
-    }
-    if (trackingNumber) {
-      message += `*🔖 Tracking Number: ${trackingNumber}*\n`;
-    }
-    message += `*Instructions:* ${orderData.instructions || 'None'}\n\n`;
-    message += `✅ Payment confirmed! Please prepare this order.`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    const restaurantNumber = "254707203741";
-    window.open(`https://wa.me/${restaurantNumber}?text=${encodedMessage}`, '_blank');
-    console.log("Order sent to WhatsApp with tracking:", trackingNumber);
+    message += `*Customer:* ${orderData.name}\n*Phone:* ${orderData.phone}\n*Address:* ${orderData.address}\n\n`;
+    message += `*Order:*\n${orderItemsList}\n*Total: KES ${total.toLocaleString()}*\n*Payment: ${orderData.paymentMethod}*\n`;
+    if (paymentRef) message += `*Transaction Ref: ${paymentRef}*\n`;
+    if (trackingNumber) message += `*🔖 Tracking Number: ${trackingNumber}*\n`;
+    message += `*Instructions:* ${orderData.instructions || 'None'}\n\n✅ Payment confirmed! Please prepare this order.`;
+    window.open(`https://wa.me/254707203741?text=${encodeURIComponent(message)}`, '_blank');
   }
 
-  // ============================================
-  // PAYSTACK PAYMENT INTEGRATION WITH TRACKING
-  // ============================================
+  // Paystack Payment
   const paystackBtn = document.getElementById('paystackPayBtn');
   if (paystackBtn) {
     paystackBtn.addEventListener('click', function() {
@@ -770,46 +479,41 @@
       const instructions = document.getElementById('specialInstructions').value.trim();
       const deliveryTime = document.getElementById('deliveryTime').value;
 
-      if (!name || !phone || !address) {
-        alert("❌ Please fill in your Name, Phone Number, and Delivery Address.");
-        return;
-      }
-      if (cart.size === 0) {
-        alert("🛒 Your cart is empty. Add some delicious items first!");
-        return;
-      }
+      if (!name || !phone || !address) { alert("❌ Please fill all delivery details"); return; }
+      if (cart.size === 0) { alert("🛒 Your cart is empty"); return; }
 
       let total = 0;
       const orderItems = [];
       for (let [id, item] of cart.entries()) {
         const subtotal = item.quantity * item.price;
         total += subtotal;
-        orderItems.push({ name: item.name, quantity: item.quantity, subtotal: subtotal });
+        orderItems.push({ name: item.name, quantity: item.quantity, subtotal });
       }
 
-      // Minimum order validation
-      if (!validateMinimumOrder(total)) {
+      if (total < MINIMUM_ORDER_AMOUNT) {
+        alert(`⚠️ Minimum order is KES ${MINIMUM_ORDER_AMOUNT}. Current total: KES ${total}`);
         return;
       }
 
       const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
       
-      // Cash on Delivery
       if (selectedPayment === 'cash') {
+        const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-        sendOrderToWhatsApp(orderData, total);
-        showResultModal(true, "Order Placed!", `Order placed via Cash on Delivery! Total: KES ${total.toLocaleString()}`);
-        cart.clear();
-        renderCart();
+        const orderForStorage = { name, phone, address, items: orderItems, total };
+        saveOrderToLocalStorage(orderForStorage, trackingNumber);
+        sendOrderToWhatsApp(orderData, total, '', trackingNumber);
+        showResultModal(true, "Order Placed!", `✅ Order placed! Total: KES ${total.toLocaleString()}\n🔖 Tracking: ${trackingNumber}`);
+        cart.clear(); renderCart();
         document.getElementById('customerName').value = '';
         document.getElementById('customerPhone').value = '';
         document.getElementById('deliveryLocation').value = '';
         document.getElementById('specialInstructions').value = '';
+        document.getElementById('deliveryTime').value = '';
         menuItems.forEach(item => updateQtyDisplay(item.id));
         return;
       }
 
-      // Paystack Public Key
       const PAYSTACK_PUBLIC_KEY = "pk_test_3f8af92c289b2fb9e0e63238c82e2f96e0921d23";
       
       try {
@@ -819,113 +523,42 @@
           amount: total * 100,
           currency: 'KES',
           ref: 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
-          metadata: {
-            custom_fields: [
-              { display_name: "Customer Name", variable_name: "customer_name", value: name },
-              { display_name: "Phone Number", variable_name: "customer_phone", value: phone },
-              { display_name: "Delivery Address", variable_name: "delivery_address", value: address },
-              { display_name: "Delivery Time", variable_name: "delivery_time", value: deliveryTime || "As soon as possible" },
-              { display_name: "Instructions", variable_name: "instructions", value: instructions || "None" }
-            ]
-          },
+          metadata: { custom_fields: [
+            { display_name: "Customer Name", value: name },
+            { display_name: "Phone", value: phone },
+            { display_name: "Address", value: address }
+          ] },
           callback: function(response) {
-    console.log("Payment successful:", response);
-    
-    // Prepare order data for tracking
-    const orderDataForTracking = {
-        name: name,
-        phone: phone,
-        address: address,
-        items: orderItems,
-        total: total
-    };
-    
-    // ✅ SAVE ORDER TO TRACKING SYSTEM - This creates and saves the tracking number
-    const trackingNumber = addOrderToTracking(orderDataForTracking);
-    
-    // Send WhatsApp with tracking number
-    const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-    sendOrderToWhatsApp(orderData, total, response.reference, trackingNumber);
-    
-    // Show success message with tracking
-    showResultModal(true, "Payment Successful!", 
-        `✅ Your order has been placed!\n\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking Number: ${trackingNumber}\n\n📱 Please save this tracking number to check your order status.\n💬 A confirmation has been sent to your WhatsApp.`);
-    
-    // Reset cart and form
-    cart.clear();
-    renderCart();
-    document.getElementById('customerName').value = '';
-    document.getElementById('customerPhone').value = '';
-    document.getElementById('deliveryLocation').value = '';
-    document.getElementById('specialInstructions').value = '';
-    document.getElementById('deliveryTime').value = '';
-    menuItems.forEach(item => updateQtyDisplay(item.id));
-},
-          onClose: function() {
-            console.log("Payment window closed");
-            alert('Payment cancelled. You can try again or use Cash on Delivery.');
-          }
+            // Generate and save tracking number
+            const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+            const orderForStorage = { name, phone, address, items: orderItems, total };
+            saveOrderToLocalStorage(orderForStorage, trackingNumber);
+            
+            const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+            sendOrderToWhatsApp(orderData, total, response.reference, trackingNumber);
+            showResultModal(true, "Payment Successful!", `✅ Order placed!\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking: ${trackingNumber}`);
+            
+            cart.clear(); renderCart();
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('deliveryLocation').value = '';
+            document.getElementById('specialInstructions').value = '';
+            document.getElementById('deliveryTime').value = '';
+            menuItems.forEach(item => updateQtyDisplay(item.id));
+          },
+          onClose: function() { alert('Payment cancelled.'); }
         });
-        
         handler.openIframe();
       } catch (error) {
-        console.error("Paystack error:", error);
-        alert("Unable to start payment. Please try again or use Cash on Delivery.\nError: " + error.message);
+        alert("Payment error: " + error.message);
       }
     });
   }
 
-  // Initialize
   renderMenu();
   renderCart();
   populateDeliverySlots();
-  
-  console.log("✅ Order page loaded with Minimum Order (KES 500), Delivery Slots, Order Tracking, and bottom buttons!");
-  // ============================================
-// ORDER TRACKING SYSTEM - SAVE ORDERS TO LOCALSTORAGE
-// ============================================
-
-// Load existing orders from localStorage
-function loadOrders() {
-    const saved = localStorage.getItem('topchef_orders');
-    if (saved) {
-        return JSON.parse(saved);
-    }
-    return [];
-}
-
-// Save orders to localStorage
-function saveOrders(orders) {
-    localStorage.setItem('topchef_orders', JSON.stringify(orders));
-}
-
-// Add a new order to tracking system
-function addOrderToTracking(orderData) {
-    const orders = loadOrders();
-    
-    // Generate unique tracking number
-    const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-    
-    const newOrder = {
-        orderNumber: trackingNumber,
-        customerName: orderData.name,
-        customerPhone: orderData.phone,
-        deliveryAddress: orderData.address,
-        orderDate: new Date().toISOString(),
-        items: orderData.items,
-        total: orderData.total,
-        status: "pending" // pending, confirmed, preparing, out_for_delivery, delivered
-    };
-    
-    orders.push(newOrder);
-    saveOrders(orders);
-    
-    console.log("✅ Order saved to tracking system:", trackingNumber);
-    return trackingNumber;
-}
-
-// Make function available globally
-window.addOrderToTracking = addOrderToTracking;
+  console.log("✅ Order page loaded with localStorage tracking support!");
 </script>
 </body>
 </html>
