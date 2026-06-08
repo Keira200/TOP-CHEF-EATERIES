@@ -724,19 +724,52 @@
             ]
           },
           callback: function(response) {
-            console.log("Payment successful:", response);
-            const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-            sendOrderToWhatsApp(orderData, total, response.reference);
-            showResultModal(true, "Payment Successful!", `Your order has been placed! Total: KES ${total.toLocaleString()}. Ref: ${response.reference}`);
-            
-            cart.clear();
-            renderCart();
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-            document.getElementById('deliveryLocation').value = '';
-            document.getElementById('specialInstructions').value = '';
-            menuItems.forEach(item => updateQtyDisplay(item.id));
-          },
+    console.log("Payment successful:", response);
+    
+    // ============================================
+    // SAVE ORDER FOR TRACKING
+    // ============================================
+    const orderDataForTracking = {
+        name: name,
+        phone: phone,
+        address: address,
+        items: orderItems,
+        total: total
+    };
+    
+    // Add order to tracking system (this creates a tracking number)
+    let orderNumber = '';
+    if (typeof window.addOrder === 'function') {
+        orderNumber = window.addOrder(orderDataForTracking);
+    } else {
+        // Fallback tracking number if tracking system not loaded
+        orderNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    }
+    
+    // Send WhatsApp with tracking number
+    const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+    sendOrderToWhatsApp(orderData, total, response.reference, orderNumber);
+    
+    // Get the tracking page URL (use your actual domain)
+    const trackingUrl = window.location.origin + '/track-order.html';
+    
+    // Show tracking link to customer
+    showResultModal(true, "Payment Successful!", 
+        `✅ Your order has been placed!\n\n` +
+        `💰 Total: KES ${total.toLocaleString()}\n` +
+        `🔖 Tracking Number: ${orderNumber}\n\n` +
+        `📱 Track your order at:\n${trackingUrl}\n\n` +
+        `💬 A confirmation has been sent to your WhatsApp.`);
+    
+    // Reset cart and form
+    cart.clear();
+    renderCart();
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('deliveryLocation').value = '';
+    document.getElementById('specialInstructions').value = '';
+    menuItems.forEach(item => updateQtyDisplay(item.id));
+},
           onClose: function() {
             console.log("Payment window closed");
             alert('Payment cancelled. You can try again or use Cash on Delivery.');
