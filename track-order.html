@@ -142,13 +142,11 @@
     .timeline-step.completed .timeline-icon {
       background: #25D366;
       color: white;
-      box-shadow: 0 0 0 2px #25D366;
     }
     .timeline-step.current .timeline-icon {
       background: #E17B2E;
       color: white;
       animation: pulse 1.5s infinite;
-      box-shadow: 0 0 0 4px rgba(225,123,46,0.3);
     }
     .timeline-step.pending .timeline-icon {
       background: #f0e0ce;
@@ -264,18 +262,12 @@
 <footer><p>&copy; 2026 Top Chef Eateries — Real-time order tracking</p></footer>
 
 <script>
-  let ordersDatabase = [];
-
   function loadOrders() {
     const saved = localStorage.getItem('topchef_orders');
     if (saved) {
-      ordersDatabase = JSON.parse(saved);
-      console.log("✅ Loaded orders:", ordersDatabase.length);
-      ordersDatabase.forEach(o => console.log(`Order: ${o.orderNumber.substring(0, 25)}... - Status: ${o.status || 'pending'}`));
-    } else {
-      ordersDatabase = [];
-      console.log("No orders found");
+      return JSON.parse(saved);
     }
+    return [];
   }
 
   function getStatusTimeline(status) {
@@ -293,11 +285,11 @@
     
     // If status is not found, default to pending
     if (currentIndex === -1) {
-      console.log("⚠️ Unknown status:", status, "defaulting to pending");
+      console.log("Unknown status:", status, "defaulting to pending");
       currentIndex = 0;
     }
     
-    console.log("📊 Current status:", status, "| Index:", currentIndex, "| Total steps:", statusOrder.length);
+    console.log("Current status:", status, "| Index:", currentIndex);
     
     let timelineHtml = '';
     
@@ -310,14 +302,11 @@
         stepClass = 'current';
       }
       
-      // Add a checkmark for completed steps
-      const checkmark = index < currentIndex ? ' ✓' : '';
-      
       timelineHtml += `
         <div class="timeline-step ${stepClass}">
           <div class="timeline-icon"><i class="fas ${step.icon}"></i></div>
           <div class="timeline-content">
-            <h4>${step.name}${checkmark}</h4>
+            <h4>${step.name} ${index < currentIndex ? '✓' : ''}</h4>
             <p>${step.description}</p>
           </div>
         </div>
@@ -339,19 +328,19 @@
   }
 
   function displayOrder(orderNumber) {
-    loadOrders(); // Refresh orders before displaying
+    const orders = loadOrders();
     
-    const order = ordersDatabase.find(o => o.orderNumber === orderNumber);
+    const order = orders.find(o => o.orderNumber === orderNumber);
     
     if (!order) {
       document.getElementById('errorMessage').style.display = 'block';
       document.getElementById('orderCard').style.display = 'none';
-      console.log("❌ Order not found:", orderNumber);
+      console.log("Order not found:", orderNumber);
       return;
     }
     
     const currentStatus = order.status || 'pending';
-    console.log("✅ Order found! Status:", currentStatus);
+    console.log("Order found! Status:", currentStatus);
     
     document.getElementById('errorMessage').style.display = 'none';
     document.getElementById('orderCard').style.display = 'block';
@@ -369,7 +358,6 @@
     document.getElementById('orderItemsList').innerHTML = itemsHtml;
     document.getElementById('orderTotal').innerHTML = `Total: KES ${order.total.toLocaleString()}`;
     
-    // Generate timeline based on current status
     document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(currentStatus);
   }
 
@@ -388,9 +376,7 @@
     }
   });
 
-  loadOrders();
   console.log("✅ Tracking page ready!");
-  console.log("📋 Available statuses: pending → confirmed → preparing → out_for_delivery → delivered");
 </script>
 </body>
 </html>
