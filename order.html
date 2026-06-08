@@ -829,29 +829,38 @@
             ]
           },
           callback: function(response) {
-            console.log("Payment successful:", response);
-            
-            // Generate tracking number
-            const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-            
-            // Send WhatsApp with tracking number
-            const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
-            sendOrderToWhatsApp(orderData, total, response.reference, trackingNumber);
-            
-            // Show success message with tracking
-            showResultModal(true, "Payment Successful!", 
-              `✅ Your order has been placed!\n\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking Number: ${trackingNumber}\n\n📱 Please save this tracking number to check your order status.\n💬 A confirmation has been sent to your WhatsApp.`);
-            
-            // Reset cart and form
-            cart.clear();
-            renderCart();
-            document.getElementById('customerName').value = '';
-            document.getElementById('customerPhone').value = '';
-            document.getElementById('deliveryLocation').value = '';
-            document.getElementById('specialInstructions').value = '';
-            document.getElementById('deliveryTime').value = '';
-            menuItems.forEach(item => updateQtyDisplay(item.id));
-          },
+    console.log("Payment successful:", response);
+    
+    // Prepare order data for tracking
+    const orderDataForTracking = {
+        name: name,
+        phone: phone,
+        address: address,
+        items: orderItems,
+        total: total
+    };
+    
+    // ✅ SAVE ORDER TO TRACKING SYSTEM - This creates and saves the tracking number
+    const trackingNumber = addOrderToTracking(orderDataForTracking);
+    
+    // Send WhatsApp with tracking number
+    const orderData = { name, phone, address, instructions, items: orderItems, paymentMethod };
+    sendOrderToWhatsApp(orderData, total, response.reference, trackingNumber);
+    
+    // Show success message with tracking
+    showResultModal(true, "Payment Successful!", 
+        `✅ Your order has been placed!\n\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking Number: ${trackingNumber}\n\n📱 Please save this tracking number to check your order status.\n💬 A confirmation has been sent to your WhatsApp.`);
+    
+    // Reset cart and form
+    cart.clear();
+    renderCart();
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('deliveryLocation').value = '';
+    document.getElementById('specialInstructions').value = '';
+    document.getElementById('deliveryTime').value = '';
+    menuItems.forEach(item => updateQtyDisplay(item.id));
+},
           onClose: function() {
             console.log("Payment window closed");
             alert('Payment cancelled. You can try again or use Cash on Delivery.');
@@ -872,6 +881,51 @@
   populateDeliverySlots();
   
   console.log("✅ Order page loaded with Minimum Order (KES 500), Delivery Slots, Order Tracking, and bottom buttons!");
+  // ============================================
+// ORDER TRACKING SYSTEM - SAVE ORDERS TO LOCALSTORAGE
+// ============================================
+
+// Load existing orders from localStorage
+function loadOrders() {
+    const saved = localStorage.getItem('topchef_orders');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    return [];
+}
+
+// Save orders to localStorage
+function saveOrders(orders) {
+    localStorage.setItem('topchef_orders', JSON.stringify(orders));
+}
+
+// Add a new order to tracking system
+function addOrderToTracking(orderData) {
+    const orders = loadOrders();
+    
+    // Generate unique tracking number
+    const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    
+    const newOrder = {
+        orderNumber: trackingNumber,
+        customerName: orderData.name,
+        customerPhone: orderData.phone,
+        deliveryAddress: orderData.address,
+        orderDate: new Date().toISOString(),
+        items: orderData.items,
+        total: orderData.total,
+        status: "pending" // pending, confirmed, preparing, out_for_delivery, delivered
+    };
+    
+    orders.push(newOrder);
+    saveOrders(orders);
+    
+    console.log("✅ Order saved to tracking system:", trackingNumber);
+    return trackingNumber;
+}
+
+// Make function available globally
+window.addOrderToTracking = addOrderToTracking;
 </script>
 </body>
 </html>
