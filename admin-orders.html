@@ -57,7 +57,7 @@
     .status-confirmed { background: #cce5ff; color: #004085; }
     .status-preparing { background: #d4edda; color: #155724; }
     .status-out_for_delivery { background: #d1ecf1; color: #0c5460; }
-    .status-delivered { background: #d4edda; color: #155724; }
+    .status-delivered { background: #28a745; color: white; }
     .order-details { margin: 1rem 0; }
     .order-details p { margin: 0.3rem 0; font-size: 0.9rem; }
     .order-items { margin: 0.5rem 0; padding-left: 1rem; }
@@ -106,7 +106,7 @@
   </div>
 </div>
 
-<footer><p>&copy; 2026 Top Chef Eateries — Admin Order Management | Update order status to keep customers informed</p></footer>
+<footer><p>&copy; 2026 Top Chef Eateries — Admin Order Management</p></footer>
 
 <script>
   let orders = [];
@@ -116,6 +116,7 @@
     if (saved) {
       orders = JSON.parse(saved);
       console.log("✅ Loaded orders:", orders.length);
+      orders.forEach(o => console.log(`Order: ${o.orderNumber.substring(0, 20)}... Status: ${o.status || 'pending'}`));
       renderOrders();
     } else {
       document.getElementById('ordersList').innerHTML = '<div class="empty-msg">No orders found. Place a test order first.</div>';
@@ -145,19 +146,30 @@
   }
 
   function updateOrderStatus(orderNumber, newStatus) {
+    console.log(`🔄 Attempting to update order: ${orderNumber} to status: ${newStatus}`);
+    
     const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
     if (orderIndex !== -1) {
       const oldStatus = orders[orderIndex].status || 'pending';
       orders[orderIndex].status = newStatus;
       orders[orderIndex].lastUpdated = new Date().toISOString();
+      
+      // Save to localStorage
       localStorage.setItem('topchef_orders', JSON.stringify(orders));
       
-      console.log(`✅ Order status updated: ${orderNumber} from ${oldStatus} to ${newStatus}`);
+      // Verify save worked
+      const verifySaved = localStorage.getItem('topchef_orders');
+      const parsed = JSON.parse(verifySaved);
+      const updatedOrder = parsed.find(o => o.orderNumber === orderNumber);
+      console.log(`✅ Order status updated: ${oldStatus} → ${newStatus}`);
+      console.log(`📦 Verified saved status: ${updatedOrder.status}`);
+      
       alert(`✅ Order status updated from "${getStatusText(oldStatus)}" to "${getStatusText(newStatus)}"`);
       
       // Refresh the display
       renderOrders();
     } else {
+      console.error(`❌ Order not found: ${orderNumber}`);
       alert("Order not found!");
     }
   }
