@@ -118,7 +118,7 @@
     .order-items { margin-bottom: 1.5rem; }
     .order-items h4 { color: #B65F1E; margin-bottom: 0.5rem; }
     .order-items ul { list-style: none; }
-    .order-items li { padding: 0.3rem 0; border-bottom: 1px solid #f0e0ce; }
+    .order-items li { padding: 0.3rem 0; border-bottom: 1px solid #f0e0ce; font-size: 0.9rem; }
     .order-total { text-align: right; font-weight: 800; font-size: 1.2rem; color: #E17B2E; margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #f0e0ce; }
     .tracking-timeline { margin: 1.5rem 0; padding: 1rem; background: #fefaf5; border-radius: 24px; }
     .timeline-step {
@@ -281,6 +281,8 @@
     ];
     
     const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
+    
+    // Find the index of the current status
     let currentIndex = statusOrder.indexOf(status);
     
     // If status is not found, default to pending
@@ -289,7 +291,7 @@
       currentIndex = 0;
     }
     
-    console.log("Current status:", status, "| Index:", currentIndex);
+    console.log("Current status:", status, "Index:", currentIndex);
     
     let timelineHtml = '';
     
@@ -339,6 +341,7 @@
       return;
     }
     
+    // Make sure status exists, default to 'pending'
     const currentStatus = order.status || 'pending';
     console.log("Order found! Status:", currentStatus);
     
@@ -358,6 +361,7 @@
     document.getElementById('orderItemsList').innerHTML = itemsHtml;
     document.getElementById('orderTotal').innerHTML = `Total: KES ${order.total.toLocaleString()}`;
     
+    // Generate timeline based on current status
     document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(currentStatus);
   }
 

@@ -116,7 +116,7 @@
     if (saved) {
       orders = JSON.parse(saved);
       console.log("✅ Loaded orders:", orders.length);
-      orders.forEach(o => console.log(`Order: ${o.orderNumber.substring(0, 20)}... Status: ${o.status || 'pending'}`));
+      orders.forEach(o => console.log(`Order: ${o.orderNumber.substring(0, 25)}... Status: ${o.status || 'pending'}`));
       renderOrders();
     } else {
       document.getElementById('ordersList').innerHTML = '<div class="empty-msg">No orders found. Place a test order first.</div>';
@@ -146,7 +146,7 @@
   }
 
   function updateOrderStatus(orderNumber, newStatus) {
-    console.log(`🔄 Attempting to update order: ${orderNumber} to status: ${newStatus}`);
+    console.log(`🔄 Updating order: ${orderNumber.substring(0, 25)}... to status: ${newStatus}`);
     
     const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
     if (orderIndex !== -1) {
@@ -157,14 +157,15 @@
       // Save to localStorage
       localStorage.setItem('topchef_orders', JSON.stringify(orders));
       
-      // Verify save worked
+      // Verify save worked immediately
       const verifySaved = localStorage.getItem('topchef_orders');
       const parsed = JSON.parse(verifySaved);
       const updatedOrder = parsed.find(o => o.orderNumber === orderNumber);
-      console.log(`✅ Order status updated: ${oldStatus} → ${newStatus}`);
-      console.log(`📦 Verified saved status: ${updatedOrder.status}`);
       
-      alert(`✅ Order status updated from "${getStatusText(oldStatus)}" to "${getStatusText(newStatus)}"`);
+      console.log(`✅ Status updated: ${oldStatus} → ${newStatus}`);
+      console.log(`📦 Verified in localStorage: ${updatedOrder.status}`);
+      
+      alert(`✅ Order status updated to: ${getStatusText(newStatus)}`);
       
       // Refresh the display
       renderOrders();
