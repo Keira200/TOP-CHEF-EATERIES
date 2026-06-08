@@ -379,34 +379,75 @@
       margin-top: 1rem;
     }
 
-    /* Back Button */
-    .back-home {
+    /* Bottom Buttons Container */
+    .bottom-buttons {
       text-align: center;
-      margin: 2rem;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 1500px;
     }
     .btn-back {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       background: #F4E3D3;
-      padding: 0.7rem 2rem;
+      padding: 0.8rem 2rem;
       border-radius: 60px;
       text-decoration: none;
       font-weight: 600;
       color: #B65F1E;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
     }
+    .btn-back:hover {
+      background: #E17B2E;
+      color: white;
+      transform: translateY(-2px);
+    }
+    .btn-track {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #E17B2E, #B65F1E);
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: white;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    .btn-track:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(225,123,46,0.3);
+      gap: 12px;
+    }
+
     footer {
       background: #2c2418;
       color: #f0e0ce;
       padding: 2rem;
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 1rem;
     }
+
     @media (max-width: 850px) {
       .navbar { flex-direction: column; padding: 1rem; }
       .ordering-container { flex-direction: column; }
       .cart-section { position: static; }
       .hero-order h1 { font-size: 2rem; }
+      .bottom-buttons { flex-direction: column; align-items: center; }
+      .btn-back, .btn-track { width: 80%; justify-content: center; }
     }
   </style>
 </head>
@@ -418,6 +459,7 @@
     <li><a href="index.html">Home</a></li>
     <li><a href="services.html">Services</a></li>
     <li><a href="#" class="active">Online Order</a></li>
+    <li><a href="track-order.html">Track Order</a></li>
   </ul>
 </nav>
 
@@ -462,7 +504,7 @@
       <div class="payment-section">
         <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
         <div class="payment-options">
-          <div class="payment-option" data-payment="mpesa">
+          <div class="payment-option selected" data-payment="mpesa">
             <i class="fas fa-mobile-alt"></i>
             <span>M-Pesa</span>
           </div>
@@ -483,13 +525,17 @@
       </div>
     </div>
   </div>
-  <div class="back-home" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-  <a href="services.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Services</a>
-  <a href="track-order.html" class="btn-back" style="background: linear-gradient(135deg, #E17B2E, #B65F1E); color: white;">
+</div>
+
+<!-- Bottom Buttons: Back to Services and Track Your Order -->
+<div class="bottom-buttons">
+  <a href="services.html" class="btn-back">
+    <i class="fas fa-arrow-left"></i> Back to Services
+  </a>
+  <a href="track-order.html" class="btn-track">
     <i class="fas fa-map-marker-alt"></i> Track Your Order
   </a>
 </div>
-
 
 <footer>
   <p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love. Pay with M-Pesa or Airtel Money via Paystack.</p>
@@ -825,7 +871,7 @@
   renderCart();
   populateDeliverySlots();
   
-  console.log("✅ Order page loaded with Minimum Order (KES 500), Delivery Slots, and Order Tracking!");
+  console.log("✅ Order page loaded with Minimum Order (KES 500), Delivery Slots, Order Tracking, and bottom buttons!");
 </script>
 </body>
 </html>
