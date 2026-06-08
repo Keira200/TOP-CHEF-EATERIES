@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Top Chef Eateries | Admin - Manage Orders</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fefaf5; color: #2c2418; }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(255, 248, 240, 0.96);
+      border-bottom: 1px solid #f0e1d0;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #B65F1E, #E17B2E);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+    h1 { color: #B65F1E; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+    .orders-grid { display: grid; gap: 1.5rem; }
+    .order-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      border: 1px solid #f0e1d0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f0e0ce;
+    }
+    .order-number { font-weight: 800; color: #E17B2E; font-family: monospace; }
+    .order-status {
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #cce5ff; color: #004085; }
+    .status-preparing { background: #d4edda; color: #155724; }
+    .status-out_for_delivery { background: #d1ecf1; color: #0c5460; }
+    .status-delivered { background: #d4edda; color: #155724; }
+    .order-details { margin: 1rem 0; }
+    .order-details p { margin: 0.3rem 0; font-size: 0.9rem; }
+    .order-items { margin: 0.5rem 0; padding-left: 1rem; }
+    .order-items li { font-size: 0.85rem; color: #7a6248; }
+    .status-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .status-btn {
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+    .status-btn:hover { transform: translateY(-2px); }
+    .refresh-btn {
+      background: #E17B2E;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .empty-msg { text-align: center; padding: 3rem; color: #b6a089; }
+    footer { background: #2c2418; color: #f0e0ce; padding: 2rem; text-align: center; margin-top: 2rem; }
+    @media (max-width: 650px) {
+      .navbar { flex-direction: column; padding: 1rem; }
+      .order-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo"><i class="fas fa-utensils"></i> TOP CHEF EATERIES - ADMIN</div>
+</nav>
+
+<div class="container">
+  <h1><i class="fas fa-clipboard-list"></i> Manage Orders</h1>
+  <button class="refresh-btn" onclick="loadOrders()"><i class="fas fa-sync-alt"></i> Refresh Orders</button>
+  <div id="ordersList" class="orders-grid">
+    <div class="empty-msg">Loading orders...</div>
+  </div>
+</div>
+
+<footer><p>&copy; 2026 Top Chef Eateries — Admin Order Management</p></footer>
+
+<script>
+  let orders = [];
+
+  function loadOrders() {
+    const saved = localStorage.getItem('topchef_orders');
+    if (saved) {
+      orders = JSON.parse(saved);
+      renderOrders();
+    } else {
+      document.getElementById('ordersList').innerHTML = '<div class="empty-msg">No orders found. Place a test order first.</div>';
+    }
+  }
+
+  function getStatusClass(status) {
+    const classes = {
+      'pending': 'status-pending',
+      'confirmed': 'status-confirmed',
+      'preparing': 'status-preparing',
+      'out_for_delivery': 'status-out_for_delivery',
+      'delivered': 'status-delivered'
+    };
+    return classes[status] || 'status-pending';
+  }
+
+  function getStatusText(status) {
+    const texts = {
+      'pending': '📋 Order Received',
+      'confirmed': '✅ Payment Confirmed',
+      'preparing': '🍳 Preparing Food',
+      'out_for_delivery': '🚚 Out for Delivery',
+      'delivered': '🎉 Delivered'
+    };
+    return texts[status] || status;
+  }
+
+  function updateOrderStatus(orderNumber, newStatus) {
+    const orderIndex = orders.findIndex(o => o.orderNumber === orderNumber);
+    if (orderIndex !== -1) {
+      orders[orderIndex].status = newStatus;
+      localStorage.setItem('topchef_orders', JSON.stringify(orders));
+      loadOrders(); // Refresh display
+      
+      // Optional: Show notification
+      alert(`✅ Order ${orderNumber} status updated to: ${getStatusText(newStatus)}`);
+    }
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-KE');
+  }
+
+  function renderOrders() {
+    const container = document.getElementById('ordersList');
+    
+    if (orders.length === 0) {
+      container.innerHTML = '<div class="empty-msg">No orders found.</div>';
+      return;
+    }
+    
+    container.innerHTML = orders.map(order => `
+      <div class="order-card">
+        <div class="order-header">
+          <div>
+            <strong>Order #:</strong> <span class="order-number">${order.orderNumber}</span>
+          </div>
+          <div>
+            <span class="order-status ${getStatusClass(order.status || 'pending')}">
+              ${getStatusText(order.status || 'pending')}
+            </span>
+          </div>
+        </div>
+        
+        <div class="order-details">
+          <p><i class="fas fa-user"></i> <strong>Customer:</strong> ${order.customerName}</p>
+          <p><i class="fas fa-phone"></i> <strong>Phone:</strong> ${order.customerPhone}</p>
+          <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> ${order.deliveryAddress}</p>
+          <p><i class="fas fa-calendar"></i> <strong>Ordered:</strong> ${formatDate(order.orderDate)}</p>
+        </div>
+        
+        <div class="order-items">
+          <strong><i class="fas fa-utensils"></i> Items:</strong>
+          <ul>
+            ${order.items.map(item => `<li>🍽️ ${item.name} x${item.quantity} - KES ${(item.price * item.quantity).toLocaleString()}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div><strong>Total:</strong> KES ${order.total.toLocaleString()}</div>
+        
+        <div class="status-buttons">
+          <button class="status-btn" style="background:#fff3cd; color:#856404;" onclick="updateOrderStatus('${order.orderNumber}', 'pending')">📋 Order Received</button>
+          <button class="status-btn" style="background:#cce5ff; color:#004085;" onclick="updateOrderStatus('${order.orderNumber}', 'confirmed')">✅ Payment Confirmed</button>
+          <button class="status-btn" style="background:#d4edda; color:#155724;" onclick="updateOrderStatus('${order.orderNumber}', 'preparing')">🍳 Preparing Food</button>
+          <button class="status-btn" style="background:#d1ecf1; color:#0c5460;" onclick="updateOrderStatus('${order.orderNumber}', 'out_for_delivery')">🚚 Out for Delivery</button>
+          <button class="status-btn" style="background:#d4edda; color:#155724;" onclick="updateOrderStatus('${order.orderNumber}', 'delivered')">🎉 Delivered</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Auto-refresh every 10 seconds
+  loadOrders();
+  setInterval(loadOrders, 10000);
+</script>
+</body>
+</html>
