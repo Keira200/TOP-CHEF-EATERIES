@@ -121,29 +121,48 @@
     .order-items li { padding: 0.3rem 0; border-bottom: 1px solid #f0e0ce; }
     .order-total { text-align: right; font-weight: 800; font-size: 1.2rem; color: #E17B2E; margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #f0e0ce; }
     .tracking-timeline { margin: 1.5rem 0; padding: 1rem; background: #fefaf5; border-radius: 24px; }
-    .timeline-step { display: flex; align-items: center; margin-bottom: 1rem; }
+    .timeline-step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 12px;
+    }
     .timeline-icon {
       width: 50px;
       height: 50px;
-      background: #f0e0ce;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 1rem;
+      transition: all 0.3s;
     }
-    .timeline-step.completed .timeline-icon { background: #25D366; color: white; }
-    .timeline-step.current .timeline-icon { background: #E17B2E; color: white; animation: pulse 1.5s infinite; }
+    .timeline-step.completed .timeline-icon {
+      background: #25D366;
+      color: white;
+      box-shadow: 0 0 0 2px #25D366;
+    }
+    .timeline-step.current .timeline-icon {
+      background: #E17B2E;
+      color: white;
+      animation: pulse 1.5s infinite;
+      box-shadow: 0 0 0 4px rgba(225,123,46,0.3);
+    }
+    .timeline-step.pending .timeline-icon {
+      background: #f0e0ce;
+      color: #b6a089;
+    }
+    .timeline-content { flex: 1; }
+    .timeline-content h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .timeline-content p { font-size: 0.8rem; color: #7a6248; }
+    .timeline-step.completed .timeline-content h4 { color: #25D366; }
+    .timeline-step.current .timeline-content h4 { color: #E17B2E; font-weight: 700; }
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(225,123,46,0.4); }
       70% { box-shadow: 0 0 0 10px rgba(225,123,46,0); }
       100% { box-shadow: 0 0 0 0 rgba(225,123,46,0); }
     }
-    .timeline-content { flex: 1; }
-    .timeline-content h4 { font-size: 1rem; }
-    .timeline-content p { font-size: 0.8rem; color: #7a6248; }
-    .timeline-step.completed .timeline-content h4 { color: #25D366; }
-    .timeline-step.current .timeline-content h4 { color: #E17B2E; font-weight: 700; }
     .whatsapp-support { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f0e0ce; }
     .whatsapp-support a {
       display: inline-flex;
@@ -204,15 +223,15 @@
 <div class="tracking-container">
   <div class="search-box">
     <h3><i class="fas fa-search"></i> Find Your Order</h3>
-    <p>Enter the order number you received after payment (e.g., TCE_1234567890_1234)</p>
+    <p>Enter the order number you received after payment</p>
     <div class="search-input-group">
-      <input type="text" id="orderNumberInput" placeholder="Enter your tracking number">
+      <input type="text" id="orderNumberInput" placeholder="e.g., TCE_1734567890_1234">
       <button id="trackOrderBtn"><i class="fas fa-truck"></i> Track Order</button>
     </div>
   </div>
 
   <div id="errorMessage" class="error-message">
-    <i class="fas fa-exclamation-circle"></i> Order not found. Please check your tracking number and try again.
+    <i class="fas fa-exclamation-circle"></i> Order not found. Please check your tracking number.
   </div>
 
   <div id="orderCard" class="order-card">
@@ -248,60 +267,68 @@
 
   function loadOrders() {
     const saved = localStorage.getItem('topchef_orders');
-    console.log("Raw saved data:", saved);
     if (saved) {
       ordersDatabase = JSON.parse(saved);
       console.log("✅ Loaded orders:", ordersDatabase.length);
-      console.log("Orders:", ordersDatabase);
+      console.log("Orders with statuses:", ordersDatabase.map(o => ({ number: o.orderNumber, status: o.status })));
     } else {
       ordersDatabase = [];
-      console.log("No orders found in localStorage");
-      // Add demo order for testing
-      const demoOrder = {
-        orderNumber: "TCE_DEMO_123456",
-        customerName: "Demo Customer",
-        customerPhone: "0712345678",
-        deliveryAddress: "Demo Address",
-        orderDate: new Date().toISOString(),
-        items: [{ name: "Demo Item", quantity: 1, price: 350 }],
-        total: 350,
-        status: "preparing"
-      };
-      ordersDatabase.push(demoOrder);
-      localStorage.setItem('topchef_orders', JSON.stringify(ordersDatabase));
-      console.log("Demo order added for testing");
+      console.log("No orders found");
     }
   }
 
   function getStatusTimeline(status) {
     const steps = [
-      { id: "pending", name: "Order Received", icon: "fa-receipt", desc: "We've received your order" },
-      { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", desc: "Payment verified" },
-      { id: "preparing", name: "Preparing Your Food", icon: "fa-utensils", desc: "Chefs are cooking" },
-      { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", desc: "On the way!" },
-      { id: "delivered", name: "Delivered", icon: "fa-check-double", desc: "Enjoy your meal!" }
+      { id: "pending", name: "Order Received", icon: "fa-receipt", description: "We've received your order" },
+      { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", description: "Payment verified successfully" },
+      { id: "preparing", name: "Preparing Your Food", icon: "fa-utensils", description: "Our chefs are cooking your meal" },
+      { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", description: "Your order is on the way!" },
+      { id: "delivered", name: "Delivered", icon: "fa-check-double", description: "Enjoy your meal!" }
     ];
-    const order = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
-    const currentIndex = order.indexOf(status);
-    let html = '';
+    
+    const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
+    const currentIndex = statusOrder.indexOf(status);
+    
+    let timelineHtml = '';
+    
     steps.forEach((step, index) => {
       let stepClass = 'pending';
-      if (index < currentIndex) stepClass = 'completed';
-      else if (index === currentIndex) stepClass = 'current';
-      html += `<div class="timeline-step ${stepClass}">
-        <div class="timeline-icon"><i class="fas ${step.icon}"></i></div>
-        <div class="timeline-content"><h4>${step.name}</h4><p>${step.desc}</p></div>
-      </div>`;
+      let timeText = '';
+      
+      if (index < currentIndex) {
+        stepClass = 'completed';
+      } else if (index === currentIndex) {
+        stepClass = 'current';
+      }
+      
+      timelineHtml += `
+        <div class="timeline-step ${stepClass}">
+          <div class="timeline-icon"><i class="fas ${step.icon}"></i></div>
+          <div class="timeline-content">
+            <h4>${step.name}</h4>
+            <p>${step.description}</p>
+          </div>
+        </div>
+      `;
     });
-    return html;
+    
+    return timelineHtml;
   }
 
   function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleDateString('en-KE', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   function displayOrder(orderNumber) {
+    loadOrders(); // Refresh orders before displaying
+    
     const order = ordersDatabase.find(o => o.orderNumber === orderNumber);
     
     if (!order) {
@@ -311,7 +338,8 @@
       return;
     }
     
-    console.log("Order found:", order);
+    console.log("Order found! Status:", order.status);
+    
     document.getElementById('errorMessage').style.display = 'none';
     document.getElementById('orderCard').style.display = 'block';
     
@@ -327,13 +355,15 @@
     }
     document.getElementById('orderItemsList').innerHTML = itemsHtml;
     document.getElementById('orderTotal').innerHTML = `Total: KES ${order.total.toLocaleString()}`;
-    document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(order.status || 'pending');
+    
+    // Generate timeline based on current status
+    const currentStatus = order.status || 'pending';
+    document.getElementById('trackingTimeline').innerHTML = getStatusTimeline(currentStatus);
   }
 
   document.getElementById('trackOrderBtn').addEventListener('click', function() {
     const orderNumber = document.getElementById('orderNumberInput').value.trim();
     if (orderNumber) {
-      console.log("Searching for:", orderNumber);
       displayOrder(orderNumber);
     } else {
       alert('Please enter your order number');
@@ -341,11 +371,13 @@
   });
 
   document.getElementById('orderNumberInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') document.getElementById('trackOrderBtn').click();
+    if (e.key === 'Enter') {
+      document.getElementById('trackOrderBtn').click();
+    }
   });
 
   loadOrders();
-  console.log("✅ Tracking page loaded!");
+  console.log("✅ Tracking page ready!");
 </script>
 </body>
 </html>
