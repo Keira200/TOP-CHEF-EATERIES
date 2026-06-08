@@ -11,31 +11,35 @@
     body { font-family: 'Inter', sans-serif; background: #fefaf5; padding: 2rem; }
     .container { max-width: 600px; margin: 0 auto; }
     .search-box { background: white; border-radius: 24px; padding: 2rem; text-align: center; margin-bottom: 2rem; border: 1px solid #f0e1d0; }
-    input { padding: 1rem; width: 70%; border: 1px solid #f0dcc8; border-radius: 60px; }
-    button { padding: 1rem 1.5rem; background: linear-gradient(135deg, #E17B2E, #B65F1E); color: white; border: none; border-radius: 60px; cursor: pointer; }
+    .search-box h3 { color: #B65F1E; margin-bottom: 0.5rem; }
+    .search-box p { color: #7a6248; margin-bottom: 1rem; }
+    input { padding: 1rem; width: 70%; border: 1px solid #f0dcc8; border-radius: 60px; font-size: 1rem; }
+    button { padding: 1rem 1.5rem; background: linear-gradient(135deg, #E17B2E, #B65F1E); color: white; border: none; border-radius: 60px; cursor: pointer; font-weight: 600; margin-left: 0.5rem; }
     .order-card { background: white; border-radius: 24px; padding: 1.5rem; border: 1px solid #f0e1d0; display: none; }
     .timeline { margin: 1.5rem 0; }
-    .step { display: flex; align-items: center; margin-bottom: 1rem; padding: 0.5rem; }
-    .step-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; }
+    .step { display: flex; align-items: center; margin-bottom: 1rem; padding: 0.5rem; border-radius: 12px; }
+    .step-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 1.2rem; }
     .step.completed .step-icon { background: #25D366; color: white; }
-    .step.current .step-icon { background: #E17B2E; color: white; animation: pulse 1s infinite; }
+    .step.current .step-icon { background: #E17B2E; color: white; animation: pulse 1.5s infinite; }
     .step.pending .step-icon { background: #f0e0ce; color: #b6a089; }
+    .step-content h4 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .step-content p { font-size: 0.8rem; color: #7a6248; }
     @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(225,123,46,0.4); } 70% { box-shadow: 0 0 0 10px rgba(225,123,46,0); } 100% { box-shadow: 0 0 0 0 rgba(225,123,46,0); } }
     .error { background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 16px; display: none; text-align: center; }
-    .back-btn { display: inline-block; margin-top: 2rem; text-align: center; width: 100%; }
+    .back-btn { display: inline-block; margin-top: 2rem; text-align: center; width: 100%; background: #F4E3D3; color: #B65F1E; padding: 0.7rem 2rem; border-radius: 60px; text-decoration: none; font-weight: 600; }
     footer { text-align: center; margin-top: 2rem; padding: 1rem; color: #b6a089; }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="search-box">
-    <h3>Track Your Order</h3>
-    <p>Enter your tracking number</p>
-    <input type="text" id="trackingInput" placeholder="e.g., TCE_1234567890_1234">
-    <button onclick="trackOrder()"><i class="fas fa-search"></i> Track</button>
+    <h3><i class="fas fa-search"></i> Track Your Order</h3>
+    <p>Enter your tracking number (e.g., TCE_1234567890_1234)</p>
+    <input type="text" id="trackingInput" placeholder="Enter tracking number">
+    <button onclick="trackOrder()"><i class="fas fa-truck"></i> Track</button>
   </div>
   
-  <div id="errorMsg" class="error">Order not found!</div>
+  <div id="errorMsg" class="error">❌ Order not found! Please check your tracking number.</div>
   
   <div id="orderCard" class="order-card">
     <h3 id="orderNumber"></h3>
@@ -45,57 +49,74 @@
     <div id="timeline" class="timeline"></div>
   </div>
   
-  <a href="order.html" class="back-btn" style="display: inline-block; background: #F4E3D3; color: #B65F1E; padding: 0.7rem 2rem; border-radius: 60px; text-decoration: none;">← Back to Order</a>
+  <a href="order.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Order</a>
 </div>
 <footer><p>Top Chef Eateries - Real-time Order Tracking</p></footer>
 
 <script>
+  const API_URL = window.location.origin;
+  const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
+  
   const steps = [
     { id: "pending", name: "Order Received", icon: "fa-receipt", desc: "We've received your order" },
-    { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", desc: "Payment verified" },
-    { id: "preparing", name: "Preparing Food", icon: "fa-utensils", desc: "Chefs are cooking" },
-    { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", desc: "On the way!" },
+    { id: "confirmed", name: "Payment Confirmed", icon: "fa-check-circle", desc: "Payment verified successfully" },
+    { id: "preparing", name: "Preparing Food", icon: "fa-utensils", desc: "Our chefs are cooking your meal" },
+    { id: "out_for_delivery", name: "Out for Delivery", icon: "fa-truck", desc: "Your order is on the way!" },
     { id: "delivered", name: "Delivered", icon: "fa-check-double", desc: "Enjoy your meal!" }
   ];
-  const statusOrder = ["pending", "confirmed", "preparing", "out_for_delivery", "delivered"];
 
-  function trackOrder() {
+  async function trackOrder() {
     const trackingNumber = document.getElementById('trackingInput').value.trim();
-    if (!trackingNumber) { alert("Enter tracking number"); return; }
-    
-    let orders = JSON.parse(localStorage.getItem('topchef_orders') || '[]');
-    let order = orders.find(o => o.orderNumber === trackingNumber);
-    
-    if (!order) {
-      document.getElementById('errorMsg').style.display = 'block';
-      document.getElementById('orderCard').style.display = 'none';
+    if (!trackingNumber) {
+      alert("Please enter your tracking number");
       return;
     }
     
-    document.getElementById('errorMsg').style.display = 'none';
-    document.getElementById('orderCard').style.display = 'block';
-    
-    let currentStatus = order.status || 'pending';
-    let currentIndex = statusOrder.indexOf(currentStatus);
-    
-    document.getElementById('orderNumber').innerHTML = `<i class="fas fa-receipt"></i> Order: ${order.orderNumber}`;
-    document.getElementById('customerDetails').innerHTML = `<i class="fas fa-user"></i> ${order.customerName} | <i class="fas fa-phone"></i> ${order.customerPhone} | <i class="fas fa-map-marker-alt"></i> ${order.deliveryAddress}`;
-    document.getElementById('orderItems').innerHTML = `<strong>Items:</strong> ${order.items.map(i => `${i.name} x${i.quantity}`).join(', ')}`;
-    document.getElementById('orderTotal').innerHTML = `<strong>Total:</strong> KES ${order.total}`;
-    
-    let timelineHtml = '';
-    steps.forEach((step, index) => {
-      let stepClass = 'pending';
-      if (index < currentIndex) stepClass = 'completed';
-      else if (index === currentIndex) stepClass = 'current';
-      timelineHtml += `
-        <div class="step ${stepClass}">
-          <div class="step-icon"><i class="fas ${step.icon}"></i></div>
-          <div><strong>${step.name}</strong><br><small>${step.desc}</small></div>
-        </div>
-      `;
-    });
-    document.getElementById('timeline').innerHTML = timelineHtml;
+    try {
+      const response = await fetch(`${API_URL}/api/orders/${trackingNumber}`);
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          document.getElementById('errorMsg').style.display = 'block';
+          document.getElementById('orderCard').style.display = 'none';
+        }
+        return;
+      }
+      
+      const order = await response.json();
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('orderCard').style.display = 'block';
+      
+      const currentStatus = order.status || 'pending';
+      const currentIndex = statusOrder.indexOf(currentStatus);
+      
+      document.getElementById('orderNumber').innerHTML = `<i class="fas fa-receipt"></i> Order: ${order.order_number}`;
+      document.getElementById('customerDetails').innerHTML = `<i class="fas fa-user"></i> ${order.customer_name} | <i class="fas fa-phone"></i> ${order.customer_phone} | <i class="fas fa-map-marker-alt"></i> ${order.delivery_address}`;
+      document.getElementById('orderItems').innerHTML = `<strong>Items:</strong> ${order.items.map(i => `${i.name} x${i.quantity}`).join(', ')}`;
+      document.getElementById('orderTotal').innerHTML = `<strong>Total:</strong> KES ${order.total_amount.toLocaleString()}`;
+      
+      let timelineHtml = '';
+      steps.forEach((step, index) => {
+        let stepClass = 'pending';
+        if (index < currentIndex) stepClass = 'completed';
+        else if (index === currentIndex) stepClass = 'current';
+        
+        timelineHtml += `
+          <div class="step ${stepClass}">
+            <div class="step-icon"><i class="fas ${step.icon}"></i></div>
+            <div class="step-content">
+              <h4>${step.name} ${index < currentIndex ? '✓' : ''}</h4>
+              <p>${step.desc}</p>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('timeline').innerHTML = timelineHtml;
+      
+    } catch (error) {
+      console.error('Error tracking order:', error);
+      alert('Error connecting to server. Make sure the server is running.');
+    }
   }
 </script>
 </body>
