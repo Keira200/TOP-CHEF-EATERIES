@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -8,9 +9,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// In-memory storage (simple array for orders)
+// Serve static files from current directory
+app.use(express.static(__dirname));
+
+// Store orders in memory (will reset on server restart)
 let orders = [];
 
 // ============================================
@@ -35,23 +38,21 @@ app.get('/api/orders/:orderNumber', (req, res) => {
 app.post('/api/orders', (req, res) => {
     const { orderNumber, customerName, customerPhone, deliveryAddress, items, totalAmount, paymentMethod } = req.body;
     
-    // Validate
     if (!orderNumber || !customerName || !customerPhone || !deliveryAddress) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
     
     const newOrder = {
-        id: orders.length + 1,
-        order_number: orderNumber,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        delivery_address: deliveryAddress,
-        special_instructions: req.body.specialInstructions || '',
+        orderNumber: orderNumber,
+        customerName: customerName,
+        customerPhone: customerPhone,
+        deliveryAddress: deliveryAddress,
+        specialInstructions: req.body.specialInstructions || '',
         items: items || [],
-        total_amount: totalAmount || 0,
-        payment_method: paymentMethod || 'Cash on Delivery',
+        totalAmount: totalAmount || 0,
+        paymentMethod: paymentMethod || 'Cash on Delivery',
         status: 'pending',
-        created_at: new Date().toISOString()
+        createdAt: new Date().toISOString()
     };
     
     orders.push(newOrder);
@@ -64,7 +65,7 @@ app.put('/api/orders/:orderNumber/status', (req, res) => {
     const { orderNumber } = req.params;
     const { status } = req.body;
     
-    const order = orders.find(o => o.order_number === orderNumber);
+    const order = orders.find(o => o.orderNumber === orderNumber);
     if (!order) {
         return res.status(404).json({ error: 'Order not found' });
     }
@@ -78,27 +79,64 @@ app.put('/api/orders/:orderNumber/status', (req, res) => {
 app.get('/api/stats', (req, res) => {
     const total = orders.length;
     const pending = orders.filter(o => o.status === 'pending').length;
+    const confirmed = orders.filter(o => o.status === 'confirmed').length;
     const preparing = orders.filter(o => o.status === 'preparing').length;
+    const out_for_delivery = orders.filter(o => o.status === 'out_for_delivery').length;
     const delivered = orders.filter(o => o.status === 'delivered').length;
-    const revenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+    const revenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     
     res.json({
         total_orders: total,
         pending: pending,
+        confirmed: confirmed,
         preparing: preparing,
+        out_for_delivery: out_for_delivery,
         delivered: delivered,
         total_revenue: revenue
     });
 });
 
-// Serve HTML files
+// ============================================
+// HTML PAGE ROUTES
+// ============================================
+
+// Serve HTML files directly
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'order.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/order.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'order.html'));
+});
+
+app.get('/admin-orders.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-orders.html'));
+});
+
+app.get('/track-order.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'track-order.html'));
+});
+
+app.get('/services.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'services.html'));
+});
+
+app.get('/event.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'event.html'));
+});
+
+app.get('/outdoor.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'outdoor.html'));
+});
+
+app.get('/reservation.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'reservation.html'));
 });
 
 // Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📱 Order page: http://localhost:${PORT}/order.html`);
-    console.log(`👨‍💼 Admin page: http://localhost:${PORT}/admin-orders.html`);
+    console.log(`📱 Order page: https://top-chef-eateries-production.up.railway.app/order.html`);
+    console.log(`👨‍💼 Admin page: https://top-chef-eateries-production.up.railway.app/admin-orders.html`);
+    console.log(`🔍 Track page: https://top-chef-eateries-production.up.railway.app/track-order.html`);
 });
