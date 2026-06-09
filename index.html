@@ -2,46 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Top Chef Eateries | Home - Gourmet Fine Dining Restaurant</title>
-  <!-- Google Fonts + Font Awesome 6 (free icons) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Top Chef Eateries | Online Ordering - Paystack Mobile Money</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
-    /* ---------- RESET & GLOBAL ---------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #fefaf5;
-      color: #2c2418;
-      scroll-behavior: smooth;
-      overflow-x: hidden;
-      transition: opacity 0.25s ease-out;
-    }
-
-    /* fade-out effect when navigating to services page */
-    body.fade-out {
-      opacity: 0;
-    }
-
-    /* custom scrollbar warmth */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f3e9de;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #c17b2e;
-      border-radius: 20px;
-    }
-
-    /* ---------- NAVIGATION BAR (matches modern restaurant style) ---------- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fefaf5; color: #2c2418; scroll-behavior: smooth; }
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -49,42 +17,28 @@
       padding: 1.2rem 3rem;
       background: rgba(255, 248, 240, 0.96);
       backdrop-filter: blur(8px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
       border-bottom: 1px solid #f0e1d0;
       flex-wrap: wrap;
       position: sticky;
       top: 0;
       z-index: 100;
     }
-
     .logo {
       font-size: 1.7rem;
       font-weight: 800;
-      letter-spacing: -0.3px;
       background: linear-gradient(135deg, #B65F1E, #E17B2E);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-    .logo i {
-      color: #E17B2E;
-      margin-right: 6px;
-      background: none;
-      
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
+    .logo i { color: #E17B2E; margin-right: 6px; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
     .nav-links a {
       text-decoration: none;
       font-weight: 500;
       color: #4a3522;
-      transition: 0.25s ease;
+      transition: 0.25s;
       position: relative;
-      font-size: 1rem;
     }
     .nav-links a:after {
       content: '';
@@ -94,617 +48,510 @@
       width: 0%;
       height: 2.5px;
       background: #E17B2E;
-      border-radius: 4px;
       transition: width 0.3s;
     }
-    .nav-links a:hover:after {
+    .nav-links a:hover:after,
+    .nav-links a.active:after { width: 100%; }
+    .nav-links a.active { color: #E17B2E; }
+    .hero-order {
+      background: linear-gradient(107deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45)), url('https://images.pexels.com/photos/4394610/pexels-photo-4394610.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      padding: 4rem 2rem;
+      text-align: center;
+      color: white;
+      border-radius: 0 0 48px 48px;
+    }
+    .hero-order h1 { font-size: 3rem; font-weight: 800; }
+    .hero-order h1 span { color: #FFB347; }
+    .ordering-container {
+      max-width: 1500px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .menu-grid-section { flex: 2; min-width: 260px; }
+    .cart-section {
+      flex: 1.2;
+      min-width: 320px;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      position: sticky;
+      top: 100px;
+      height: fit-content;
+      border: 1px solid #f0e1d0;
+    }
+    .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; color: #B65F1E; display: flex; align-items: center; gap: 10px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; }
+    .food-card {
+      background: white;
+      border-radius: 28px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid #ffe4ce;
+    }
+    .food-card:hover { transform: translateY(-6px); border-color: #E17B2E; }
+    .card-img { height: 180px; background-size: cover; background-position: center; }
+    .card-content { padding: 1.2rem; }
+    .card-content h3 { font-size: 1.4rem; font-weight: 700; }
+    .desc { color: #7a6248; font-size: 0.85rem; margin: 0.5rem 0; }
+    .price { font-size: 1.4rem; font-weight: 800; color: #E17B2E; margin: 0.5rem 0; }
+    .quantity-control { display: flex; align-items: center; gap: 12px; margin: 1rem 0; }
+    .qty-btn {
+      background: #f0e0ce; border: none; width: 36px; height: 36px; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer;
+    }
+    .qty-btn:hover { background: #E17B2E; color: white; }
+    .add-to-cart {
+      background: #E17B2E; border: none; width: 100%; padding: 0.7rem;
+      border-radius: 40px; color: white; font-weight: 700; cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .add-to-cart:hover { background: #B65F1E; transform: scale(1.01); }
+    .cart-items { max-height: 350px; overflow-y: auto; margin-bottom: 1rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f0e0ce; }
+    .cart-total { font-size: 1.3rem; font-weight: 800; text-align: right; padding: 1rem 0; border-top: 2px dashed #E17B2E; margin-top: 0.5rem; }
+    .checkout-form input, .checkout-form textarea, .checkout-form select {
       width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #f0dcc8;
+      border-radius: 28px;
+      font-family: inherit;
     }
-    .nav-links a:hover {
-      color: #C26522;
+    .payment-section { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f0e0ce; }
+    .payment-title { font-weight: 700; margin-bottom: 0.8rem; color: #B65F1E; }
+    .payment-options { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .payment-option {
+      flex: 1; min-width: 100px; padding: 0.8rem; border: 2px solid #f0dcc8;
+      border-radius: 16px; text-align: center; cursor: pointer; background: white;
     }
-
-    /* Active link style for current page */
-    .nav-links a.active {
-      color: #E17B2E;
-      font-weight: 600;
-    }
-    .nav-links a.active:after {
+    .payment-option.selected { border-color: #E17B2E; background: #fef0e4; }
+    .payment-option i { font-size: 1.5rem; color: #E17B2E; display: block; }
+    .paystack-btn {
+      background: linear-gradient(135deg, #E17B2E, #B65F1E);
+      color: white;
+      border: none;
       width: 100%;
-    }
-
-    /* ---------- HERO SECTION with beautiful food background & animations ---------- */
-    .hero-home {
-      position: relative;
-      min-height: 92vh;
+      padding: 1rem;
+      border-radius: 40px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      overflow: hidden;
-      background: radial-gradient(circle at 20% 30%, rgba(0,0,0,0.55), rgba(0,0,0,0.75));
+      gap: 10px;
     }
-    .food-bg {
-      position: absolute;
+    .modal {
+      display: none;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      z-index: -2;
-      filter: brightness(0.5) saturate(1.2);
-      animation: subtleZoom 22s infinite alternate ease-in-out;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
     }
-    @keyframes subtleZoom {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.08); }
+    .modal-content {
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
     }
-    .hero-content {
-      max-width: 900px;
-      z-index: 5;
-      animation: fadeSlideUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    }
-    @keyframes fadeSlideUp {
-      0% { opacity: 0; transform: translateY(35px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .hero-content h1 {
-      font-size: 4.2rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    .modal-close {
+      background: #E17B2E;
       color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 40px;
+      cursor: pointer;
+      margin-top: 1rem;
     }
-    .hero-content h1 span {
-      color: #FFB347;
-    }
-    .hero-tagline {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      color: #fef2e4;
-      opacity: 0.95;
-    }
-    .btn-group {
+    .bottom-buttons {
+      text-align: center;
+      margin: 2rem auto;
+      padding: 0 2rem;
       display: flex;
-      gap: 1.2rem;
+      gap: 1rem;
       justify-content: center;
       flex-wrap: wrap;
+      max-width: 1500px;
     }
-    .btn {
-      display: inline-block;
-      padding: 0.9rem 2rem;
-      border-radius: 50px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    .btn-primary {
-      background: #E17B2E;
-      color: #0a0c10;
-      box-shadow: 0 8px 18px rgba(225,123,46,0.3);
-    }
-    .btn-primary:hover {
-      transform: scale(1.03);
-      background: #f08c42;
-      box-shadow: 0 12px 22px rgba(225,123,46,0.5);
-    }
-    .btn-outline {
-      border: 2px solid #E17B2E;
-      color: white;
-      background: transparent;
-    }
-    .btn-outline:hover {
-      background: rgba(225,123,46,0.2);
-      transform: translateY(-3px);
-    }
-
-    /* ---------- SERVICES LINK BUTTON (special styling to match theme) ---------- */
-    .btn-services-link {
+    .btn-back {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      background: linear-gradient(135deg, #E17B2E 0%, #C26522 100%);
-      color: white;
-      padding: 0.9rem 2.2rem;
+      gap: 8px;
+      background: #F4E3D3;
+      padding: 0.8rem 2rem;
       border-radius: 60px;
       text-decoration: none;
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: 0.3px;
-      transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      box-shadow: 0 8px 20px rgba(193, 101, 34, 0.3);
-      border: none;
-      cursor: pointer;
+      font-weight: 600;
+      color: #B65F1E;
     }
-    .btn-services-link i {
-      font-size: 1.1rem;
-      transition: transform 0.25s ease;
-    }
-    .btn-services-link:hover {
-      transform: translateY(-4px);
-      background: linear-gradient(135deg, #F08C42 0%, #D9722E 100%);
-      box-shadow: 0 16px 28px rgba(193, 101, 34, 0.4);
-      gap: 16px;
-    }
-    .btn-services-link:hover i:last-child {
-      transform: translateX(6px);
-    }
-    .btn-services-link:hover i:first-child {
-      transform: translateX(-2px);
-    }
-
-    /* ---------- ABOUT SECTION ---------- */
-    .about-section {
-      max-width: 1300px;
-      margin: 5rem auto;
-      padding: 0 2rem;
-    }
-    .section-title {
-      font-size: 2.5rem;
-      text-align: center;
-      margin-bottom: 2rem;
-      background: linear-gradient(135deg, #B65F1E, #E17B2E);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 800;
-    }
-    .about-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3rem;
+    .btn-back:hover { background: #E17B2E; color: white; }
+    .btn-track {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
+      background: linear-gradient(135deg, #E17B2E, #B65F1E);
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 600;
+      color: white;
     }
-    .about-text {
-      flex: 1;
-      min-width: 260px;
-    }
-    .about-text p {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 1.2rem;
-      color: #4a3a2a;
-    }
-    .about-stats {
-      flex: 1;
-      display: flex;
-      gap: 2rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .stat-card {
-      background: white;
-      padding: 1.8rem;
-      border-radius: 32px;
-      text-align: center;
-      width: 160px;
-      transition: transform 0.3s ease;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border: 1px solid #ffe4ce;
-    }
-    .stat-card:hover {
-      transform: translateY(-8px);
-      border-color: #E17B2E;
-    }
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: #E17B2E;
-    }
-    .stat-label {
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #7a6248;
-    }
-
-    /* ---------- SERVICES PREVIEW SECTION ---------- */
-    .preview-section {
-      background: #fff9f2;
-      padding: 4rem 2rem;
-      border-radius: 64px;
-      margin: 2rem auto;
-      max-width: 1400px;
-    }
-    .services-preview {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2rem;
-      justify-content: center;
-      margin: 2rem 0;
-    }
-    .mini-card {
-      background: white;
-      border-radius: 28px;
-      padding: 1.8rem;
-      width: 260px;
-      text-align: center;
-      transition: all 0.3s;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-      border: 1px solid #ffe4ce;
-    }
-    .mini-card:hover {
-      transform: translateY(-8px);
-      border-color: #E17B2E;
-    }
-    .mini-card i {
-      font-size: 2.4rem;
-      color: #E17B2E;
-      margin-bottom: 1rem;
-    }
-    .mini-card h3 {
-      font-size: 1.3rem;
-      margin-bottom: 0.5rem;
-      color: #3a2c1c;
-    }
-    .mini-card p {
-      font-size: 0.9rem;
-      color: #7a6248;
-    }
-    .cta-link {
-      text-align: center;
-      margin: 2rem 0 1rem;
-    }
-
-    /* ---------- TESTIMONIALS / EXTRA CHARM ---------- */
-    .testimonial-section {
-      max-width: 1000px;
-      margin: 4rem auto;
-      padding: 0 2rem;
-      text-align: center;
-    }
-    .testimonial-card {
-      background: white;
-      border-radius: 48px;
-      padding: 2rem;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.05);
-      border: 1px solid #f0e0ce;
-    }
-    .testimonial-card i {
-      font-size: 2rem;
-      color: #E17B2E;
-      opacity: 0.5;
-    }
-    .testimonial-card p {
-      font-size: 1.1rem;
-      font-style: italic;
-      margin: 1rem 0;
-    }
-
-    /* ---------- FOOTER ---------- */
-    .footer {
-      background: #2c2418;
-      color: #f0e0ce;
-      padding: 2.5rem 2rem 1.5rem;
-      margin-top: 3rem;
-      border-radius: 40px 40px 0 0;
-    }
-    .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 2rem;
-    }
-    .footer-col h4 {
-      color: #E6B17E;
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-    }
-    .footer-col p {
-      margin: 0.5rem 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-    }
-    .footer-col i {
-      width: 24px;
-      color: #E17B2E;
-    }
-    .social-links a {
-      color: #f0dbc8;
-      margin-right: 1.2rem;
-      font-size: 1.4rem;
-      transition: 0.2s;
-      display: inline-block;
-    }
-    .social-links a:hover {
-      color: #E17B2E;
-      transform: translateY(-3px);
-    }
-    .copyright {
-      text-align: center;
-      padding-top: 2rem;
-      font-size: 0.8rem;
-      border-top: 1px solid #4f3e2c;
-      margin-top: 2rem;
-    }
-
-    /* Responsive */
+    .btn-track:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(225,123,46,0.3); }
+    footer { background: #2c2418; color: #f0e0ce; padding: 2rem; text-align: center; margin-top: 1rem; }
     @media (max-width: 850px) {
-      .navbar {
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        gap: 0.8rem;
-      }
-      .nav-links {
-        gap: 1.3rem;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .hero-content h1 {
-        font-size: 2.5rem;
-      }
-      .section-title {
-        font-size: 2rem;
-      }
-      .about-grid {
-        flex-direction: column;
-      }
-      .footer-container {
-        flex-direction: column;
-        text-align: center;
-      }
-      .footer-col p {
-        justify-content: center;
-      }
-    }
-    @media (max-width: 500px) {
-      .hero-content h1 {
-        font-size: 2rem;
-      }
-      .btn-group {
-        gap: 0.8rem;
-      }
-      .btn-services-link {
-        padding: 0.7rem 1.5rem;
-        font-size: 0.9rem;
-      }
+      .navbar { flex-direction: column; padding: 1rem; }
+      .ordering-container { flex-direction: column; }
+      .hero-order h1 { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
 
-<!-- ======================== -->
-<!-- NAVIGATION BAR           -->
-<!-- ======================== -->
 <nav class="navbar">
-  <div class="logo">
-    <i class="fas fa-utensils"></i> TOP CHEF EATERIES
-  </div>
+  <div class="logo"><i class="fas fa-utensils"></i> TOP CHEF EATERIES</div>
   <ul class="nav-links">
-    <li><a href="#home" class="active">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <!-- SERVICES LINK IN NAVBAR - this links to the services page -->
-    <li><a href="services.html" id="navServicesLink">Services</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="#" class="active">Online Order</a></li>
+    <li><a href="track-order.html">Track Order</a></li>
   </ul>
 </nav>
 
-<!-- ======================== -->
-<!-- HERO SECTION (Home)      -->
-<!-- ======================== -->
-<section id="home" class="hero-home">
-  <!-- Beautiful food background image -->
-  <img class="food-bg" src="https://images.pexels.com/photos/2609220/pexels-photo-2609220.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Gourmet food background" onerror="this.src='https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=1600'">
-  <div class="hero-content">
-    <h1>Welcome to <span>Top Chef<br>Eateries</span></h1>
-    <p class="hero-tagline">Savor the art of fine dining — where passion meets perfection on every plate.</p>
-    <div class="btn-group">
-      <a href="#about" class="btn btn-primary">Our Story</a>
-      <!-- BUTTON LINKING TO SERVICES PAGE - Hero CTA -->
-      <a href="services.html" id="heroServicesBtn" class="btn-services-link">
-        <i class="fas fa-concierge-bell"></i> Explore Services <i class="fas fa-arrow-right"></i>
-      </a>
-    </div>
-  </div>
+<section class="hero-order">
+  <h1>Online <span>Food Ordering</span></h1>
+  <p>Fresh, gourmet meals delivered to your doorstep. Select your favorites below.</p>
 </section>
 
-<!-- ======================== -->
-<!-- ABOUT SECTION            -->
-<!-- ======================== -->
-<section id="about" class="about-section">
-  <h2 class="section-title">About Top Chef Eateries</h2>
-  <div class="about-grid">
-    <div class="about-text">
-      <p><strong>Top Chef Eateries</strong> was founded with a vision: to bring world-class culinary experiences crafted by top chefs to every guest. From seasonal ingredients to innovative cooking techniques, our kitchen is a stage for creativity and flavor.</p>
-      <p>We believe dining is an emotion. Our warm ambiance, exceptional service, and mindfully curated menu create memories that linger long after the last bite. With a team of Michelin-starred alumni and local artisans, we redefine gastronomy.</p>
-      <p><i class="fas fa-star" style="color: #E17B2E;"></i> <strong>Est. 2015</strong> — A legacy of taste and elegance.</p>
-    </div>
-    <div class="about-stats">
-      <div class="stat-card">
-        <div class="stat-number">12+</div>
-        <div class="stat-label">Award Wins</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">35K+</div>
-        <div class="stat-label">Happy Guests</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">8</div>
-        <div class="stat-label">Signature Chefs</div>
-      </div>
-    </div>
+<div class="ordering-container">
+  <div class="menu-grid-section">
+    <div class="section-title"><i class="fas fa-utensils"></i> Our Signature Menu</div>
+    <div class="menu-grid" id="menuGrid"></div>
   </div>
-</section>
 
-<!-- ======================== -->
-<!-- SERVICES PREVIEW + LINK  -->
-<!-- ======================== -->
-<div class="preview-section">
-  <h2 class="section-title">What We Offer</h2>
-  <div class="services-preview">
-    <div class="mini-card">
-      <i class="fas fa-utensil-spoon"></i>
-      <h3>Dine-In</h3>
-      <p>Elegant ambiance & chef's specials</p>
+  <div class="cart-section">
+    <div class="section-title"><i class="fas fa-shopping-cart"></i> Your Order</div>
+    <div id="cartItemsList" class="cart-items"><p style="text-align:center;">Your cart is empty</p></div>
+    <div id="cartTotal" class="cart-total">Total: KES 0.00</div>
+
+    <div class="checkout-form">
+      <h4>Delivery Details</h4>
+      <input type="text" id="customerName" placeholder="Full Name">
+      <input type="tel" id="customerPhone" placeholder="Phone Number">
+      <input type="text" id="deliveryLocation" placeholder="Delivery Address">
+      <textarea id="specialInstructions" rows="2" placeholder="Special instructions"></textarea>
+
+      <div class="form-group">
+        <label><i class="fas fa-clock"></i> Preferred Delivery Time</label>
+        <select id="deliveryTime"><option value="">Select a time slot</option></select>
+      </div>
+
+      <div class="payment-section">
+        <div class="payment-title"><i class="fas fa-credit-card"></i> Select Payment Method</div>
+        <div class="payment-options">
+          <div class="payment-option selected" data-payment="mpesa"><i class="fas fa-mobile-alt"></i><span>M-Pesa</span></div>
+          <div class="payment-option" data-payment="airtel"><i class="fas fa-mobile-alt"></i><span>Airtel Money</span></div>
+          <div class="payment-option" data-payment="cash"><i class="fas fa-money-bill-wave"></i><span>Cash on Delivery</span></div>
+        </div>
+        <button id="paystackPayBtn" class="paystack-btn"><i class="fas fa-mobile-alt"></i> Pay with M-Pesa / Airtel Money</button>
+      </div>
     </div>
-    <div class="mini-card">
-      <i class="fas fa-mobile-alt"></i>
-      <h3>Online Order</h3>
-      <p>Fast & seamless digital ordering</p>
-    </div>
-    <div class="mini-card">
-      <i class="fas fa-truck"></i>
-      <h3>Home Delivery</h3>
-      <p>Fresh to your doorstep</p>
-    </div>
-    <div class="mini-card">
-      <i class="fas fa-champagne-glasses"></i>
-      <h3>Event Catering</h3>
-      <p>Weddings & corporate events</p>
-     <div style="text-align: center; margin: 2rem;">
-  <a href="services.html" class="btn-services-link">
-    <i class="fas fa-utensils"></i> View All Services
-  </a>
-</div>
-    </div>
-  </div>
-  <div class="cta-link">
-    <!-- SECOND SERVICES LINK BUTTON - View all services -->
-    <a href="services.html" id="previewServicesBtn" class="btn-services-link">
-      <i class="fas fa-list-ul"></i> View All Services <i class="fas fa-long-arrow-alt-right"></i>
-    </a>
   </div>
 </div>
 
-<!-- ======================== -->
-<!-- TESTIMONIAL (warm touch) -->
-<!-- ======================== -->
-<div class="testimonial-section">
-  <div class="testimonial-card">
-    <i class="fas fa-quote-left"></i>
-    <p>"An unforgettable dining experience! The attention to detail and flavor combinations are simply outstanding. Top Chef Eateries is our go-to for celebrations."</p>
-    <h4 style="color:#E17B2E;">— Maria & James</h4>
+<div class="bottom-buttons">
+  <a href="services.html" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Services</a>
+  <a href="track-order.html" class="btn-track"><i class="fas fa-map-marker-alt"></i> Track Your Order</a>
+</div>
+
+<footer><p>&copy; 2026 Top Chef Eateries — Fresh flavors, delivered with love.</p></footer>
+
+<div id="resultModal" class="modal">
+  <div class="modal-content">
+    <i id="resultIcon" class="fas fa-check-circle" style="color: #25D366;"></i>
+    <h3 id="resultTitle">Payment Successful!</h3>
+    <p id="resultMessage">Your order has been placed successfully.</p>
+    <button class="modal-close" onclick="closeResultModal()">Close</button>
   </div>
 </div>
 
-<!-- ======================== -->
-<!-- FOOTER with contact & socials -->
-<!-- ======================== -->
-<footer class="footer" id="contact">
-  <div class="footer-container">
-    <div class="footer-col">
-      <h4>Top Chef Eateries</h4>
-      <p><i class="fas fa-map-marker-alt"></i> barracks Avenue, Nanyuki, Kenya</p>
-      <p><i class="fas fa-phone-alt"></i> +254707203741</p>
-      <p><i class="fas fa-envelope"></i>topchefeateries@gmail.com</p>
-    </div>
-    <div class="footer-col">
-      <h4>Opening Hours</h4>
-      <p>Mon - Fri: 6:00 AM – 12:30 AM</p>
-      <p>Sat - Sun: 5:00 AM – 12:45 AM</p>
-      <p>Happy Hour: 12–3 PM (Daily)</p>
-    </div>
-    <div class="footer-col">
-      <h4>Follow Us</h4>
-      <div class="social-links">
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-        <a href="#" aria-label="Yelp"><i class="fab fa-yelp"></i></a>
-      </div>
-      <p style="margin-top: 1rem;"><i class="fas fa-star"></i> 4.9 stars · 2k+ reviews</p>
-    </div>
-  </div>
-  <div class="copyright">
-    &copy; 2026 Top Chef Eateries | Savor the art of fine dining. All rights reserved.
-  </div>
-</footer>
-
-<!-- ======================== -->
-<!-- JAVASCRIPT: Smooth linking to services page + fade animation -->
-<!-- ======================== -->
 <script>
-  (function() {
-    // Get all links that point to services.html (navbar link, hero button, preview button)
-    const servicesLinks = document.querySelectorAll('a[href="services.html"]');
-    
-    // Function to handle smooth navigation with fade-out effect
-    function navigateToServicesPage(event) {
-      // Prevent default link behavior to add our smooth animation
-      event.preventDefault();
-      const targetUrl = event.currentTarget.getAttribute('href');
-      
-      // Add fade-out class to body
-      document.body.classList.add('fade-out');
-      
-      // After a short delay, navigate to the services page
-      setTimeout(function() {
-        window.location.href = targetUrl;
-      }, 250);
-    }
-    
-    // Attach click event to every link that goes to services.html
-    servicesLinks.forEach(link => {
-      link.addEventListener('click', navigateToServicesPage);
-    });
-    
-    // Also handle any dynamically added elements (just in case)
-    // Remove fade class when page loads (in case user comes back via back button)
-    window.addEventListener('pageshow', function() {
-      document.body.classList.remove('fade-out');
-    });
-    
-    // For the navigation "Services" link, ensure active state is removed from Home
-    // (just visual polish)
-    const currentPath = window.location.pathname;
-    if (currentPath.includes('index.html') || currentPath === '/' || currentPath.endsWith('/')) {
-      // we are on homepage, fine
-    }
-    
-    // Add small console info (optional)
-    console.log('✅ Homepage loaded — Services links are ready to navigate to services.html');
-  })();
-</script>
+  // ============================================
+  // BACKEND API URL (Railway Production)
+  // ============================================
+  const API_URL = 'https://top-chef-eateries-production.up.railway.app';
 
-<!-- 
-  ==================================================
-  IMPORTANT NOTE FOR LINKING TO SERVICES PAGE:
-  ==================================================
-  This homepage is designed to link to a file named "services.html"
-  located in the SAME folder as this homepage.
-  
-  MAKE SURE YOU HAVE THE SERVICES PAGE FILE (services.html) in the same directory.
-  If your services page has a different name (e.g., "our-services.html" or "service-page.html"),
-  update the href attributes in these places:
-  
-  1. Navbar: <a href="services.html" id="navServicesLink">
-  2. Hero button: <a href="services.html" id="heroServicesBtn">
-  3. Preview button: <a href="services.html" id="previewServicesBtn">
-  
-  Change "services.html" to your actual services page filename.
-  
-  If you haven't created the services page yet, you can use the complete 
-  "Services Provided" page code I provided earlier and save it as "services.html"
-  in the same folder as this homepage.
-  
-  ==================================================
-  ADDITIONAL FEATURES:
-  - Smooth fade-out animation when leaving homepage
-  - 3 different linking points (navbar, hero, services preview)
-  - Fully responsive design
-  - Beautiful food background with subtle zoom animation
-  - Modern warm restaurant colors
-  - Complete footer with contact and social links
-  ==================================================
--->
-  <script>
-  // Smooth navigation to services page
-  const serviceLinks = document.querySelectorAll('a[href="services.html"]');
-  
-  serviceLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = 'services.html';
+  // ============================================
+  // MENU DATA
+  // ============================================
+  const menuItems = [
+    { id: 1, name: "Truffle Risotto", desc: "Creamy arborio rice, wild mushrooms", price: 1850, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 2, name: "Grass-Fed Ribeye", desc: "Herb butter, roasted garlic", price: 3200, image: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 4, name: "Margherita Pizza", desc: "Fresh mozzarella, basil", price: 1400, image: "https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 6, name: "Vegan Power Bowl", desc: "Quinoa, avocado, chickpeas", price: 1450, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 7, name: "Spaghetti Carbonara", desc: "Pancetta, egg yolk, pecorino", price: 1650, image: "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 8, name: "Chocolate Lava Cake", desc: "Warm chocolate, ice cream", price: 750, image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 9, name: "Beef Burger", desc: "Grass-fed beef, cheddar", price: 1250, image: "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 10, name: "Fresh Fruit Juice", desc: "Seasonal fruits", price: 450, image: "https://images.pexels.com/photos/1233319/pexels-photo-1233319.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 11, name: "Garlic Bread", desc: "Garlic butter, herbs", price: 350, image: "https://images.pexels.com/photos/1654426/pexels-photo-1654426.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 12, name: "Chicken Wings", desc: "Crispy wings, BBQ sauce", price: 850, image: "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400" }
+  ];
+
+  let cart = new Map();
+  let selectedPayment = "mpesa";
+  const MINIMUM_ORDER_AMOUNT = 500;
+
+  // ============================================
+  // SAVE ORDER TO BACKEND (Railway API)
+  // ============================================
+  async function saveOrderToBackend(orderData, trackingNumber) {
+    try {
+      const response = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderNumber: trackingNumber,
+          customerName: orderData.name,
+          customerPhone: orderData.phone,
+          deliveryAddress: orderData.address,
+          specialInstructions: orderData.instructions || '',
+          items: orderData.items,
+          totalAmount: orderData.total,
+          paymentMethod: orderData.paymentMethod,
+          status: 'pending'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save order to backend');
+      }
+      
+      const result = await response.json();
+      console.log('✅ Order saved to backend:', result);
+      return true;
+    } catch (error) {
+      console.error('❌ Backend save error:', error);
+      return false;
+    }
+  }
+
+  // ============================================
+  // DELIVERY TIME SLOTS
+  // ============================================
+  function generateDeliverySlots() {
+    const slots = [];
+    const now = new Date();
+    const currentHour = now.getHours();
+    let startHour = currentHour + 1;
+    for (let i = 0; i < 6; i++) {
+      let slotHour = startHour + i;
+      let period = slotHour >= 12 ? 'PM' : 'AM';
+      let displayHour = slotHour > 12 ? slotHour - 12 : slotHour;
+      if (displayHour === 0) displayHour = 12;
+      slots.push({ value: `${slotHour}:00`, display: `${displayHour}:00 ${period}`, available: slotHour <= 22 });
+    }
+    return slots;
+  }
+
+  function populateDeliverySlots() {
+    const select = document.getElementById('deliveryTime');
+    if (select) {
+      const slots = generateDeliverySlots().filter(slot => slot.available);
+      select.innerHTML = '<option value="">Select a time slot</option>' + slots.map(slot => `<option value="${slot.value}">${slot.display}</option>`).join('');
+    }
+  }
+
+  // Payment selection
+  document.querySelectorAll('.payment-option').forEach(option => {
+    option.addEventListener('click', function() {
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedPayment = this.dataset.payment;
     });
   });
+
+  // Cart Functions
+  function renderMenu() {
+    const container = document.getElementById('menuGrid');
+    container.innerHTML = '';
+    menuItems.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'food-card';
+      card.innerHTML = `
+        <div class="card-img" style="background-image: url('${item.image}');"></div>
+        <div class="card-content">
+          <h3>${item.name}</h3>
+          <p class="desc">${item.desc}</p>
+          <div class="price">KES ${item.price.toLocaleString()}</div>
+          <div class="quantity-control">
+            <button class="qty-btn decr" data-id="${item.id}">-</button>
+            <span class="qty-value" id="qty-${item.id}">0</span>
+            <button class="qty-btn incr" data-id="${item.id}">+</button>
+          </div>
+          <button class="add-to-cart" data-id="${item.id}"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+    document.querySelectorAll('.decr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), -1)));
+    document.querySelectorAll('.incr').forEach(btn => btn.addEventListener('click', () => changeQuantity(parseInt(btn.dataset.id), 1)));
+    document.querySelectorAll('.add-to-cart').forEach(btn => btn.addEventListener('click', () => addToCart(parseInt(btn.dataset.id))));
+  }
+
+  function getItemQuantity(id) { return cart.has(id) ? cart.get(id).quantity : 0; }
+  function updateQtyDisplay(id) { document.getElementById(`qty-${id}`).innerText = getItemQuantity(id); }
+
+  function changeQuantity(id, delta) {
+    const item = menuItems.find(i => i.id === id);
+    if (!item) return;
+    let newQty = getItemQuantity(id) + delta;
+    if (newQty < 0) newQty = 0;
+    if (newQty === 0) cart.delete(id);
+    else cart.set(id, { quantity: newQty, price: item.price, name: item.name });
+    updateQtyDisplay(id);
+    renderCart();
+  }
+
+  function addToCart(id) {
+    const item = menuItems.find(i => i.id === id);
+    if (!item) return;
+    let newQty = getItemQuantity(id) + 1;
+    cart.set(id, { quantity: newQty, price: item.price, name: item.name });
+    updateQtyDisplay(id);
+    renderCart();
+  }
+
+  function renderCart() {
+    const cartContainer = document.getElementById('cartItemsList');
+    const totalSpan = document.getElementById('cartTotal');
+    let total = 0;
+    if (cart.size === 0) {
+      cartContainer.innerHTML = '<p style="text-align:center;">Your cart is empty</p>';
+      totalSpan.innerText = 'Total: KES 0.00';
+      return;
+    }
+    let html = '';
+    for (let [id, item] of cart.entries()) {
+      const subtotal = item.quantity * item.price;
+      total += subtotal;
+      html += `<div class="cart-item"><div><strong>${item.name}</strong><br>KES ${item.price.toLocaleString()} x ${item.quantity}</div><div><strong>KES ${subtotal.toLocaleString()}</strong> <button class="remove-item" data-id="${id}" style="background:none; border:none; color:#b9534e;"><i class="fas fa-trash"></i></button></div></div>`;
+    }
+    cartContainer.innerHTML = html;
+    totalSpan.innerText = `Total: KES ${total.toLocaleString()}`;
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', () => { const id = parseInt(btn.dataset.id); cart.delete(id); updateQtyDisplay(id); renderCart(); });
+    });
+    return total;
+  }
+
+  // Modal Functions
+  function showResultModal(success, title, message) {
+    document.getElementById('resultIcon').className = success ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    document.getElementById('resultIcon').style.color = success ? '#25D366' : '#e74c3c';
+    document.getElementById('resultTitle').innerText = title;
+    document.getElementById('resultMessage').innerText = message;
+    document.getElementById('resultModal').style.display = 'flex';
+  }
+  function closeResultModal() { document.getElementById('resultModal').style.display = 'none'; }
+
+  // Paystack Payment
+  const paystackBtn = document.getElementById('paystackPayBtn');
+  if (paystackBtn) {
+    paystackBtn.addEventListener('click', function() {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const address = document.getElementById('deliveryLocation').value.trim();
+      const instructions = document.getElementById('specialInstructions').value.trim();
+      const deliveryTime = document.getElementById('deliveryTime').value;
+
+      if (!name || !phone || !address) { alert("❌ Please fill all delivery details"); return; }
+      if (cart.size === 0) { alert("🛒 Your cart is empty"); return; }
+
+      let total = 0;
+      const orderItems = [];
+      for (let [id, item] of cart.entries()) {
+        const subtotal = item.quantity * item.price;
+        total += subtotal;
+        orderItems.push({ name: item.name, quantity: item.quantity, price: item.price });
+      }
+
+      if (total < MINIMUM_ORDER_AMOUNT) {
+        alert(`⚠️ Minimum order is KES ${MINIMUM_ORDER_AMOUNT}. Current total: KES ${total}`);
+        return;
+      }
+
+      const paymentMethod = selectedPayment === 'mpesa' ? 'M-Pesa' : selectedPayment === 'airtel' ? 'Airtel Money' : 'Cash on Delivery';
+      const trackingNumber = 'TCE_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+      
+      // For Cash on Delivery - save immediately to backend
+      if (selectedPayment === 'cash') {
+        const orderData = { name, phone, address, instructions, items: orderItems, total, paymentMethod };
+        saveOrderToBackend(orderData, trackingNumber).then(() => {
+          showResultModal(true, "Order Placed!", `✅ Order placed!\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking: ${trackingNumber}`);
+          cart.clear(); renderCart();
+          document.getElementById('customerName').value = '';
+          document.getElementById('customerPhone').value = '';
+          document.getElementById('deliveryLocation').value = '';
+          document.getElementById('specialInstructions').value = '';
+          document.getElementById('deliveryTime').value = '';
+          menuItems.forEach(item => updateQtyDisplay(item.id));
+        });
+        return;
+      }
+
+      // For M-Pesa/Airtel - process payment first, then save to backend
+      const PAYSTACK_PUBLIC_KEY = "pk_test_3f8af92c289b2fb9e0e63238c82e2f96e0921d23";
+      
+      try {
+        const handler = PaystackPop.setup({
+          key: PAYSTACK_PUBLIC_KEY,
+          email: `${name.replace(/\s/g, '').toLowerCase()}@customer.com`,
+          amount: total * 100,
+          currency: 'KES',
+          ref: trackingNumber,
+          metadata: { custom_fields: [
+            { display_name: "Customer Name", value: name },
+            { display_name: "Phone", value: phone },
+            { display_name: "Address", value: address }
+          ] },
+          callback: function(response) {
+            const orderData = { name, phone, address, instructions, items: orderItems, total, paymentMethod };
+            saveOrderToBackend(orderData, trackingNumber).then(() => {
+              showResultModal(true, "Payment Successful!", `✅ Order placed!\n💰 Total: KES ${total.toLocaleString()}\n🔖 Tracking: ${trackingNumber}`);
+              cart.clear(); renderCart();
+              document.getElementById('customerName').value = '';
+              document.getElementById('customerPhone').value = '';
+              document.getElementById('deliveryLocation').value = '';
+              document.getElementById('specialInstructions').value = '';
+              document.getElementById('deliveryTime').value = '';
+              menuItems.forEach(item => updateQtyDisplay(item.id));
+            });
+          },
+          onClose: function() { alert('Payment cancelled.'); }
+        });
+        handler.openIframe();
+      } catch (error) {
+        alert("Payment error: " + error.message);
+      }
+    });
+  }
+
+  renderMenu();
+  renderCart();
+  populateDeliverySlots();
+  console.log("✅ Order page loaded with Railway backend!");
+  console.log(`📡 Backend API URL: ${API_URL}`);
 </script>
 </body>
 </html>
